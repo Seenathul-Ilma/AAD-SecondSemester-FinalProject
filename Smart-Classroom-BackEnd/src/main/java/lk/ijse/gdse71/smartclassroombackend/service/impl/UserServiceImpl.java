@@ -40,6 +40,17 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(users, new TypeToken<List<UserDTO>>(){}.getType());
     }
 
+    @Override
+    public List<UserDTO> getAllTeachers() {
+        List<User> users = userRepository.findAllByRole(Role.TEACHER);
+        return modelMapper.map(users, new TypeToken<List<UserDTO>>(){}.getType());
+    }
+
+    @Override
+    public List<UserDTO> getAllAdmins() {
+        List<User> users = userRepository.findAllByRole(Role.ADMIN);
+        return modelMapper.map(users, new TypeToken<List<UserDTO>>(){}.getType());    }
+
 }
 
 // @Service

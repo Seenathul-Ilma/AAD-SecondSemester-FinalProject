@@ -31,4 +31,14 @@ public class UserController {
     public List<UserDTO> getAllStudents(){
         return userService.getAllStudents();
     }
+
+    @GetMapping("/teachers")
+    public List<UserDTO> getAllTeachers(){
+        return userService.getAllTeachers();
+    }
+
+    @GetMapping("/admins")
+    public List<UserDTO> getAllAdmins(){
+        return userService.getAllAdmins();
+    }
 }

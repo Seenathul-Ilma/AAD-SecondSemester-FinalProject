@@ -18,4 +18,8 @@ import java.util.List;
 
 public interface UserService {
     List<UserDTO> getAllStudents();
+
+    List<UserDTO> getAllTeachers();
+
+    List<UserDTO> getAllAdmins();
 }
