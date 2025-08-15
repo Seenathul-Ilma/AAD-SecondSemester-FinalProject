@@ -27,8 +27,8 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/users/all")
-    public List<UserDTO> getAllUsers(){
-        return userService.getAllUsers();
+    @GetMapping("/students")
+    public List<UserDTO> getAllStudents(){
+        return userService.getAllStudents();
     }
 }

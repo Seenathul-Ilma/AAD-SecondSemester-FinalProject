@@ -1,6 +1,7 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
+import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
@@ -34,8 +35,8 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<UserDTO> getAllUsers() {
-        List<User> users = userRepository.findAll();
+    public List<UserDTO> getAllStudents() {
+        List<User> users = userRepository.findAllByRole(Role.STUDENT);
         return modelMapper.map(users, new TypeToken<List<UserDTO>>(){}.getType());
     }
 
