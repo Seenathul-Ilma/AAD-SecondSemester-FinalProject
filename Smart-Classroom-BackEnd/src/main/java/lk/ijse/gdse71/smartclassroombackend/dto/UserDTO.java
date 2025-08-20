@@ -26,7 +26,7 @@ import lombok.*;
 public class UserDTO {
 
     @NotBlank(message = "User ID cannot be blank")
-    private String user_id;
+    private String userId;
 
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
@@ -53,12 +53,12 @@ public class UserDTO {
     private String role;
 
     @Pattern(regexp = "([^\\s]+(\\.(?i)(jpg|jpeg|png))$)", message = "Profile image must be a valid image file (jpg, jpeg, png)")
-    private String profile_img; // optional, can be null
+    private String profileImg; // optional, can be null
 
     // Only for students, nullable for others
     @Pattern(regexp = "^(?:\\+94|0)?[0-9]{9,10}$")
     @Size(max = 50, message = "Emergency contact name cannot exceed 50 characters")
-    private String emergency_contact;
+    private String emergencyContact;
 
     @Size(max = 50, message = "Relationship description cannot exceed 50 characters")
     private String relationship;   // relationship between given emergency contact

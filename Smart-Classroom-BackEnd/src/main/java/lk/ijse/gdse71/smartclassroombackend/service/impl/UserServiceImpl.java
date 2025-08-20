@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -49,8 +50,52 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getAllAdmins() {
         List<User> users = userRepository.findAllByRole(Role.ADMIN);
-        return modelMapper.map(users, new TypeToken<List<UserDTO>>(){}.getType());    }
+        return modelMapper.map(users, new TypeToken<List<UserDTO>>(){}.getType());
+    }
 
+    @Override
+    public String generateNextStudentId(){
+        String year = String.valueOf(LocalDate.now().getYear());
+        String prefix = "STU" + year;   // STU + 2025
+
+        User lastStudent = userRepository.findTopByRoleOrderByUserIdDesc(Role.STUDENT);
+
+        int nextSequence = 1;
+
+        if(lastStudent != null) {
+            String lastId = lastStudent.getUserId();   // STU20250015
+            nextSequence = Integer.parseInt(lastId.substring(7)) + 1;    // STU2025 + ...1
+        }
+
+        return prefix + String.format("%04d", nextSequence);     // STU20250001
+    }
+
+    @Override
+    public String generateNextTeacherId() {
+        String year = String.valueOf(LocalDate.now().getYear());
+        String prefix = "TEA" + year;   // STU + 2025
+
+        //User lastTeacher = userRepository.findTopByRoleOrderByUser_idDesc(Role.TEACHER);
+        User lastTeacher = userRepository.findTopByRoleOrderByUserIdDesc(Role.TEACHER);
+
+        int nextSequence = 1;
+
+        if(lastTeacher != null) {
+            String lastId = lastTeacher.getUserId();   // TEA20250015
+            nextSequence = Integer.parseInt(lastId.substring(7)) + 1;    // TEA2025 + ...1
+        }
+
+        return prefix + String.format("%04d", nextSequence);     // TEA20250001
+    }
+
+    @Override
+    public boolean saveUser(UserDTO userDTO) {
+        if (userRepository.existsById(userDTO.getUserId())) {
+            return false; // if user id already exists
+        }
+        User savedUser = userRepository.save(modelMapper.map(userDTO, User.class));
+        return savedUser != null && savedUser.getUserId() != null;
+    }
 }
 
 // @Service

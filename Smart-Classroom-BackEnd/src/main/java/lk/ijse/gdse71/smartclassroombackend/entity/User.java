@@ -20,7 +20,8 @@ import lombok.*;
 @Entity
 public class User {
     @Id
-    private String user_id;
+    @Column(name = "user_id")   // maps to DB column
+    private String userId;
 
     @Column
     private String name;
@@ -40,11 +41,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = true)
-    private String profile_img;
+    @Column(name = "profile_img", nullable = true)
+    private String profileImg;
 
-    @Column(nullable = true)
-    private String emergency_contact;
+    @Column(name = "emergency_contact", nullable = true)
+    private String emergencyContact;
 
     @Column(nullable = true)
     private String relationship;   // relationship between given emergency contact

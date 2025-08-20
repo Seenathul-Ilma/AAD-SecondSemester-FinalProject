@@ -22,4 +22,10 @@ public interface UserService {
     List<UserDTO> getAllTeachers();
 
     List<UserDTO> getAllAdmins();
+
+    String generateNextStudentId();
+
+    String generateNextTeacherId();
+
+    boolean saveUser(UserDTO userDTO);
 }

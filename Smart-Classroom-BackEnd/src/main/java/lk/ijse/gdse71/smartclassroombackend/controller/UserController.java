@@ -1,11 +1,10 @@
 package lk.ijse.gdse71.smartclassroombackend.controller;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
+import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,6 +19,7 @@ import java.util.List;
  * --------------------------------------------
  **/
 
+@CrossOrigin(origins = "http://localhost:5173") // allow only your frontend
 @RestController
 @RequestMapping("/api/v1/edusphere")
 @RequiredArgsConstructor
@@ -40,5 +40,31 @@ public class UserController {
     @GetMapping("/admins")
     public List<UserDTO> getAllAdmins(){
         return userService.getAllAdmins();
+    }
+
+    @PostMapping("/students/add")
+    public boolean saveStudent(@RequestBody UserDTO userDTO){
+        String newId = userService.generateNextStudentId();
+        userDTO.setUserId(newId);
+
+        String password = "abcd1234";
+
+        userDTO.setPassword(password);
+        userDTO.setRole(String.valueOf(Role.STUDENT));
+
+        return userService.saveUser(userDTO);
+    }
+
+    @PostMapping("/teachers/add")
+    public boolean saveTeacher(@RequestBody UserDTO userDTO){
+        String newId = userService.generateNextTeacherId();
+        userDTO.setUserId(newId);
+
+        String password = "teach1234";
+
+        userDTO.setPassword(password);
+        userDTO.setRole(String.valueOf(Role.TEACHER));
+
+        return userService.saveUser(userDTO);
     }
 }
