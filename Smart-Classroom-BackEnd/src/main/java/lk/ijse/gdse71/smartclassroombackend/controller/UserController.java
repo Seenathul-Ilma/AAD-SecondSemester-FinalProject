@@ -21,7 +21,7 @@ import java.util.List;
  * --------------------------------------------
  **/
 
-@CrossOrigin(origins = "http://localhost:5173") // allow only your frontend
+@CrossOrigin // to allow frontend
 @RestController
 @RequestMapping("/api/v1/edusphere")
 @RequiredArgsConstructor
