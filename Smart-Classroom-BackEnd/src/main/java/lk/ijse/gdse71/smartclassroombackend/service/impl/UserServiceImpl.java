@@ -121,6 +121,20 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userToUpdate);
         return true;
     }
+
+    @Override
+    public boolean deleteUser(String id) {
+        // Fetch the user by ID
+        User userToDelete = userRepository.findById(id).orElse(null);
+
+        if (userToDelete == null) {
+            return false; // user not found
+        }
+
+        // Delete the user
+        userRepository.delete(userToDelete);
+        return true; // deletion successful
+    }
 }
 
 // @Service

@@ -4,6 +4,7 @@ import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +61,11 @@ public class UserController {
     @PutMapping("/teachers/edit")
     public boolean updateTeacher(@RequestBody UserDTO userDTO) {
         return userService.updateUser(userDTO, Role.TEACHER);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public boolean deleteUser(@PathVariable String id){
+        return userService.deleteUser(id);
     }
 
 }

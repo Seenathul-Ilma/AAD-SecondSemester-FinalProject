@@ -28,4 +28,6 @@ public interface UserService {
     boolean saveUser(UserDTO userDTO, Role role);
 
     boolean updateUser(UserDTO userDTO, Role role);
+
+    boolean deleteUser(String id);
 }
