@@ -24,6 +24,4 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<User> findAllByRole(Role role);
 
     User findTopByRoleOrderByUserIdDesc(Role role);
-
-    //User findTopByRoleOrderByUser_idDesc(Role role);
 }

@@ -44,27 +44,12 @@ public class UserController {
 
     @PostMapping("/students/add")
     public boolean saveStudent(@RequestBody UserDTO userDTO){
-        String newId = userService.generateNextStudentId();
-        userDTO.setUserId(newId);
-
-        String password = "abcd1234";
-
-        userDTO.setPassword(password);
-        userDTO.setRole(String.valueOf(Role.STUDENT));
-
-        return userService.saveUser(userDTO);
+        return userService.saveUser(userDTO, Role.STUDENT);
     }
 
     @PostMapping("/teachers/add")
     public boolean saveTeacher(@RequestBody UserDTO userDTO){
-        String newId = userService.generateNextTeacherId();
-        userDTO.setUserId(newId);
-
-        String password = "teach1234";
-
-        userDTO.setPassword(password);
-        userDTO.setRole(String.valueOf(Role.TEACHER));
-
-        return userService.saveUser(userDTO);
+        return userService.saveUser(userDTO, Role.TEACHER);
     }
+
 }

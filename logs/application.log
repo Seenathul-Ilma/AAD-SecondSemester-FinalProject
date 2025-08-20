@@ -421,3 +421,301 @@ Caused by: org.springframework.data.mapping.PropertyReferenceException: No prope
 2025-08-20T09:26:45.386+05:30  INFO 26116 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2025-08-20T09:26:45.386+05:30  INFO 26116 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2025-08-20T09:26:45.388+05:30  INFO 26116 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-08-20T10:01:43.426+05:30  INFO 26116 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-20T10:01:43.440+05:30  INFO 26116 --- [Smart-Classroom-BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-08-20T10:01:43.446+05:30  INFO 26116 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:01:43.449+05:30  INFO 26116 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-08-20T10:01:43.458+05:30  INFO 26116 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-08-20T10:01:47.718+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Starting SmartClassroomBackEndApplication using Java 21.0.7 with PID 19464 (C:\IJSE\AAD\AAD-SecondSemester-FinalProject\Smart-Classroom-BackEnd\target\classes started by user in C:\IJSE\AAD\AAD-SecondSemester-FinalProject)
+2025-08-20T10:01:47.721+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : No active profile set, falling back to 1 default profile: "default"
+2025-08-20T10:01:48.390+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-20T10:01:48.434+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 38 ms. Found 1 JPA repository interface.
+2025-08-20T10:01:48.788+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T10:01:48.797+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T10:01:48.797+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-20T10:01:48.825+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-20T10:01:48.825+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1056 ms
+2025-08-20T10:01:48.926+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-20T10:01:48.960+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-20T10:01:48.984+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-20T10:01:49.191+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-20T10:01:49.212+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-20T10:01:49.445+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@27dfd12b
+2025-08-20T10:01:49.446+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-20T10:01:49.481+05:30  WARN 19464 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-20T10:01:49.491+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-20T10:01:50.084+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-20T10:01:50.123+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:01:50.366+05:30  WARN 19464 --- [Smart-Classroom-BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-20T10:01:50.594+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-20T10:01:50.599+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Started SmartClassroomBackEndApplication in 3.259 seconds (process running for 3.794)
+2025-08-20T10:02:09.765+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-20T10:02:09.765+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-08-20T10:02:09.767+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-08-20T10:02:59.916+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-20T10:02:59.928+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-08-20T10:02:59.934+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:02:59.936+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-08-20T10:02:59.947+05:30  INFO 19464 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-08-20T10:03:03.387+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Starting SmartClassroomBackEndApplication using Java 21.0.7 with PID 6236 (C:\IJSE\AAD\AAD-SecondSemester-FinalProject\Smart-Classroom-BackEnd\target\classes started by user in C:\IJSE\AAD\AAD-SecondSemester-FinalProject)
+2025-08-20T10:03:03.389+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : No active profile set, falling back to 1 default profile: "default"
+2025-08-20T10:03:03.906+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-20T10:03:03.945+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 1 JPA repository interface.
+2025-08-20T10:03:04.271+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T10:03:04.279+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T10:03:04.279+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-20T10:03:04.313+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-20T10:03:04.313+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 885 ms
+2025-08-20T10:03:04.408+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-20T10:03:04.439+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-20T10:03:04.460+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-20T10:03:04.657+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-20T10:03:04.680+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-20T10:03:04.933+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2e93108a
+2025-08-20T10:03:04.935+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-20T10:03:04.972+05:30  WARN 6236 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-20T10:03:04.983+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-20T10:03:05.678+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-20T10:03:05.722+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:03:05.953+05:30  WARN 6236 --- [Smart-Classroom-BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-20T10:03:06.226+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-20T10:03:06.232+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Started SmartClassroomBackEndApplication in 3.191 seconds (process running for 3.649)
+2025-08-20T10:03:18.956+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-20T10:03:18.957+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-08-20T10:03:18.958+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-08-20T10:13:04.557+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-20T10:13:04.568+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-08-20T10:13:04.575+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:13:04.578+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-08-20T10:13:04.586+05:30  INFO 6236 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-08-20T10:13:08.270+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Starting SmartClassroomBackEndApplication using Java 21.0.7 with PID 9148 (C:\IJSE\AAD\AAD-SecondSemester-FinalProject\Smart-Classroom-BackEnd\target\classes started by user in C:\IJSE\AAD\AAD-SecondSemester-FinalProject)
+2025-08-20T10:13:08.272+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : No active profile set, falling back to 1 default profile: "default"
+2025-08-20T10:13:08.779+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-20T10:13:08.817+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 1 JPA repository interface.
+2025-08-20T10:13:09.132+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T10:13:09.140+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T10:13:09.141+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-20T10:13:09.171+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-20T10:13:09.171+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 858 ms
+2025-08-20T10:13:09.277+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-20T10:13:09.308+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-20T10:13:09.330+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-20T10:13:09.526+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-20T10:13:09.546+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-20T10:13:09.758+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@34e25492
+2025-08-20T10:13:09.759+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-20T10:13:09.797+05:30  WARN 9148 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-20T10:13:09.808+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-20T10:13:10.402+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-20T10:13:10.437+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:13:10.667+05:30  WARN 9148 --- [Smart-Classroom-BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-20T10:13:10.912+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-20T10:13:10.918+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Started SmartClassroomBackEndApplication in 3.002 seconds (process running for 3.443)
+2025-08-20T10:13:32.558+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-6] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-20T10:13:32.558+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-08-20T10:13:32.559+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-08-20T10:15:40.902+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-20T10:15:40.911+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-08-20T10:15:40.916+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:15:40.918+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-08-20T10:15:40.924+05:30  INFO 9148 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-08-20T10:15:44.309+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Starting SmartClassroomBackEndApplication using Java 21.0.7 with PID 16344 (C:\IJSE\AAD\AAD-SecondSemester-FinalProject\Smart-Classroom-BackEnd\target\classes started by user in C:\IJSE\AAD\AAD-SecondSemester-FinalProject)
+2025-08-20T10:15:44.311+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : No active profile set, falling back to 1 default profile: "default"
+2025-08-20T10:15:44.855+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-20T10:15:44.907+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 40 ms. Found 1 JPA repository interface.
+2025-08-20T10:15:45.215+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T10:15:45.224+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T10:15:45.224+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-20T10:15:45.259+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-20T10:15:45.259+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 908 ms
+2025-08-20T10:15:45.373+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-20T10:15:45.410+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-20T10:15:45.438+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-20T10:15:45.648+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-20T10:15:45.668+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-20T10:15:45.888+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@34e25492
+2025-08-20T10:15:45.889+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-20T10:15:45.925+05:30  WARN 16344 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-20T10:15:45.936+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-20T10:15:46.548+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-20T10:15:46.584+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:15:46.828+05:30  WARN 16344 --- [Smart-Classroom-BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-20T10:15:47.104+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-20T10:15:47.110+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Started SmartClassroomBackEndApplication in 3.179 seconds (process running for 3.651)
+2025-08-20T10:16:05.773+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-5] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-20T10:16:05.773+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-08-20T10:16:05.774+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-08-20T10:18:20.991+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-20T10:18:21.000+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-08-20T10:18:21.005+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:18:21.007+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-08-20T10:18:21.016+05:30  INFO 16344 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-08-20T10:18:24.436+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Starting SmartClassroomBackEndApplication using Java 21.0.7 with PID 22092 (C:\IJSE\AAD\AAD-SecondSemester-FinalProject\Smart-Classroom-BackEnd\target\classes started by user in C:\IJSE\AAD\AAD-SecondSemester-FinalProject)
+2025-08-20T10:18:24.437+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : No active profile set, falling back to 1 default profile: "default"
+2025-08-20T10:18:24.958+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-20T10:18:24.995+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 1 JPA repository interface.
+2025-08-20T10:18:25.290+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T10:18:25.299+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T10:18:25.300+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-20T10:18:25.327+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-20T10:18:25.328+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 844 ms
+2025-08-20T10:18:25.423+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-20T10:18:25.452+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-20T10:18:25.473+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-20T10:18:25.664+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-20T10:18:25.681+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-20T10:18:25.891+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@56872fcb
+2025-08-20T10:18:25.892+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-20T10:18:25.927+05:30  WARN 22092 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-20T10:18:25.937+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-20T10:18:26.529+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-20T10:18:26.562+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:18:26.782+05:30  WARN 22092 --- [Smart-Classroom-BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-20T10:18:27.009+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-20T10:18:27.017+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Started SmartClassroomBackEndApplication in 2.943 seconds (process running for 3.385)
+2025-08-20T10:22:56.104+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-20T10:22:56.118+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-08-20T10:22:56.122+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:22:56.125+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-08-20T10:22:56.132+05:30  INFO 22092 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-08-20T10:22:59.596+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Starting SmartClassroomBackEndApplication using Java 21.0.7 with PID 25636 (C:\IJSE\AAD\AAD-SecondSemester-FinalProject\Smart-Classroom-BackEnd\target\classes started by user in C:\IJSE\AAD\AAD-SecondSemester-FinalProject)
+2025-08-20T10:22:59.598+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : No active profile set, falling back to 1 default profile: "default"
+2025-08-20T10:23:00.104+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-20T10:23:00.144+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 34 ms. Found 1 JPA repository interface.
+2025-08-20T10:23:00.443+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T10:23:00.451+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T10:23:00.451+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-20T10:23:00.482+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-20T10:23:00.482+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 841 ms
+2025-08-20T10:23:00.580+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-20T10:23:00.612+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-20T10:23:00.632+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-20T10:23:00.827+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-20T10:23:00.846+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-20T10:23:01.063+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@41059616
+2025-08-20T10:23:01.064+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-20T10:23:01.098+05:30  WARN 25636 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-20T10:23:01.108+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-20T10:23:01.698+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-20T10:23:01.733+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:23:01.946+05:30  WARN 25636 --- [Smart-Classroom-BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-20T10:23:02.169+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-20T10:23:02.175+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Started SmartClassroomBackEndApplication in 2.921 seconds (process running for 3.348)
+2025-08-20T10:23:15.393+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-7] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-20T10:23:15.394+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-08-20T10:23:15.395+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-08-20T10:24:33.340+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-20T10:24:33.356+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-08-20T10:24:33.362+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:24:33.364+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-08-20T10:24:33.372+05:30  INFO 25636 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-08-20T10:24:36.659+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Starting SmartClassroomBackEndApplication using Java 21.0.7 with PID 7988 (C:\IJSE\AAD\AAD-SecondSemester-FinalProject\Smart-Classroom-BackEnd\target\classes started by user in C:\IJSE\AAD\AAD-SecondSemester-FinalProject)
+2025-08-20T10:24:36.660+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : No active profile set, falling back to 1 default profile: "default"
+2025-08-20T10:24:37.160+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-20T10:24:37.198+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 31 ms. Found 1 JPA repository interface.
+2025-08-20T10:24:37.515+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T10:24:37.523+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T10:24:37.524+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-20T10:24:37.552+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-20T10:24:37.552+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 852 ms
+2025-08-20T10:24:37.654+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-20T10:24:37.684+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-20T10:24:37.706+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-20T10:24:37.901+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-20T10:24:37.918+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-20T10:24:38.129+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1029cf9
+2025-08-20T10:24:38.131+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-20T10:24:38.166+05:30  WARN 7988 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-20T10:24:38.176+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-20T10:24:38.783+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-20T10:24:38.815+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:24:39.028+05:30  WARN 7988 --- [Smart-Classroom-BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-20T10:24:39.265+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-20T10:24:39.270+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Started SmartClassroomBackEndApplication in 2.962 seconds (process running for 3.408)
+2025-08-20T10:35:46.382+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-20T10:35:46.393+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-08-20T10:35:46.398+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:35:46.400+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-08-20T10:35:46.409+05:30  INFO 7988 --- [Smart-Classroom-BackEnd] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-08-20T10:35:50.394+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Starting SmartClassroomBackEndApplication using Java 21.0.7 with PID 8652 (C:\IJSE\AAD\AAD-SecondSemester-FinalProject\Smart-Classroom-BackEnd\target\classes started by user in C:\IJSE\AAD\AAD-SecondSemester-FinalProject)
+2025-08-20T10:35:50.395+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : No active profile set, falling back to 1 default profile: "default"
+2025-08-20T10:35:50.887+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-20T10:35:50.926+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 1 JPA repository interface.
+2025-08-20T10:35:51.237+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-20T10:35:51.245+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-20T10:35:51.245+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-20T10:35:51.272+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-20T10:35:51.273+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 836 ms
+2025-08-20T10:35:51.371+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-20T10:35:51.399+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-20T10:35:51.421+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-20T10:35:51.608+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-20T10:35:51.626+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-20T10:35:51.838+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2e93108a
+2025-08-20T10:35:51.839+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-20T10:35:51.883+05:30  WARN 8652 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-20T10:35:51.893+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.36
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-20T10:35:52.468+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-20T10:35:52.501+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-20T10:35:52.713+05:30  WARN 8652 --- [Smart-Classroom-BackEnd] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-20T10:35:52.941+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-20T10:35:52.947+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [main] l.i.g.s.SmartClassroomBackEndApplication : Started SmartClassroomBackEndApplication in 2.903 seconds (process running for 3.329)
+2025-08-20T10:36:20.827+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-20T10:36:20.828+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-08-20T10:36:20.829+05:30  INFO 8652 --- [Smart-Classroom-BackEnd] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
