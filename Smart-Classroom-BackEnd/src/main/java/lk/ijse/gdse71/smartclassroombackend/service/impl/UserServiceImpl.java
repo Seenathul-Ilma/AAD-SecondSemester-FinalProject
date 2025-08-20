@@ -75,6 +75,11 @@ public class UserServiceImpl implements UserService {
     public boolean saveUser(UserDTO userDTO, Role role) {
         String newId = generateNextUserId(role);
 
+        if(userRepository.existsById(newId)) {
+            System.out.println(newId + "User already exist..!");
+            return false;
+        }
+
         userDTO.setUserId(newId);
         userDTO.setRole(role.name());
 
@@ -91,7 +96,29 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Name, Address, Contact No and Email are required!");
         }
 
-        userRepository.save(modelMapper.map(userDTO, User.class));
+        User user = modelMapper.map(userDTO, User.class);
+        user.setRole(Role.valueOf(userDTO.getRole()));
+        userRepository.save(user);
+        return true;
+    }
+
+    @Override
+    public boolean updateUser(UserDTO userDTO, Role role) {
+        // Check if user exists
+        User existingUser = userRepository.findById(userDTO.getUserId()).orElse(null);
+        if (existingUser == null) {
+            return false; // userId not found
+        }
+
+        // Check if role matches
+        if (!existingUser.getRole().equals(role)) {
+            return false; // role mismatch
+        }
+
+        // Map DTO → Entity and save
+        User userToUpdate = modelMapper.map(userDTO, User.class);
+        userToUpdate.setRole(role); // ensure role is correct
+        userRepository.save(userToUpdate);
         return true;
     }
 }

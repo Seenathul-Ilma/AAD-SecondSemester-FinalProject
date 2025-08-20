@@ -52,4 +52,14 @@ public class UserController {
         return userService.saveUser(userDTO, Role.TEACHER);
     }
 
+    @PutMapping("/students/edit")
+    public boolean updateStudent(@RequestBody UserDTO userDTO) {
+        return userService.updateUser(userDTO, Role.STUDENT);
+    }
+
+    @PutMapping("/teachers/edit")
+    public boolean updateTeacher(@RequestBody UserDTO userDTO) {
+        return userService.updateUser(userDTO, Role.TEACHER);
+    }
+
 }

@@ -2,7 +2,6 @@ package lk.ijse.gdse71.smartclassroombackend.service;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -27,4 +26,6 @@ public interface UserService {
     String generateNextUserId(Role role);
 
     boolean saveUser(UserDTO userDTO, Role role);
+
+    boolean updateUser(UserDTO userDTO, Role role);
 }
