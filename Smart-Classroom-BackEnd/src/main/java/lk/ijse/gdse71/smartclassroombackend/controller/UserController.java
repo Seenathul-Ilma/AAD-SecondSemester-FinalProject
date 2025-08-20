@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.controller;
 
+import jakarta.validation.Valid;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
@@ -44,22 +45,22 @@ public class UserController {
     }
 
     @PostMapping("/students/add")
-    public boolean saveStudent(@RequestBody UserDTO userDTO){
+    public boolean saveStudent(@Valid @RequestBody UserDTO userDTO){
         return userService.saveUser(userDTO, Role.STUDENT);
     }
 
     @PostMapping("/teachers/add")
-    public boolean saveTeacher(@RequestBody UserDTO userDTO){
+    public boolean saveTeacher(@Valid @RequestBody UserDTO userDTO){
         return userService.saveUser(userDTO, Role.TEACHER);
     }
 
     @PutMapping("/students/edit")
-    public boolean updateStudent(@RequestBody UserDTO userDTO) {
+    public boolean updateStudent(@Valid @RequestBody UserDTO userDTO) {
         return userService.updateUser(userDTO, Role.STUDENT);
     }
 
     @PutMapping("/teachers/edit")
-    public boolean updateTeacher(@RequestBody UserDTO userDTO) {
+    public boolean updateTeacher(@Valid @RequestBody UserDTO userDTO) {
         return userService.updateUser(userDTO, Role.TEACHER);
     }
 

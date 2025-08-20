@@ -27,6 +27,9 @@ public class User {
     private String name;
 
     @Column
+    private String nic;
+
+    @Column
     private String address;
 
     @Column

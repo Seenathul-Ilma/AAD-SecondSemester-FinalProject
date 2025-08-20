@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.dto;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
@@ -31,6 +32,10 @@ public class UserDTO {
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     private String name;
+
+    @NotBlank(message = "NIC Number is required")
+    @Size(min = 10, max = 12, message = "NIC must be valid")
+    private String nic;
 
     @NotBlank(message = "Address is required")
     @Size(max = 200, message = "Address cannot exceed 200 characters")
