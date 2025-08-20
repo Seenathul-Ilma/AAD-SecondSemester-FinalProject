@@ -26,7 +26,7 @@ import lombok.*;
 @Builder
 public class UserDTO {
 
-    @NotBlank(message = "User ID cannot be blank")
+    //@NotBlank(message = "User ID cannot be blank")
     private String userId;
 
     @NotBlank(message = "Name is required")
@@ -49,11 +49,11 @@ public class UserDTO {
     @Email(message = "Email must be valid")
     private String email;
 
-    @NotBlank(message = "Password is required")
+    //@NotBlank(message = "Password is required")
     @Size(min = 6, max = 100, message = "Password must be at least 6 characters")
     private String password;
 
-    @NotBlank(message = "Role is required")
+    //@NotBlank(message = "Role is required")
     @Pattern(regexp = "STUDENT|TEACHER|ADMIN", message = "Role must be STUDENT, TEACHER or ADMIN")
     private String role;
 
