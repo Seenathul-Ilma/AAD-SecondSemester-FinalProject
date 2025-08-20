@@ -5,6 +5,10 @@ import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,14 +33,30 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/students")
+    /*@GetMapping("/students")
     public List<UserDTO> getAllStudents(){
         return userService.getAllStudents();
+    }*/
+
+    @GetMapping("/students")
+    public Page<UserDTO> getPaginatedStudents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return userService.getUsersByPaginated(page, size, Role.STUDENT);
     }
 
-    @GetMapping("/teachers")
+    /*@GetMapping("/teachers")
     public List<UserDTO> getAllTeachers(){
         return userService.getAllTeachers();
+    }*/
+
+    @GetMapping("/teachers")
+    public Page<UserDTO> getPaginatedTeachers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return userService.getUsersByPaginated(page, size, Role.TEACHER);
     }
 
     @GetMapping("/admins")
@@ -68,5 +88,4 @@ public class UserController {
     public boolean deleteUser(@PathVariable String id){
         return userService.deleteUser(id);
     }
-
 }

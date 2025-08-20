@@ -2,6 +2,7 @@ package lk.ijse.gdse71.smartclassroombackend.service;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -30,4 +31,6 @@ public interface UserService {
     boolean updateUser(UserDTO userDTO, Role role);
 
     boolean deleteUser(String id);
+
+    Page<UserDTO> getUsersByPaginated(int page, int size, Role student);
 }

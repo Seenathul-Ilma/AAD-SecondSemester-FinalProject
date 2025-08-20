@@ -2,6 +2,8 @@ package lk.ijse.gdse71.smartclassroombackend.repository;
 
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,4 +26,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<User> findAllByRole(Role role);
 
     User findTopByRoleOrderByUserIdDesc(Role role);
+
+    Page<User> findAllByRole(Role role, Pageable pageable);
+
 }

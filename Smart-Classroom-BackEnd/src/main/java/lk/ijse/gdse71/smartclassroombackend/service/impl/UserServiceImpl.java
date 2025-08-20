@@ -8,6 +8,8 @@ import lk.ijse.gdse71.smartclassroombackend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -135,6 +137,16 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(userToDelete);
         return true; // deletion successful
     }
+
+    @Override
+    public Page<UserDTO> getUsersByPaginated(int page, int size, Role role) {
+        // Pass role first, then pageable
+        Page<User> userPage = userRepository.findAllByRole(role, PageRequest.of(page, size));
+
+        // Map each User entity to UserDTO
+        return userPage.map(user -> modelMapper.map(user, UserDTO.class));
+    }
+
 }
 
 // @Service
