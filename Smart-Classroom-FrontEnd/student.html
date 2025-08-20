@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduSphere | Smart Classroom</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!--<style>
+    .active-link {
+      background: linear-gradient(to right, var(&#45;&#45;tw-gradient-from), var(&#45;&#45;tw-gradient-to));
+      color: #fff;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .dark .active-link {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    }
+  </style>-->
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-900">
+    <!-- Wrapper -->
+    <div
+      class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500"
+    >
+      <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div
+          class="w-64 min-h-screen transition duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10"
+        >
+          <div
+            class="p-5 border-b border-slate-200/50 dark:border-slate-700/50"
+          >
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
+              >
+                <i
+                  data-lucide="school"
+                  class="w-6 h-6 font-medium text-white"
+                ></i>
+              </div>
+              <div>
+                <h1 class="text-xl font-bold text-slate-800 dark:text-white">
+                  EduSphere
+                </h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  Admin Panel
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation -->
+          <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <a
+              href="index.html"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg active-link"
+            >
+              <i
+                data-lucide="home"
+                class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Dashboard</span>
+              <i
+                data-lucide="dot"
+                class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse"
+              ></i>
+            </a>
+
+            <a
+              href="#"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                data-lucide="users"
+                class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Teachers</span>
+            </a>
+
+            <a
+              href="student.html"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                data-lucide="users"
+                class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Students</span>
+            </a>
+
+            <a
+              href="#"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                data-lucide="landmark"
+                class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Classrooms</span>
+            </a>
+
+            <a
+              href="#"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                data-lucide="package"
+                class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Materials</span>
+            </a>
+
+            <a
+              href="#"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                data-lucide="message-square"
+                class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Messages</span>
+            </a>
+
+            <a
+              href="#"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                data-lucide="user-circle"
+                class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Profile</span>
+            </a>
+          </nav>
+
+          <!-- Side Bar Footer -->
+        </div>
+
+        <!-- Main Content With Header -->
+      </div>
+    </div>
+
+    <script>
+      // Initialize Lucide icons after the DOM is loaded
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
