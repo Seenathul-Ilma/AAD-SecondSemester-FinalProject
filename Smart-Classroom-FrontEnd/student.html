@@ -153,7 +153,7 @@
           >
             <!-- Footer Wrapper -->
             <div
-              class="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50"
+              class="flex items-center space-x-3 p-3 rounded-xl bg-gray-100 dark:bg-slate-800"
             >
               <img
                 src="Assets/images/user-profile-male.avif"
@@ -356,35 +356,9 @@
                     </tbody>
                   </table>
 
-                  <!-- Pagination -->
-                  <div
-                    id="pagination"
-                    class="flex items-center justify-between px-4 py-3 sm:px-6"
-                  >
-                    <div
-                      class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
-                    >
-                      <div>
-                        <p
-                          id="pageInfo"
-                          class="text-sm text-slate-500 dark:text-slate-400"
-                        >
-                          Showing <span id="startIndex">1</span> to
-                          <span id="endIndex">10</span> of
-                          <span id="totalCount">0</span> results
-                        </p>
-                      </div>
-                      <div>
-                        <nav
-                          id="pageNumbers"
-                          aria-label="Pagination"
-                          class="isolate inline-flex -space-x-px rounded-md"
-                        >
-                          <!-- JS will generate page links -->
-                        </nav>
-                      </div>
-                    </div>
-                  </div>
+                  <!-- Pagination footer (JS will render inside) -->
+                  <div id="pagination-container"></div>
+                  <!-- Pagination Finished -->
                 </div>
               </div>
             </div>
