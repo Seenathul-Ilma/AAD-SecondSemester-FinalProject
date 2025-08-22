@@ -3,6 +3,8 @@ package lk.ijse.gdse71.smartclassroombackend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 /**
  * --------------------------------------------
  * Author: Zeenathul Ilma

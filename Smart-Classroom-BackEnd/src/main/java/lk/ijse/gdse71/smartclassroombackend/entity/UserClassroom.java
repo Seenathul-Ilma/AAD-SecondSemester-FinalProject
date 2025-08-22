@@ -31,7 +31,4 @@ public class UserClassroom {
     private String roleInClassroom;
     private String user;                    // teacher or student
 
-    @OneToMany(mappedBy = "userClassroom")
-    private List<Payment> payments;
-
 }
