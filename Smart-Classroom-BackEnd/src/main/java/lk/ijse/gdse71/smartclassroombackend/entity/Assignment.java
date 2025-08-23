@@ -1,14 +1,12 @@
 package lk.ijse.gdse71.smartclassroombackend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * --------------------------------------------
@@ -20,6 +18,8 @@ import java.time.LocalDate;
  * Project: AAD-SecondSemester-FinalProject
  * --------------------------------------------
  **/
+
+// Done
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,7 +39,17 @@ public class Assignment {
 
     private LocalDate dueDate;
 
-    private String teacher;     // userId
+    @ManyToOne
+    @JoinColumn(name = "assigned_by")
+    private User user;                              // ok
+    //private String teacher;     // userId
 
-    private String classroom;   // classroomId
+    @ManyToOne
+    @JoinColumn(name = "assigned_classroom_id")
+    private Classroom classroom;                    // ok
+    //private String classroom;   // classroomId
+
+    // Uni-directional
+    //@OneToMany(mappedBy = "assignment")
+    //private List<Submission> submissions;        // ok
 }

@@ -1,8 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,6 +34,13 @@ public class Submission {
     private Double marks;
     private Character grade;
 
-    private String studentId;           // userId
-    private String assignmentId;
+    @ManyToOne
+    @JoinColumn(name = "submitted_by")
+    private User user;                      // ok
+    //private String studentId;         // userId
+
+    @ManyToOne
+    @JoinColumn(name = "assignment_id")
+    private Assignment assignment;          // ok
+    //private String assignmentId;
 }

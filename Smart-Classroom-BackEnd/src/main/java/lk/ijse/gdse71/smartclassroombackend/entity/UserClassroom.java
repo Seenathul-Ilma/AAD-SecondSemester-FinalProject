@@ -29,6 +29,18 @@ public class UserClassroom {
     private String userClassroomId;
 
     private String roleInClassroom;
-    private String user;                    // teacher or student
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;                  // ok
+    //private String user;               // teacher or student
+
+    @ManyToOne
+    @JoinColumn(name = "classroom_id")
+    private Classroom classroom;            // ok
+
+    // Uni-directional
+    //@OneToMany(mappedBy = "userClassroom")
+    //private List<Payment> payment;          // ok
 
 }

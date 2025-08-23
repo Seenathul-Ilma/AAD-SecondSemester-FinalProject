@@ -1,8 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,7 +32,15 @@ public class Resources {
     private String filePath;
     private LocalDate uploadedAt;
 
-    private String teacher;    // userId
-    private String classroom;
+    @ManyToOne
+    @JoinColumn(name = "shared_by")
+    private User user;                  // ok
+    //private String teacher;    // userId
+
+    @ManyToOne
+    @JoinColumn(name = "shared_to")
+    private Classroom classroom;        // ok
+    //private String classroom;
+
 
 }

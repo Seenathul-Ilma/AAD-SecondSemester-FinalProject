@@ -55,4 +55,31 @@ public class User {
     @Column(nullable = true)
     private String relationship;   // relationship between given emergency contact
 
+    // Relationships
+
+    // Uni-directional
+    //@OneToMany(mappedBy = "sender")
+    //private List<Chat> sentMessages;   // ok
+
+    //@OneToMany(mappedBy = "receiver")
+    //private List<Chat> receivedMessages;   // ok
+
+    //@OneToMany(mappedBy = "user")
+    //private List<Assignment> assignments;   // ok
+
+    //@OneToMany(mappedBy = "user")
+    //private List<Announcement> announcements;  // ok
+
+    //@OneToMany(mappedBy = "user")
+    //private List<Resources> resources;  // ok
+
+    //@OneToMany(mappedBy = "user")
+    //private List<UserClassroom> userClassrooms;   // ok
+
+    //@OneToMany(mappedBy = "user")
+    //private List<Submission> submissions;       // ok
+
+    //@OneToMany(mappedBy = "user")
+    //private List<Payment> payments;             // ok
+
 }

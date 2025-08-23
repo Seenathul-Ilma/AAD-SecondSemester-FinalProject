@@ -1,8 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,19 +16,30 @@ import java.time.LocalDateTime;
  * --------------------------------------------
  **/
 
+// Done
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 @Entity
+@Table(name = "message")
 public class Chat {
     @Id
     @Column(name = "message_id")
     private String messageId;
 
-    private String content;
+    private String message;
     private LocalDateTime sentAt;
 
-    private String senderId;
-    private String receiverId;
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;                // ok
+    //private String senderId;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private User receiver;              // ok
+    //private String receiverId;
+
 }

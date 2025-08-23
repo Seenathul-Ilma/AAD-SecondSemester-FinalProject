@@ -3,9 +3,12 @@ package lk.ijse.gdse71.smartclassroombackend.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * --------------------------------------------
@@ -31,4 +34,20 @@ public class Classroom {
     private String subject;
     private String description;
     private String classroomCode;
+
+
+    // Uni-directional
+    //@OneToMany(mappedBy = "classroom")
+    //private List<UserClassroom> userClassrooms;     // ok
+
+    //@OneToMany(mappedBy = "classroom")
+    //private List<Announcement> announcements;      // ok
+
+    //@OneToMany(mappedBy = "classroom")
+    //private List<Assignment> assignments;       // ok
+
+    //@OneToMany(mappedBy = "classroom")
+    //private List<Resources> resources;          // ok
+
+
 }

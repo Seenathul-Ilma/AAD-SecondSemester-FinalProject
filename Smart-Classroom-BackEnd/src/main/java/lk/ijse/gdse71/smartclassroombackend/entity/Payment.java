@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
  * --------------------------------------------
  **/
 
+// Done
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -31,7 +33,14 @@ public class Payment {
     private LocalDateTime paidAt;
     private String method;           // CASH, CARD, ONLINE
 
-    private String student;   // userId
-    private String userClassroom;  // classroomId
+
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private User user;                      // ok
+    //private String student;   // userId
+
+    @ManyToOne
+    @JoinColumn(name = "student_classroom_id")    // ok
+    private UserClassroom userClassroom;  // classroomId
 
 }

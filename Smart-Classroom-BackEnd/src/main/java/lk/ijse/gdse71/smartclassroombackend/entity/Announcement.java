@@ -1,9 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 /**
@@ -16,6 +13,8 @@ import lombok.*;
  * Project: AAD-SecondSemester-FinalProject
  * --------------------------------------------
  **/
+
+// Done
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,7 +29,14 @@ public class Announcement {
     private String title;
     private String content;
 
-    private String teacher;    //  or admin   - userId
-    private String classroomId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;                  // ok
+    //private String teacher;    //  or admin   - userId
+
+    @ManyToOne
+    @JoinColumn(name = "classroom_id")
+    private Classroom classroom;           // ok
+    //private String classroomId;
 
 }
