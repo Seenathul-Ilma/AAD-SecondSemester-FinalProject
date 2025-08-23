@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -29,6 +30,8 @@ public class UserClassroom {
     private String userClassroomId;
 
     private String roleInClassroom;
+
+    private LocalDateTime joinedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -31,8 +31,11 @@ public class Payment {
 
     private Double amount;
     private LocalDateTime paidAt;
+    private LocalDateTime updateAt;        // status changes
     private String method;           // CASH, CARD, ONLINE
 
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
