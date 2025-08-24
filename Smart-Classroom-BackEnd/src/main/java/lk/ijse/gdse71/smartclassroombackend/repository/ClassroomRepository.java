@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ClassroomRepository extends JpaRepository<Classroom, String> {
+
+    Classroom findTopByOrderByClassroomIdDesc();
+    boolean existsByClassroomCode(String code);
 }

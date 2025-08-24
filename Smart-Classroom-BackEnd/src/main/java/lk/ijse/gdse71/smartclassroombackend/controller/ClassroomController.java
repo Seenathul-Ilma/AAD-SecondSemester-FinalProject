@@ -1,11 +1,16 @@
 package lk.ijse.gdse71.smartclassroombackend.controller;
 
+import jakarta.validation.Valid;
 import lk.ijse.gdse71.smartclassroombackend.dto.ClassroomDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
+import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.service.ClassroomService;
+import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,4 +39,30 @@ public class ClassroomController {
     ) {
         return classroomService.getClassroomsByPaginated(page, size);
     }
+
+    @PostMapping("/add")
+    public ResponseEntity<ApiResponse> saveClassroom(@Valid @RequestBody ClassroomDTO classroomDTO) {
+        Classroom savedClassroom = classroomService.saveClassroom(classroomDTO);
+
+        if (savedClassroom == null) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to create classroom..!",
+                            null
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        201,
+                        "Classroom created successfully..!",
+                        savedClassroom
+                ),
+                HttpStatus.CREATED
+        );
+    }
+
 }
