@@ -3,6 +3,7 @@ package lk.ijse.gdse71.smartclassroombackend.service.impl;
 import lk.ijse.gdse71.smartclassroombackend.dto.ClassroomDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.*;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
+import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomUserRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
@@ -117,9 +118,15 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     @Transactional
-    public Classroom updateClassroom(ClassroomDTO classroomDTO) {
+    public Classroom updateClassroom(ClassroomDTO classroomDTO, String updatingTeacherId) {
         Classroom existing = classroomRepository.findById(classroomDTO.getClassroomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Classroom not found"));
+
+        boolean isCreator = classroomUserRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(updatingTeacherId, classroomDTO.getClassroomId());
+
+        if (!isCreator) {
+            throw new AccessDeniedException("Only the creator can update this classroom");
+        }
 
         if (classroomDTO.getClassLevel() == null || classroomDTO.getSubject() == null) {
             throw new IllegalArgumentException("Class-level and Subject are required!");

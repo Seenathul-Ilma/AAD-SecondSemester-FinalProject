@@ -116,8 +116,8 @@ public class ClassroomController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<ApiResponse> updateClassroom(@Valid @RequestBody ClassroomDTO classroomDTO) {
-        Classroom updatedClassroom = classroomService.updateClassroom(classroomDTO);
+    public ResponseEntity<ApiResponse> updateClassroom(@Valid @RequestBody ClassroomDTO classroomDTO, @RequestParam String updatingTeacherId) {
+        Classroom updatedClassroom = classroomService.updateClassroom(classroomDTO, updatingTeacherId);
 
         if (updatedClassroom == null) {
             return new ResponseEntity<>(

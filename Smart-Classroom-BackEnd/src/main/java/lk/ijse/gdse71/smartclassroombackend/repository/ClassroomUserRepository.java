@@ -19,4 +19,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClassroomUserRepository extends JpaRepository<UserClassroom, String> {
     UserClassroom findTopByOrderByUserClassroomIdDesc();
+    boolean existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(String updatingTeacherId, String classroomId);
 }

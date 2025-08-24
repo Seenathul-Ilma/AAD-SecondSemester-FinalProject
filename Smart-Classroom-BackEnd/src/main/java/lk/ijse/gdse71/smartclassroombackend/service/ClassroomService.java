@@ -25,7 +25,7 @@ public interface ClassroomService {
 
     Classroom saveClassroom(@Valid ClassroomDTO classroomDTO, String creatingTeacherId);
 
-    Classroom updateClassroom(@Valid ClassroomDTO classroomDTO);
+    Classroom updateClassroom(@Valid ClassroomDTO classroomDTO, String updatingTeacherId);
 
     List<ClassroomDTO> getAllClassrooms();
 

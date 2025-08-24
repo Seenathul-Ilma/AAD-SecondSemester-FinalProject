@@ -25,6 +25,15 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     // Add exception handling logics here
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException e){
+        return new ResponseEntity<>(new ApiResponse(
+                403,
+                e.getMessage(),
+                null
+        ), HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleGenericException(Exception e){
         return new ResponseEntity<>(new ApiResponse(
