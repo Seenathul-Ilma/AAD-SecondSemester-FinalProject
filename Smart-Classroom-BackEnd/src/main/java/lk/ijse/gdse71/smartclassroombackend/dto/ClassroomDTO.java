@@ -32,8 +32,7 @@ public class ClassroomDTO {
     @Size(min = 2, max = 50, message = "Subject must be between 2 and 50 characters")
     private String subject;
 
-    @NotBlank(message = "Description is required")
-    @Size(min = 5, max = 200, message = "Description must be between 5 and 200 characters")
+    @Size(max = 200, message = "Description can be at most 200 characters")
     private String description;
 
     private String classroomCode;
