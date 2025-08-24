@@ -1,5 +1,7 @@
 package lk.ijse.gdse71.smartclassroombackend.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,10 +21,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ClassroomDTO {
+
     private String classroomId;
 
+    @NotBlank(message = "Class-level is required")
+    @Size(min = 2, max = 50, message = "Class-level must be between 2 and 50 characters")
     private String classLevel;   // Grade 7
+
+    @NotBlank(message = "Subject is required")
+    @Size(min = 2, max = 50, message = "Subject must be between 2 and 50 characters")
     private String subject;
+
+    @NotBlank(message = "Description is required")
+    @Size(min = 5, max = 200, message = "Description must be between 5 and 200 characters")
     private String description;
+
     private String classroomCode;
 }
