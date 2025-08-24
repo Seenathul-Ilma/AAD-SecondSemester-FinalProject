@@ -29,7 +29,10 @@ public class UserClassroom {
     @Column(name = "user_classroom_id")
     private String userClassroomId;
 
-    private String roleInClassroom;
+    @Enumerated(EnumType.STRING)
+    private ClassroomRole roleInClassroom;        // TEACHER, STUDENT
+
+    private boolean isCreator;      // true = teacher who created class
 
     private LocalDateTime joinedAt;
 
