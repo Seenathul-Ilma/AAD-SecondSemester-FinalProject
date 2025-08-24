@@ -30,4 +30,6 @@ public interface ClassroomService {
     List<ClassroomDTO> getAllClassrooms();
 
     boolean deleteClassroom(String id);
+
+    Classroom getClassroomById(String classroomId);
 }

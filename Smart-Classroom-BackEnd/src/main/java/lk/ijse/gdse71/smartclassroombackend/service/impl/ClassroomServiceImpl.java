@@ -156,4 +156,10 @@ public class ClassroomServiceImpl implements ClassroomService {
         return true; // deletion successful
     }
 
+    @Override
+    public Classroom getClassroomById(String classroomId) {
+        return classroomRepository.findById(classroomId)
+                .orElseThrow(() -> new RuntimeException("Cannot find classroom with id: " + classroomId));
+    }
+
 }

@@ -64,6 +64,32 @@ public class ClassroomController {
         //return classroomService.getClassroomsByPaginated(page, size);
     }
 
+    @GetMapping("/{classroomId}")
+    public ResponseEntity<ApiResponse> getClassroomById(@PathVariable String classroomId){
+        Classroom foundClassroom = classroomService.getClassroomById(classroomId);
+
+        if (foundClassroom == null) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to find classroom..!",
+                            null
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        201,
+                        "Classroom found..!",
+                        foundClassroom
+                ),
+                HttpStatus.CREATED
+        );
+
+    }
+
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> saveClassroom(@Valid @RequestBody ClassroomDTO classroomDTO, @RequestParam String creatingTeacherId) {
         Classroom savedClassroom = classroomService.saveClassroom(classroomDTO, creatingTeacherId);
