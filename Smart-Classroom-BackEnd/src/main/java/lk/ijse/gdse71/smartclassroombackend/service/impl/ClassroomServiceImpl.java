@@ -1,12 +1,11 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.ClassroomDTO;
-import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
-import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
-import lk.ijse.gdse71.smartclassroombackend.entity.User;
-import lk.ijse.gdse71.smartclassroombackend.exception.ResourceDuplicateException;
+import lk.ijse.gdse71.smartclassroombackend.entity.*;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
+import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomUserRepository;
+import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.ClassroomService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -16,8 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -36,7 +35,9 @@ import java.util.List;
 public class ClassroomServiceImpl implements ClassroomService {
 
     private final ClassroomRepository classroomRepository;
+    private final ClassroomUserRepository classroomUserRepository;
     private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
 
     @Override
     public Page<ClassroomDTO> getClassroomsByPaginated(int page, int size) {
@@ -47,27 +48,33 @@ public class ClassroomServiceImpl implements ClassroomService {
         return classroomPage.map(classroom -> modelMapper.map(classroom, ClassroomDTO.class));
     }
 
-    public String generateNextClassroomId() {
+    public String generateNextClassroomId(String prefix) {
         String year = String.valueOf(LocalDate.now().getYear());
-        String prefix = "CLS" + year;   // CLS + 2025
-
-        Classroom lastClassroom = classroomRepository.findTopByOrderByClassroomIdDesc();
+        String fullPrefix = prefix + year;   // CLS + 2025  / REG + 2025
 
         int nextSequence = 1;
 
-        if (lastClassroom != null) {
-            String lastId = lastClassroom.getClassroomId();   // CLS20250015
-            nextSequence = Integer.parseInt(lastId.substring(7)) + 1;   // extract after CLS2025
+        if (prefix.equals("CLS")) {
+            Classroom lastClassroom = classroomRepository.findTopByOrderByClassroomIdDesc();
+            if (lastClassroom != null) {
+                String lastId = lastClassroom.getClassroomId();   // CLS20250015
+                nextSequence = Integer.parseInt(lastId.substring(fullPrefix.length())) + 1;
+            }
+        } else if (prefix.equals("REG")) {
+            UserClassroom lastUserClassroom = classroomUserRepository.findTopByOrderByUserClassroomIdDesc();
+            if (lastUserClassroom != null) {
+                String lastId = lastUserClassroom.getUserClassroomId(); // REG20250003
+                nextSequence = Integer.parseInt(lastId.substring(fullPrefix.length())) + 1;
+            }
         }
 
-        return prefix + String.format("%04d", nextSequence); // CLS20250001
-
+        return fullPrefix + String.format("%04d", nextSequence); // CLS20250001 / REG20250001
     }
 
     @Override
     @Transactional
-    public Classroom saveClassroom(ClassroomDTO classroomDTO) {
-        String newId = generateNextClassroomId();
+    public Classroom saveClassroom(ClassroomDTO classroomDTO, String creatingTeacherId) {
+        String newId = generateNextClassroomId("CLS");
         classroomDTO.setClassroomId(newId);
 
         if (classroomDTO.getClassLevel() == null || classroomDTO.getSubject() == null) {
@@ -81,7 +88,23 @@ public class ClassroomServiceImpl implements ClassroomService {
             classroom.setClassroomCode(generateUniqueClassroomCode());
         }
 
-        return classroomRepository.save(classroom);
+        //return classroomRepository.save(classroom);
+        Classroom savedClassroom = classroomRepository.save(classroom);
+
+        User creatingTeacher = userRepository.findById(creatingTeacherId).orElseThrow(() -> new ResourceNotFoundException("Teacher not found..!"));
+
+        UserClassroom joinClassroom = new UserClassroom();
+        String newUserClassroomId = generateNextClassroomId("REG");
+        joinClassroom.setUserClassroomId(newUserClassroomId);
+        joinClassroom.setUser(creatingTeacher);
+        joinClassroom.setClassroom(savedClassroom);
+        joinClassroom.setRoleInClassroom(ClassroomRole.TEACHER);
+        joinClassroom.setCreator(true);
+        joinClassroom.setJoinedAt(LocalDateTime.now());
+
+        classroomUserRepository.save(joinClassroom);
+        return savedClassroom;
+
     }
 
     private String generateUniqueClassroomCode() {
