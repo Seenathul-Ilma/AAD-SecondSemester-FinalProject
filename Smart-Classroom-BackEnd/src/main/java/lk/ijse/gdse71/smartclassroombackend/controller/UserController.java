@@ -4,11 +4,13 @@ import jakarta.validation.Valid;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
+import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,11 +41,21 @@ public class UserController {
     }*/
 
     @GetMapping("/students")
-    public Page<UserDTO> getPaginatedStudents(
+    public ResponseEntity<ApiResponse> getPaginatedStudents(
+    //public Page<UserDTO> getPaginatedStudents(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        return userService.getUsersByPaginated(page, size, Role.STUDENT);
+        //return userService.getUsersByPaginated(page, size, Role.STUDENT);
+        Page<UserDTO> userDTOS = userService.getUsersByPaginated(page, size, Role.STUDENT);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Students paginated successfully..!",
+                        userDTOS
+                ),
+                HttpStatus.OK
+        );
     }
 
     /*@GetMapping("/teachers")
@@ -52,40 +64,164 @@ public class UserController {
     }*/
 
     @GetMapping("/teachers")
-    public Page<UserDTO> getPaginatedTeachers(
+    public ResponseEntity<ApiResponse> getPaginatedTeachers(
+    //public Page<UserDTO> getPaginatedTeachers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        return userService.getUsersByPaginated(page, size, Role.TEACHER);
+        Page<UserDTO> userDTOS = userService.getUsersByPaginated(page, size, Role.TEACHER);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Teachers paginated successfully..!",
+                        userDTOS
+                ),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/admins")
-    public List<UserDTO> getAllAdmins(){
-        return userService.getAllAdmins();
+    public ResponseEntity<ApiResponse> getAllAdmins(){
+    //public List<UserDTO> getAllAdmins(){
+        List<UserDTO> userDTOS = userService.getAllAdmins();
+        //return userService.getAllAdmins();
+        return ResponseEntity.ok(
+                new ApiResponse(
+                        200,
+                        "Success..!",
+                        userDTOS
+                )
+        );
     }
 
     @PostMapping("/students/add")
-    public boolean saveStudent(@Valid @RequestBody UserDTO userDTO){
-        return userService.saveUser(userDTO, Role.STUDENT);
+    public ResponseEntity<ApiResponse> saveStudent(@Valid @RequestBody UserDTO userDTO){
+    //public boolean saveStudent(@Valid @RequestBody UserDTO userDTO){
+        boolean isSaved = userService.saveUser(userDTO, Role.STUDENT);
+        if(!isSaved){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to create student..!",
+                            isSaved
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        //return userService.saveUser(userDTO, Role.STUDENT);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        201,
+                        "Student created successfully..!",
+                        isSaved
+                ),
+                HttpStatus.CREATED
+        );
     }
 
     @PostMapping("/teachers/add")
-    public boolean saveTeacher(@Valid @RequestBody UserDTO userDTO){
-        return userService.saveUser(userDTO, Role.TEACHER);
+    public ResponseEntity<ApiResponse> saveTeacher(@Valid @RequestBody UserDTO userDTO){
+    //public boolean saveTeacher(@Valid @RequestBody UserDTO userDTO){
+
+        boolean isSaved = userService.saveUser(userDTO, Role.TEACHER);
+        if(!isSaved){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to create teacher..!",
+                            isSaved
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        //return userService.saveUser(userDTO, Role.TEACHER);
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        201,
+                        "Teacher created successfully..!",
+                        isSaved
+                ),
+                HttpStatus.CREATED
+        );
     }
 
     @PutMapping("/students/edit")
-    public boolean updateStudent(@Valid @RequestBody UserDTO userDTO) {
-        return userService.updateUser(userDTO, Role.STUDENT);
+    public ResponseEntity<ApiResponse> updateStudent(@Valid @RequestBody UserDTO userDTO) {
+    //public boolean updateStudent(@Valid @RequestBody UserDTO userDTO) {
+        boolean isUpdated = userService.updateUser(userDTO, Role.STUDENT);
+        if(!isUpdated){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to update student..!",
+                            isUpdated
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        //return userService.updateUser(userDTO, Role.STUDENT);
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Student updated successfully..!",
+                        isUpdated
+                ),
+                HttpStatus.OK
+        );
     }
 
     @PutMapping("/teachers/edit")
-    public boolean updateTeacher(@Valid @RequestBody UserDTO userDTO) {
-        return userService.updateUser(userDTO, Role.TEACHER);
+    public ResponseEntity<ApiResponse> updateTeacher(@Valid @RequestBody UserDTO userDTO) {
+    //public boolean updateTeacher(@Valid @RequestBody UserDTO userDTO) {
+        boolean isUpdated =  userService.updateUser(userDTO, Role.TEACHER);
+        if(!isUpdated){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to update teacher..!",
+                            isUpdated
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        //return userService.updateUser(userDTO, Role.TEACHER);
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Teacher updated successfully..!",
+                        isUpdated
+                ),
+                HttpStatus.OK
+        );
     }
 
     @DeleteMapping("/delete/{id}")
-    public boolean deleteUser(@PathVariable String id){
-        return userService.deleteUser(id);
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable String id){
+    //public boolean deleteUser(@PathVariable String id){
+
+        boolean isDeleted =  userService.deleteUser(id);
+        if(!isDeleted){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to delete..!",
+                            isDeleted
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        //return userService.deleteUser(id);
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Deletion successful..!",
+                        isDeleted
+                ),
+                HttpStatus.OK
+        );
     }
 }
