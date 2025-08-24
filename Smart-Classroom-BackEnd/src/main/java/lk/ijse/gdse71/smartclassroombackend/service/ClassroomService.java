@@ -29,4 +29,6 @@ public interface ClassroomService {
     Classroom updateClassroom(@Valid ClassroomDTO classroomDTO);
 
     List<ClassroomDTO> getAllClassrooms();
+
+    boolean deleteClassroom(String id);
 }

@@ -114,4 +114,29 @@ public class ClassroomController {
         );
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse> deleteClassroom(@PathVariable String id){
+
+        boolean isDeleted =  classroomService.deleteClassroom(id);
+        if(!isDeleted){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to delete classroom..!",
+                            isDeleted
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Deletion successful..!",
+                        isDeleted
+                ),
+                HttpStatus.OK
+        );
+    }
+
 }

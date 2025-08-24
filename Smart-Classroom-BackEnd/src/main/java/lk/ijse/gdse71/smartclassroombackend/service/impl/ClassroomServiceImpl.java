@@ -120,4 +120,17 @@ public class ClassroomServiceImpl implements ClassroomService {
         return modelMapper.map(classrooms, new TypeToken<List<ClassroomDTO>>(){}.getType());
     }
 
+    @Override
+    public boolean deleteClassroom(String id) {
+        Classroom classroomToDelete = classroomRepository.findById(id).orElse(null);
+
+        if (classroomToDelete == null) {
+            throw new ResourceNotFoundException("No classroom found..!");
+            //return false;
+        }
+
+        classroomRepository.delete(classroomToDelete);
+        return true; // deletion successful
+    }
+
 }
