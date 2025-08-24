@@ -29,7 +29,7 @@ import java.util.List;
 
 @CrossOrigin // to allow frontend
 @RestController
-@RequestMapping("/api/v1/edusphere")
+@RequestMapping("/api/v1/edusphere/users")
 @RequiredArgsConstructor
 public class UserController {
 
