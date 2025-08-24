@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * --------------------------------------------
  * Author: Zeenathul Ilma
@@ -32,12 +34,34 @@ public class ClassroomController {
 
     private final ClassroomService classroomService;
 
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse> getAllClassrooms(){
+        List<ClassroomDTO> classroomDTOS = classroomService.getAllClassrooms();
+        return ResponseEntity.ok(
+                new ApiResponse(
+                        200,
+                        "Success..!",
+                        classroomDTOS
+                )
+        );
+    }
+
     @GetMapping("/all/paginated")
-    public Page<ClassroomDTO> getPaginatedClassroom(
+    public ResponseEntity<ApiResponse> getPaginatedClassroom(
+    //public Page<ClassroomDTO> getPaginatedClassroom(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size
     ) {
-        return classroomService.getClassroomsByPaginated(page, size);
+        Page<ClassroomDTO> classroomDTOS = classroomService.getClassroomsByPaginated(page, size);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Classrooms paginated successfully..!",
+                        classroomDTOS
+                ),
+                HttpStatus.OK
+        );
+        //return classroomService.getClassroomsByPaginated(page, size);
     }
 
     @PostMapping("/add")

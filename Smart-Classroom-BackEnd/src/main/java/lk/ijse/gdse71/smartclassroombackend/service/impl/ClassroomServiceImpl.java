@@ -1,6 +1,7 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.ClassroomDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceDuplicateException;
@@ -9,6 +10,7 @@ import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.ClassroomService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * --------------------------------------------
@@ -106,6 +109,15 @@ public class ClassroomServiceImpl implements ClassroomService {
 
         // classroomCode remains unchanged
         return classroomRepository.save(existing);
+    }
+
+    @Override
+    public List<ClassroomDTO> getAllClassrooms() {
+        List<Classroom> classrooms = classroomRepository.findAll();
+        if (classrooms.isEmpty()){
+            throw new ResourceNotFoundException("No Classrooms found..!");
+        }
+        return modelMapper.map(classrooms, new TypeToken<List<ClassroomDTO>>(){}.getType());
     }
 
 }

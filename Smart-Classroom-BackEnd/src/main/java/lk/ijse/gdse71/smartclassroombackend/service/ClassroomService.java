@@ -6,6 +6,8 @@ import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 /**
  * --------------------------------------------
  * Author: Zeenathul Ilma
@@ -25,4 +27,6 @@ public interface ClassroomService {
     Classroom saveClassroom(@Valid ClassroomDTO classroomDTO);
 
     Classroom updateClassroom(@Valid ClassroomDTO classroomDTO);
+
+    List<ClassroomDTO> getAllClassrooms();
 }
