@@ -118,11 +118,15 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     @Transactional
-    public Classroom updateClassroom(ClassroomDTO classroomDTO, String updatingTeacherId) {
+    public Classroom updateClassroom(ClassroomDTO classroomDTO, String updatingTeacherId)  {
         Classroom existing = classroomRepository.findById(classroomDTO.getClassroomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Classroom not found"));
 
-        boolean isCreator = classroomUserRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(updatingTeacherId, classroomDTO.getClassroomId());
+        boolean isCreator =
+                classroomUserRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(
+                        updatingTeacherId,
+                        classroomDTO.getClassroomId()
+                );
 
         if (!isCreator) {
             throw new AccessDeniedException("Only the creator can update this classroom");
@@ -131,7 +135,6 @@ public class ClassroomServiceImpl implements ClassroomService {
         if (classroomDTO.getClassLevel() == null || classroomDTO.getSubject() == null) {
             throw new IllegalArgumentException("Class-level and Subject are required!");
         }
-
         // Only update editable fields
         existing.setClassLevel(classroomDTO.getClassLevel());
         existing.setSubject(classroomDTO.getSubject());
