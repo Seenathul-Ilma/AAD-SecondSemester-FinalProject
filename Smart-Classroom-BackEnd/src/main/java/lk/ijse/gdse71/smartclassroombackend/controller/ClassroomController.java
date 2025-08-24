@@ -65,4 +65,29 @@ public class ClassroomController {
         );
     }
 
+    @PutMapping("/edit")
+    public ResponseEntity<ApiResponse> updateClassroom(@Valid @RequestBody ClassroomDTO classroomDTO) {
+        Classroom updatedClassroom = classroomService.updateClassroom(classroomDTO);
+
+        if (updatedClassroom == null) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to update classroom..!",
+                            null
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Classroom updated successfully..!",
+                        updatedClassroom
+                ),
+                HttpStatus.OK
+        );
+    }
+
 }

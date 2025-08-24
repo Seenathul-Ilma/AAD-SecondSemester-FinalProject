@@ -65,23 +65,19 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Transactional
     public Classroom saveClassroom(ClassroomDTO classroomDTO) {
         String newId = generateNextClassroomId();
-        if(classroomRepository.existsById(newId)) {
-            throw new ResourceDuplicateException("Classroom already exist..!");
-        }
         classroomDTO.setClassroomId(newId);
 
         if (classroomDTO.getClassLevel() == null || classroomDTO.getSubject() == null) {
             throw new IllegalArgumentException("Class-level and Subject are required!");
         }
 
-        // Map DTO to entity
         Classroom classroom = modelMapper.map(classroomDTO, Classroom.class);
-        // Generate unique classroom code if missing
+
+        // Generate classroomCode only if not present
         if (classroom.getClassroomCode() == null || classroom.getClassroomCode().isEmpty()) {
             classroom.setClassroomCode(generateUniqueClassroomCode());
         }
 
-        // Save entity
         return classroomRepository.save(classroom);
     }
 
@@ -91,6 +87,25 @@ public class ClassroomServiceImpl implements ClassroomService {
             code = Classroom.generateRandomClassroomCode();
         } while (classroomRepository.existsByClassroomCode(code));
         return code;
+    }
+
+    @Override
+    @Transactional
+    public Classroom updateClassroom(ClassroomDTO classroomDTO) {
+        Classroom existing = classroomRepository.findById(classroomDTO.getClassroomId())
+                .orElseThrow(() -> new ResourceNotFoundException("Classroom not found"));
+
+        if (classroomDTO.getClassLevel() == null || classroomDTO.getSubject() == null) {
+            throw new IllegalArgumentException("Class-level and Subject are required!");
+        }
+
+        // Only update editable fields
+        existing.setClassLevel(classroomDTO.getClassLevel());
+        existing.setSubject(classroomDTO.getSubject());
+        existing.setDescription(classroomDTO.getDescription());
+
+        // classroomCode remains unchanged
+        return classroomRepository.save(existing);
     }
 
 }

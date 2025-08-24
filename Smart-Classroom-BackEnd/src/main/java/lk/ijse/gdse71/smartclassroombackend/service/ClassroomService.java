@@ -23,4 +23,6 @@ public interface ClassroomService {
     String generateNextClassroomId();
 
     Classroom saveClassroom(@Valid ClassroomDTO classroomDTO);
+
+    Classroom updateClassroom(@Valid ClassroomDTO classroomDTO);
 }
