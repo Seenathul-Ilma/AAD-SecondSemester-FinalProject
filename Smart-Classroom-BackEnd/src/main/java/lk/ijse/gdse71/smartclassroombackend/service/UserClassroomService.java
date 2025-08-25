@@ -11,5 +11,5 @@ public interface UserClassroomService {
 
     UserClassroomDTO joinClassroomByCode(String studentId, String classroomCode);
 
-    List<UserClassroomDTO> joinListStudentsToClassroomByCode(Set<String> studentIds, String classroomCode);
+    List<UserClassroomDTO> joinListOfMembersToClassroomByCode(Set<String> studentIds, String classroomCode);
 }
