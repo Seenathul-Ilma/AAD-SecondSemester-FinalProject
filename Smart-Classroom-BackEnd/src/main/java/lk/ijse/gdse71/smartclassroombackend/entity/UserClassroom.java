@@ -36,12 +36,12 @@ public class UserClassroom {
 
     private LocalDateTime joinedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;                  // ok
     //private String user;               // teacher or student
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "classroom_id")
     private Classroom classroom;            // ok
 

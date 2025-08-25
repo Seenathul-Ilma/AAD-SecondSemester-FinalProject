@@ -50,8 +50,8 @@ public class Classroom {
     }
 
     // Uni-directional
-    //@OneToMany(mappedBy = "classroom")
-    //private List<UserClassroom> userClassrooms;     // ok
+    @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserClassroom> userClassrooms;     // ok
 
     //@OneToMany(mappedBy = "classroom")
     //private List<Announcement> announcements;      // ok

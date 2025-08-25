@@ -23,13 +23,15 @@ public interface ClassroomService {
 
     String generateNextClassroomId(String prefix);
 
-    Classroom saveClassroom(@Valid ClassroomDTO classroomDTO, String creatingTeacherId);
+    ClassroomDTO saveClassroom(@Valid ClassroomDTO classroomDTO, String creatingTeacherId);
 
-    Classroom updateClassroom(@Valid ClassroomDTO classroomDTO, String updatingTeacherId);
+    ClassroomDTO updateClassroom(@Valid ClassroomDTO classroomDTO, String updatingTeacherId);
 
     List<ClassroomDTO> getAllClassrooms();
 
-    boolean deleteClassroom(String id);
+    boolean deleteClassroom(String id, String deletingTeacherId);
 
     Classroom getClassroomById(String classroomId);
+
+    Classroom getClassroomByCode(String classroomCode);
 }

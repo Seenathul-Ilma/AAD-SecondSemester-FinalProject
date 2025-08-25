@@ -64,7 +64,7 @@ public class ClassroomController {
         //return classroomService.getClassroomsByPaginated(page, size);
     }
 
-    @GetMapping("/{classroomId}")
+    @GetMapping("/id/{classroomId}")
     public ResponseEntity<ApiResponse> getClassroomById(@PathVariable String classroomId){
         Classroom foundClassroom = classroomService.getClassroomById(classroomId);
 
@@ -90,9 +90,35 @@ public class ClassroomController {
 
     }
 
+    @GetMapping("/code/{classroomCode}")
+    public ResponseEntity<ApiResponse> getClassroomByCode(@PathVariable String classroomCode){
+        Classroom foundClassroom = classroomService.getClassroomByCode(classroomCode);
+
+        if (foundClassroom == null) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to find classroom..!",
+                            null
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        201,
+                        "Classroom found..!",
+                        foundClassroom
+                ),
+                HttpStatus.CREATED
+        );
+
+    }
+
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> saveClassroom(@Valid @RequestBody ClassroomDTO classroomDTO, @RequestParam String creatingTeacherId) {
-        Classroom savedClassroom = classroomService.saveClassroom(classroomDTO, creatingTeacherId);
+        ClassroomDTO savedClassroom = classroomService.saveClassroom(classroomDTO, creatingTeacherId);
 
         if (savedClassroom == null) {
             return new ResponseEntity<>(
@@ -117,7 +143,7 @@ public class ClassroomController {
 
     @PutMapping("/edit")
     public ResponseEntity<ApiResponse> updateClassroom(@Valid @RequestBody ClassroomDTO classroomDTO, @RequestParam String updatingTeacherId) {
-        Classroom updatedClassroom = classroomService.updateClassroom(classroomDTO, updatingTeacherId);
+        ClassroomDTO updatedClassroom = classroomService.updateClassroom(classroomDTO, updatingTeacherId);
 
         if (updatedClassroom == null) {
             return new ResponseEntity<>(
@@ -140,10 +166,10 @@ public class ClassroomController {
         );
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse> deleteClassroom(@PathVariable String id){
+    @DeleteMapping("/delete/{classroomId}")
+    public ResponseEntity<ApiResponse> deleteClassroom(@PathVariable String classroomId, @RequestParam String deletingTeacherId){
 
-        boolean isDeleted =  classroomService.deleteClassroom(id);
+        boolean isDeleted =  classroomService.deleteClassroom(classroomId, deletingTeacherId);
         if(!isDeleted){
             return new ResponseEntity<>(
                     new ApiResponse(

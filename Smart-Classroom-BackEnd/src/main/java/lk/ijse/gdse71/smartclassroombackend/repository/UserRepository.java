@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * --------------------------------------------
@@ -28,5 +29,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     User findTopByRoleOrderByUserIdDesc(Role role);
 
     Page<User> findAllByRole(Role role, Pageable pageable);
+
+    Optional<User> findUserByUserIdAndRole(String id, Role role);
 
 }

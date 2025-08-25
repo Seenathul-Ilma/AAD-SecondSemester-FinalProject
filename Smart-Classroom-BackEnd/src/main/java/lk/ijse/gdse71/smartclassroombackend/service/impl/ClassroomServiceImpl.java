@@ -74,7 +74,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     @Transactional
-    public Classroom saveClassroom(ClassroomDTO classroomDTO, String creatingTeacherId) {
+    public ClassroomDTO saveClassroom(ClassroomDTO classroomDTO, String creatingTeacherId) {
         String newId = generateNextClassroomId("CLS");
         classroomDTO.setClassroomId(newId);
 
@@ -92,7 +92,9 @@ public class ClassroomServiceImpl implements ClassroomService {
         //return classroomRepository.save(classroom);
         Classroom savedClassroom = classroomRepository.save(classroom);
 
-        User creatingTeacher = userRepository.findById(creatingTeacherId).orElseThrow(() -> new ResourceNotFoundException("Teacher not found..!"));
+        //User creatingTeacher = userRepository.findById(creatingTeacherId).orElseThrow(() -> new ResourceNotFoundException("Teacher not found..!"));
+        User creatingTeacher = userRepository.findUserByUserIdAndRole(creatingTeacherId, Role.TEACHER).orElseThrow(() -> new AccessDeniedException("Only a verified teacher can create a classroom"));
+
 
         UserClassroom joinClassroom = new UserClassroom();
         String newUserClassroomId = generateNextClassroomId("REG");
@@ -104,7 +106,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         joinClassroom.setJoinedAt(LocalDateTime.now());
 
         classroomUserRepository.save(joinClassroom);
-        return savedClassroom;
+        return modelMapper.map(savedClassroom, ClassroomDTO.class);
 
     }
 
@@ -118,7 +120,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     @Transactional
-    public Classroom updateClassroom(ClassroomDTO classroomDTO, String updatingTeacherId)  {
+    public ClassroomDTO updateClassroom(ClassroomDTO classroomDTO, String updatingTeacherId)  {
         Classroom existing = classroomRepository.findById(classroomDTO.getClassroomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Classroom not found"));
 
@@ -141,7 +143,11 @@ public class ClassroomServiceImpl implements ClassroomService {
         existing.setDescription(classroomDTO.getDescription());
 
         // classroomCode remains unchanged
-        return classroomRepository.save(existing);
+        //return classroomRepository.save(existing);
+        Classroom updatedClassroom = classroomRepository.save(existing);
+
+        // Map to response DTO to hide userClassrooms
+        return modelMapper.map(updatedClassroom, ClassroomDTO.class);
     }
 
     @Override
@@ -153,8 +159,30 @@ public class ClassroomServiceImpl implements ClassroomService {
         return modelMapper.map(classrooms, new TypeToken<List<ClassroomDTO>>(){}.getType());
     }
 
-
     @Override
+    @Transactional
+    public boolean deleteClassroom(String classroomId, String deletingTeacherId) {
+        // Check classroom existence first
+        Classroom classroomToDelete = classroomRepository.findById(classroomId)
+                .orElseThrow(() -> new ResourceNotFoundException("No classroom found..!"));
+
+        // Ensure the deleting user is the creator of this classroom
+        boolean isCreator = classroomUserRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(
+                deletingTeacherId,
+                classroomId
+        );
+
+        if (!isCreator) {
+            throw new AccessDeniedException("Only the creator can delete this classroom..!");
+        }
+
+        // Perform deletion
+        classroomRepository.delete(classroomToDelete);
+        return true;
+    }
+
+    /*@Override
+    @Transactional
     public boolean deleteClassroom(String id) {
         Classroom classroomToDelete = classroomRepository.findById(id).orElse(null);
 
@@ -165,12 +193,18 @@ public class ClassroomServiceImpl implements ClassroomService {
 
         classroomRepository.delete(classroomToDelete);
         return true; // deletion successful
-    }
+    }*/
 
     @Override
     public Classroom getClassroomById(String classroomId) {
         return classroomRepository.findById(classroomId)
                 .orElseThrow(() -> new RuntimeException("Cannot find classroom with id: " + classroomId));
+    }
+
+    @Override
+    public Classroom getClassroomByCode(String classroomCode) {
+        return classroomRepository.findByClassroomCode(classroomCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find classroom with code: " + classroomCode));
     }
 
 }
