@@ -28,7 +28,8 @@ public class UserClassroomDTO {
     private String userClassroomId;
 
     //@NotBlank(message = "User ID cannot be empty")
-    private String userId;                          // instead of full User object
+    private String memberId;       // instead of full User object
+
 
     @NotBlank(message = "Classroom ID cannot be empty")
     private String classroomId;                     // instead of full Classroom object
