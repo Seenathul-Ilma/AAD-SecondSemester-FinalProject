@@ -196,15 +196,20 @@ public class ClassroomServiceImpl implements ClassroomService {
     }*/
 
     @Override
-    public Classroom getClassroomById(String classroomId) {
-        return classroomRepository.findById(classroomId)
+    public ClassroomDTO getClassroomById(String classroomId) {
+        Classroom foundClassroom = classroomRepository.findById(classroomId)
                 .orElseThrow(() -> new RuntimeException("Cannot find classroom with id: " + classroomId));
+
+        return modelMapper.map(foundClassroom, ClassroomDTO.class);
+
     }
 
     @Override
-    public Classroom getClassroomByCode(String classroomCode) {
-        return classroomRepository.findByClassroomCode(classroomCode)
+    public ClassroomDTO getClassroomByCode(String classroomCode) {
+        Classroom foundClassroom =  classroomRepository.findByClassroomCode(classroomCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot find classroom with code: " + classroomCode));
+
+        return modelMapper.map(foundClassroom, ClassroomDTO.class);
     }
 
 }

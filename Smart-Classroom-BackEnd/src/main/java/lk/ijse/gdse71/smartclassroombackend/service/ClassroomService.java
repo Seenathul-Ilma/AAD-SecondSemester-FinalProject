@@ -2,7 +2,6 @@ package lk.ijse.gdse71.smartclassroombackend.service;
 
 import jakarta.validation.Valid;
 import lk.ijse.gdse71.smartclassroombackend.dto.ClassroomDTO;
-import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -31,7 +30,7 @@ public interface ClassroomService {
 
     boolean deleteClassroom(String id, String deletingTeacherId);
 
-    Classroom getClassroomById(String classroomId);
+    ClassroomDTO getClassroomById(String classroomId);
 
-    Classroom getClassroomByCode(String classroomCode);
+    ClassroomDTO getClassroomByCode(String classroomCode);
 }

@@ -66,7 +66,7 @@ public class ClassroomController {
 
     @GetMapping("/id/{classroomId}")
     public ResponseEntity<ApiResponse> getClassroomById(@PathVariable String classroomId){
-        Classroom foundClassroom = classroomService.getClassroomById(classroomId);
+        ClassroomDTO foundClassroom = classroomService.getClassroomById(classroomId);
 
         if (foundClassroom == null) {
             return new ResponseEntity<>(
@@ -92,7 +92,7 @@ public class ClassroomController {
 
     @GetMapping("/code/{classroomCode}")
     public ResponseEntity<ApiResponse> getClassroomByCode(@PathVariable String classroomCode){
-        Classroom foundClassroom = classroomService.getClassroomByCode(classroomCode);
+        ClassroomDTO foundClassroom = classroomService.getClassroomByCode(classroomCode);
 
         if (foundClassroom == null) {
             return new ResponseEntity<>(
