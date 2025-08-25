@@ -106,19 +106,19 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
     @Override
     @Transactional
-    public List<UserClassroomDTO> joinListStudentsToClassroomByCode(Set<String> studentIds, String classroomCode) {
+    public List<UserClassroomDTO> joinListOfMembersToClassroomByCode(Set<String> memberIds, String classroomCode) {
         // Fetch classroom
         Classroom classroom = classroomRepository.findByClassroomCode(classroomCode)
                 .orElseThrow(() -> new RuntimeException("Classroom not found!"));
 
         List<UserClassroomDTO> joinedDTOs = new ArrayList<>();
 
-        for (String studentId : studentIds) {
+        for (String memberId : memberIds) {
             // Generate manual ID
             String newId = generateNextClassroomId("REG");
 
             // Fetch student
-            User student = userRepository.findById(studentId)
+            User student = userRepository.findById(memberId)
                     .orElseThrow(() -> new RuntimeException("Student not found!"));
 
             // Check if already joined

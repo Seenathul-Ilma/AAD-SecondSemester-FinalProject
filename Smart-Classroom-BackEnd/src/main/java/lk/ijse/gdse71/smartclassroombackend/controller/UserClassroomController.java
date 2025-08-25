@@ -56,9 +56,9 @@ public class UserClassroomController {
     }
 
     @PostMapping("/join/list")
-    public ResponseEntity<ApiResponse> joinListStudentsToClassroomByCode(@RequestBody Set<String> studentIds, @RequestParam String classroomCode){
+    public ResponseEntity<ApiResponse> joinListOfMembersToClassroomByCode(@RequestBody Set<String> studentIds, @RequestParam String classroomCode){
 
-        List<UserClassroomDTO> joinedStudents = userClassroomService.joinListStudentsToClassroomByCode(studentIds, classroomCode);
+        List<UserClassroomDTO> joinedStudents = userClassroomService.joinListOfMembersToClassroomByCode(studentIds, classroomCode);
 
         if (joinedStudents == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
