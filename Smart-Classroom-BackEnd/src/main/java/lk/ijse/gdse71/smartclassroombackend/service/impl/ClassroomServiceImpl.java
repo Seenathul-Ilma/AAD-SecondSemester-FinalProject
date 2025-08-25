@@ -5,7 +5,7 @@ import lk.ijse.gdse71.smartclassroombackend.entity.*;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
-import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomUserRepository;
+import lk.ijse.gdse71.smartclassroombackend.repository.UserClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.ClassroomService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ import java.util.List;
 public class ClassroomServiceImpl implements ClassroomService {
 
     private final ClassroomRepository classroomRepository;
-    private final ClassroomUserRepository classroomUserRepository;
+    private final UserClassroomRepository userClassroomRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
 
@@ -62,7 +62,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 nextSequence = Integer.parseInt(lastId.substring(fullPrefix.length())) + 1;
             }
         } else if (prefix.equals("REG")) {
-            UserClassroom lastUserClassroom = classroomUserRepository.findTopByOrderByUserClassroomIdDesc();
+            UserClassroom lastUserClassroom = userClassroomRepository.findTopByOrderByUserClassroomIdDesc();
             if (lastUserClassroom != null) {
                 String lastId = lastUserClassroom.getUserClassroomId(); // REG20250003
                 nextSequence = Integer.parseInt(lastId.substring(fullPrefix.length())) + 1;
@@ -105,7 +105,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         joinClassroom.setCreator(true);
         joinClassroom.setJoinedAt(LocalDateTime.now());
 
-        classroomUserRepository.save(joinClassroom);
+        userClassroomRepository.save(joinClassroom);
         return modelMapper.map(savedClassroom, ClassroomDTO.class);
 
     }
@@ -125,7 +125,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 .orElseThrow(() -> new ResourceNotFoundException("Classroom not found"));
 
         boolean isCreator =
-                classroomUserRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(
+                userClassroomRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(
                         updatingTeacherId,
                         classroomDTO.getClassroomId()
                 );
@@ -167,7 +167,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 .orElseThrow(() -> new ResourceNotFoundException("No classroom found..!"));
 
         // Ensure the deleting user is the creator of this classroom
-        boolean isCreator = classroomUserRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(
+        boolean isCreator = userClassroomRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(
                 deletingTeacherId,
                 classroomId
         );

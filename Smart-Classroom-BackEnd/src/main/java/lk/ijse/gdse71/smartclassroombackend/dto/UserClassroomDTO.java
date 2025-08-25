@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ClassroomUserDTO {
+public class UserClassroomDTO {
 
     private String userClassroomId;
 

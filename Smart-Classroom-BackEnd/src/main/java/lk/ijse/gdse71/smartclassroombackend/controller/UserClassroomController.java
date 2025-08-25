@@ -11,5 +11,5 @@ package lk.ijse.gdse71.smartclassroombackend.controller;
  * --------------------------------------------
  **/
 
-public class ClassroomUserController {
+public class UserClassroomController {
 }

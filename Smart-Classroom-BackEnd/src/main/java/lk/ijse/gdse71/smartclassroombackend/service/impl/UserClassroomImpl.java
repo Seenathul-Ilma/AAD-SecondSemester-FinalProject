@@ -11,5 +11,5 @@ package lk.ijse.gdse71.smartclassroombackend.service.impl;
  * --------------------------------------------
  **/
 
-public class ClassroomUserImpl {
+public class UserClassroomImpl {
 }
