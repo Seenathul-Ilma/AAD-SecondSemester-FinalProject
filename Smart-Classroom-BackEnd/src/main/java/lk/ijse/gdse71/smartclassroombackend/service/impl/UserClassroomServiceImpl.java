@@ -152,4 +152,54 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
         return joinedDTOs;
     }
+
+    @Override
+    //public boolean joinListOfMembersToClassroomById(Set<String> memberIds, String classroomId) {
+    public List<UserClassroomDTO> joinListOfMembersToClassroomById(Set<String> memberIds, String classroomId) {
+        // Fetch classroom
+        Classroom classroom = classroomRepository.findByClassroomId(classroomId)
+                .orElseThrow(() -> new RuntimeException("Classroom not found!"));
+
+        List<UserClassroomDTO> joinedDTOs = new ArrayList<>();
+
+        for (String memberId : memberIds) {
+            // Generate manual ID
+            String newId = generateNextClassroomId("REG");
+
+            // Fetch student
+            User student = userRepository.findById(memberId)
+                    .orElseThrow(() -> new RuntimeException("Student not found!"));
+
+            // Check if already joined
+            boolean alreadyJoined = userClassroomRepository.existsByUserAndClassroom(student, classroom);
+
+            //if (alreadyJoined) continue; // skip already joined
+            if (alreadyJoined) {
+                continue;
+                // Student already joined, skip
+            }
+
+            // Create UserClassroom
+            UserClassroom userClassroom = new UserClassroom();
+            userClassroom.setUserClassroomId(newId);
+            userClassroom.setUser(student);
+            userClassroom.setClassroom(classroom);
+            userClassroom.setJoinedAt(java.time.LocalDateTime.now());
+            userClassroom.setRoleInClassroom(ClassroomRole.STUDENT);
+            userClassroom.setCreator(false);
+
+            // Save
+            UserClassroom savedUC = userClassroomRepository.save(userClassroom);
+
+            // Map to DTO
+            modelMapper.typeMap(UserClassroom.class, UserClassroomDTO.class)
+                    .addMappings(m -> m.map(src -> src.getUser().getUserId(), UserClassroomDTO::setMemberId))
+                    .addMappings(m -> m.map(src -> src.getClassroom().getClassroomId(), UserClassroomDTO::setClassroomId));
+
+            joinedDTOs.add(modelMapper.map(savedUC, UserClassroomDTO.class));
+        }
+
+        return joinedDTOs;
+        //return true;
+    }
 }

@@ -79,4 +79,32 @@ public class UserClassroomController {
         );
     }
 
+    @PostMapping("/joinById/list")
+    public ResponseEntity<ApiResponse> joinListOfMembersToClassroomByClassroomId(@RequestBody Set<String> memberIds, @RequestParam String classroomId){
+
+        List<UserClassroomDTO> joinedStudents = userClassroomService.joinListOfMembersToClassroomById(memberIds, classroomId);
+        //boolean isStudentsJoined = userClassroomService.joinListOfMembersToClassroomById(memberIds, classroomId);
+
+        if (joinedStudents == null) {
+        //if (!isStudentsJoined) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ApiResponse(
+                            400,
+                            "Failed to join classroom. Invalid studentId or classroomId.",
+                            //null
+                            false
+                    )
+            );
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new ApiResponse(
+                        201,
+                        "Joined classroom successfully!",
+                        joinedStudents
+                        //true
+                )
+        );
+    }
+
 }
