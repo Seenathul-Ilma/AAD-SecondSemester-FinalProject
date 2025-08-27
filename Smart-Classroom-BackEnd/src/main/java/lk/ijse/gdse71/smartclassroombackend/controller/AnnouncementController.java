@@ -87,4 +87,39 @@ public class AnnouncementController {
         }
     }
 
+    @PutMapping(
+            value = "/{userId}/announcements/{announcementId}/update",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ApiResponse> updateAnnouncement(
+            @PathVariable String userId,
+            @PathVariable String announcementId,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam("content") String content,
+            @RequestParam(value = "files", required = false) List<MultipartFile> files
+    ) {
+
+        try {
+            AnnouncementDTO savedAnnouncement = announcementService.updateAnnouncementByAnnouncementId(userId, announcementId, title, content, files);
+
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            201,
+                            "Announcement updated successfully!",
+                            savedAnnouncement
+                    ),
+                    HttpStatus.CREATED
+            );
+        } catch (IOException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            500,
+                            "File upload failed: " + e.getMessage(),
+                            null
+                    ),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
 }

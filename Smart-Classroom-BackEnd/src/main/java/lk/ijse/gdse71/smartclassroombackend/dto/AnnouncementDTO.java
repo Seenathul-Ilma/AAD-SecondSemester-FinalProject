@@ -22,6 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class AnnouncementDTO {
+
     private String announcementId;
 
     private String title;
@@ -29,6 +30,8 @@ public class AnnouncementDTO {
     private String content;
 
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     private List<String> fileUrls;   // frontend can fetch file
 

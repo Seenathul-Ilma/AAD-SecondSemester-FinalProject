@@ -37,6 +37,8 @@ public class Announcement {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime updatedAt;
+
     // Optional file attachment (store path or URL, not the actual file!)
     @Lob
     @Column(name = "file_urls")

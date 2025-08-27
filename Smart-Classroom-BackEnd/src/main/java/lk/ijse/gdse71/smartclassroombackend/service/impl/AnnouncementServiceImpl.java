@@ -156,4 +156,62 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         return dto;
     }
 
+    @Override
+    @Transactional
+    public AnnouncementDTO updateAnnouncementByAnnouncementId(String userId, String announcementId, String title, String content, List<MultipartFile> files) throws IOException {
+        Announcement announcement = announcementRepository.findById(announcementId)
+                .orElseThrow(() -> new RuntimeException("Announcement not found"));
+
+        announcement.setTitle(title);
+        announcement.setContent(content);
+        announcement.setUpdatedAt(LocalDateTime.now());
+
+        if (!announcement.getUser().getUserId().equals(userId)) {
+            throw new RuntimeException("Only the announcer can update this announcement");
+        }
+
+        // Handle files
+        List<String> existingFileUrls = announcement.getFileUrls() != null
+                ? new ArrayList<>(Arrays.asList(announcement.getFileUrls().split(",")))
+                : new ArrayList<>();
+        List<String> existingFileTypes = announcement.getFileTypes() != null
+                ? new ArrayList<>(Arrays.asList(announcement.getFileTypes().split(",")))
+                : new ArrayList<>();
+
+        if (files != null && !files.isEmpty()) {
+            // Delete old files
+            for (String path : existingFileUrls) {
+                File file = new File(path);
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+            existingFileUrls.clear();
+            existingFileTypes.clear();
+
+            // Save new files
+            List<String> newFileUrls = saveFiles(files,
+                    announcement.getClassroom().getClassroomId(),
+                    announcement.getUser().getUserId(),
+                    announcementId);
+
+            for (MultipartFile file : files) existingFileTypes.add(file.getContentType());
+            existingFileUrls.addAll(newFileUrls);
+        }
+
+        // Update DB
+        announcement.setFileUrls(String.join(",", existingFileUrls));
+        announcement.setFileTypes(String.join(",", existingFileTypes));
+
+        Announcement savedAnnouncement = announcementRepository.save(announcement);
+
+        AnnouncementDTO dto = modelMapper.map(savedAnnouncement, AnnouncementDTO.class);
+        dto.setClassroomId(savedAnnouncement.getClassroom().getClassroomId());
+        dto.setAnnouncedUserId(savedAnnouncement.getUser().getUserId());
+        dto.setFileUrls(existingFileUrls);
+        dto.setFileTypes(existingFileTypes);
+
+        return dto;
+    }
+
 }

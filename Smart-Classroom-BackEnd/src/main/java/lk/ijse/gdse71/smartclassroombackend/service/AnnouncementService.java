@@ -11,4 +11,6 @@ public interface AnnouncementService {
     Page<AnnouncementDTO> getAnnouncementsForClassroomByClassroomId(String classroomId, int page, int size);
 
     AnnouncementDTO createAnnouncementByClassroomId(String classroomId, String userId, String title, String content, List<MultipartFile> files) throws IOException;;
+
+    AnnouncementDTO updateAnnouncementByAnnouncementId(String userId, String announcementId, String title, String content, List<MultipartFile> files) throws IOException;
 }
