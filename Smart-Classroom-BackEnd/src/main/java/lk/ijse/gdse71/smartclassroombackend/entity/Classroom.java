@@ -49,13 +49,14 @@ public class Classroom {
         return code.toString();
     }
 
-    // Uni-directional
+    // Bi-directional
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserClassroom> userClassrooms;     // ok
 
-    //@OneToMany(mappedBy = "classroom")
-    //private List<Announcement> announcements;      // ok
+    @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Announcement> announcements;      // ok
 
+    // Uni-directional
     //@OneToMany(mappedBy = "classroom")
     //private List<Assignment> assignments;       // ok
 

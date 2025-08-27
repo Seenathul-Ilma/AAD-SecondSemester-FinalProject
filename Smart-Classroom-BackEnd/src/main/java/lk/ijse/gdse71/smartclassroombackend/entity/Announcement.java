@@ -29,12 +29,16 @@ public class Announcement {
     private String title;
     private String content;
 
-    @ManyToOne
+    // Optional file attachment (store path or URL, not the actual file!)
+    private String fileUrl;     // "/uploads/announcements/abc.pdf"
+    private String fileType;    // "image/png", "video/mp4", "application/pdf"
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;                  // ok
     //private String teacher;    //  or admin   - userId
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "classroom_id")
     private Classroom classroom;           // ok
     //private String classroomId;
