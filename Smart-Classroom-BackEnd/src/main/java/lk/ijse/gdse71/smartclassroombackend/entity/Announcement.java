@@ -3,6 +3,9 @@ package lk.ijse.gdse71.smartclassroombackend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * --------------------------------------------
  * Author: Zeenathul Ilma
@@ -28,10 +31,21 @@ public class Announcement {
     private String announcementId;
     private String title;
     private String content;
+    private LocalDateTime createdAt;
+
 
     // Optional file attachment (store path or URL, not the actual file!)
-    private String fileUrl;     // "/uploads/announcements/abc.pdf"
-    private String fileType;    // "image/png", "video/mp4", "application/pdf"
+    @Lob
+    @Column(name = "file_urls")
+    private String fileUrls;    // CLS2025001_TEA20250001_15_1
+    //private List<String> fileUrls;    // CLS2025001_TEA20250001_15_1
+    //private String fileUrl;
+
+    @Lob
+    @Column(name = "file_types")
+    private String fileTypes;   // img/png, video/mp4, application/pdf
+    //private List<String> fileTypes;   // img/png, video/mp4, application/pdf
+    //private String fileType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

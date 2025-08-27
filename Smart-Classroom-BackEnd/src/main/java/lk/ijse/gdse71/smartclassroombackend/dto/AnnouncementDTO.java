@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * --------------------------------------------
  * Author: Zeenathul Ilma
@@ -24,10 +27,10 @@ public class AnnouncementDTO {
     private String title;
 
     private String content;
+    private LocalDateTime createdAt;
 
-    private String fileUrl;   // frontend can fetch file
-
-    private String fileType;  // helps frontend decide (image / pdf / video)
+    private List<String> fileUrls;   // frontend can fetch file
+    private List<String> fileTypes;  // helps frontend decide (image / pdf / video)
 
     private String classroomId;
 
