@@ -26,4 +26,7 @@ public interface UserClassroomRepository extends JpaRepository<UserClassroom, St
 
     boolean existsByUserAndClassroom(User student, Classroom classroom);
 
+    boolean existsByUser_UserIdAndClassroom_ClassroomId(String userId, String classroomId);
+
+    void deleteByUser_UserIdAndClassroom_ClassroomId(String userId, String classroomId);
 }

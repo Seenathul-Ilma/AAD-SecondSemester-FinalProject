@@ -7,6 +7,7 @@ import lk.ijse.gdse71.smartclassroombackend.entity.ClassroomRole;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.entity.UserClassroom;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceDuplicateException;
+import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
@@ -155,6 +156,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
     }
 
     @Override
+    @Transactional
     //public boolean joinListOfMembersToClassroomById(Set<String> memberIds, String classroomId) {
     public List<UserClassroomDTO> joinListOfMembersToClassroomById(Set<String> memberIds, String classroomId) {
         // Fetch classroom
@@ -219,5 +221,23 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
         return joinedDTOs;
         // return true
+    }
+
+    @Override
+    @Transactional
+    public void removeByUserClassroomId(String userClassroomId) {
+        UserClassroom userClassroomToDelete = userClassroomRepository.findById(userClassroomId)
+                .orElseThrow(() -> new ResourceNotFoundException("UserClassroom not found with ID: " + userClassroomId));
+
+        userClassroomRepository.delete(userClassroomToDelete);
+    }
+
+    @Override
+    @Transactional
+    public void removeByUserAndClassroom(String userId, String classroomId) {
+        if (!userClassroomRepository.existsByUser_UserIdAndClassroom_ClassroomId(userId, classroomId)) {
+            throw new ResourceNotFoundException("Failed to remove. \nThe user you are trying to find is not joined to this classroom (ID: " + userId + ").");
+        }
+        userClassroomRepository.deleteByUser_UserIdAndClassroom_ClassroomId(userId, classroomId);
     }
 }

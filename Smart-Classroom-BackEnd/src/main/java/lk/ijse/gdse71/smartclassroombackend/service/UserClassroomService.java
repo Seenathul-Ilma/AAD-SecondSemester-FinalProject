@@ -15,4 +15,8 @@ public interface UserClassroomService {
 
     List<UserClassroomDTO> joinListOfMembersToClassroomById(Set<String> studentIds, String classroomId);
     //boolean joinListOfMembersToClassroomById(Set<String> studentIds, String classroomId);
+
+    void removeByUserClassroomId(String userClassroomId);
+
+    void removeByUserAndClassroom(String userId, String classroomId);
 }
