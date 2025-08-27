@@ -236,7 +236,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
     @Transactional
     public void removeByUserAndClassroom(String userId, String classroomId) {
         if (!userClassroomRepository.existsByUser_UserIdAndClassroom_ClassroomId(userId, classroomId)) {
-            throw new ResourceNotFoundException("Failed to remove. \nThe user you are trying to remove is not joined to this classroom (ID: " + userId + ").");
+            throw new ResourceNotFoundException("Failed to remove. The user you are trying to remove is not joined to this classroom (ID: " + userId + ").");
         }
         userClassroomRepository.deleteByUser_UserIdAndClassroom_ClassroomId(userId, classroomId);
     }
@@ -256,7 +256,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
         boolean isExist = userClassroomRepository.existsByUserAndClassroom(user, classroom);
 
         if (!isExist) {
-            throw new ResourceNotFoundException("Failed to remove. \nThe user you are trying to remove is not joined to this classroom (ID: " + userId + ").");
+            throw new ResourceNotFoundException("Failed to remove. The user you are trying to remove is not joined to this classroom (ID: " + userId + ").");
         }
 
         userClassroomRepository.deleteByUser_UserIdAndClassroom_ClassroomCode(userId, classroomCode);

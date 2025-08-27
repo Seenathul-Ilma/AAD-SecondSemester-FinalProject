@@ -131,7 +131,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 );
 
         if (!isCreator) {
-            throw new AccessDeniedException("Only the creator can update this classroom");
+            throw new AccessDeniedException("Access denied: Only the creator can update this classroom.");
         }
 
         if (classroomDTO.getClassLevel() == null || classroomDTO.getSubject() == null) {
@@ -173,7 +173,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         );
 
         if (!isCreator) {
-            throw new AccessDeniedException("Only the creator can delete this classroom..!");
+            throw new AccessDeniedException("Access denied: Only the creator can delete this classroom.");
         }
 
         // Perform deletion
