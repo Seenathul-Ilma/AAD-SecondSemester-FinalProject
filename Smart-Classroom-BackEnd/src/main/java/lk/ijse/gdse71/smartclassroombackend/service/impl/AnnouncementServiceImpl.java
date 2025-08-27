@@ -65,6 +65,12 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
+    public Page<AnnouncementDTO> getAnnouncementsForClassroomByClassroomId(String classroomId, int page, int size) {
+        Page<Announcement> announcementPage = announcementRepository.findByClassroom_ClassroomId(classroomId, PageRequest.of(page, size));
+        return announcementPage.map(announcement -> modelMapper.map(announcement, AnnouncementDTO.class));
+    }
+
+    @Override
     @Transactional
     public AnnouncementDTO createAnnouncementByClassroomId(String classroomId, String userId, String title, String content, List<MultipartFile> files) throws IOException {
         String announcementId = generateNextAnnouncementId();
@@ -138,10 +144,4 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         return dto;
     }
 
-
-    @Override
-    public Page<AnnouncementDTO> getAnnouncementsForClassroomByClassroomId(String classroomId, int page, int size) {
-        Page<Announcement> announcementPage = announcementRepository.findByClassroom_ClassroomId(classroomId, PageRequest.of(page, size));
-        return announcementPage.map(announcement -> modelMapper.map(announcement, AnnouncementDTO.class));
-    }
 }
