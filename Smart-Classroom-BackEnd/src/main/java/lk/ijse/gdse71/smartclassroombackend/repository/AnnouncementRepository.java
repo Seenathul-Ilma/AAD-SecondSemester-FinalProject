@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface AnnouncementRepository extends JpaRepository<Announcement, String> {
 
     Page<Announcement> findByClassroom_ClassroomId(String classroomId, Pageable pageable);
-
     Announcement findTopByOrderByAnnouncementIdDesc();
+
 }

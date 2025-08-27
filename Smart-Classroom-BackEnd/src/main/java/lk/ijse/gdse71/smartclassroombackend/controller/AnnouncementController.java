@@ -35,23 +35,6 @@ public class AnnouncementController {
 
     private final AnnouncementService announcementService;
 
-    @GetMapping("/{classroomId}/view/announcements")
-    public ResponseEntity<ApiResponse> getAnnouncements(
-            @PathVariable String classroomId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        Page<AnnouncementDTO> announcementDTOS = announcementService.getAnnouncementsForClassroomByClassroomId(classroomId, page, size);
-        return new ResponseEntity<>(
-                new ApiResponse(
-                        200,
-                        "Announcements paginated successfully..!",
-                        announcementDTOS
-                ),
-                HttpStatus.OK
-        );
-    }
-
     @PostMapping(
             value = "/{classroomId}/announcements/{userId}/create",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -85,6 +68,23 @@ public class AnnouncementController {
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    @GetMapping("/{classroomId}/view/announcements")
+    public ResponseEntity<ApiResponse> getAnnouncements(
+            @PathVariable String classroomId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<AnnouncementDTO> announcementDTOS = announcementService.getAnnouncementsForClassroomByClassroomId(classroomId, page, size);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Announcements paginated successfully..!",
+                        announcementDTOS
+                ),
+                HttpStatus.OK
+        );
     }
 
 }

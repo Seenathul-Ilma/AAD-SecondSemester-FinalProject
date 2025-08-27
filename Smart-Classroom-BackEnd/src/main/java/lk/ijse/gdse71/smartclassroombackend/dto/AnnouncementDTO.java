@@ -29,10 +29,10 @@ public class AnnouncementDTO {
     private String content;
     private LocalDateTime createdAt;
 
+    private String classroomId;
+
     private List<String> fileUrls;   // frontend can fetch file
     private List<String> fileTypes;  // helps frontend decide (image / pdf / video)
-
-    private String classroomId;
 
     private String announcedUserId; // teacher/admin
 

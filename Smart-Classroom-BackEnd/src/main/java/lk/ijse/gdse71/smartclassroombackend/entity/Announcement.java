@@ -29,10 +29,10 @@ public class Announcement {
     @Id
     @Column(name = "announcement_id")
     private String announcementId;
-    private String title;
-    private String content;
-    private LocalDateTime createdAt;
 
+    private String title;
+
+    private String content;
 
     // Optional file attachment (store path or URL, not the actual file!)
     @Lob
@@ -46,6 +46,8 @@ public class Announcement {
     private String fileTypes;   // img/png, video/mp4, application/pdf
     //private List<String> fileTypes;   // img/png, video/mp4, application/pdf
     //private String fileType;
+
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
