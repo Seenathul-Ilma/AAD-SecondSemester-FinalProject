@@ -67,7 +67,59 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     @Override
     public Page<AnnouncementDTO> getAnnouncementsForClassroomByClassroomId(String classroomId, int page, int size) {
         Page<Announcement> announcementPage = announcementRepository.findByClassroom_ClassroomId(classroomId, PageRequest.of(page, size));
-        return announcementPage.map(announcement -> modelMapper.map(announcement, AnnouncementDTO.class));
+        return announcementPage.map(announcement -> {
+            AnnouncementDTO dto = modelMapper.map(announcement, AnnouncementDTO.class);
+
+            // Convert comma-separated strings to List<String>
+            dto.setFileUrls(announcement.getFileUrls() != null
+                    ? Arrays.asList(announcement.getFileUrls().split(","))
+                    : new ArrayList<>());
+
+            dto.setFileTypes(announcement.getFileTypes() != null
+                    ? Arrays.asList(announcement.getFileTypes().split(","))
+                    : new ArrayList<>());
+
+            // Map nested IDs manually
+            dto.setClassroomId(announcement.getClassroom().getClassroomId());
+            dto.setAnnouncedUserId(announcement.getUser().getUserId());
+
+            return dto;
+        });
+    }
+
+    private List<String> saveFiles(List<MultipartFile> files, String classroomId, String userId, String announcementId) throws IOException {
+        List<String> filePaths = new ArrayList<>();
+
+        if (files == null || files.isEmpty()) return filePaths;
+
+        File uploadFolder = new File(uploadDirectory);
+        if (!uploadFolder.exists()) uploadFolder.mkdirs();
+
+        int fileCounter = 1;
+        for (MultipartFile file : files) {
+            String extension = "";
+            String originalFilename = file.getOriginalFilename();
+
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            // Unique filename using timestamp
+            String filename = String.format("%s_%s_%s_%d_%d%s",
+                    classroomId,
+                    userId,
+                    announcementId,
+                    System.currentTimeMillis(),
+                    fileCounter++,
+                    extension
+            );
+
+            File dest = new File(uploadFolder, filename);
+            file.transferTo(dest);
+            filePaths.add(dest.getPath());
+        }
+
+        return filePaths;
     }
 
     @Override
@@ -75,13 +127,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     public AnnouncementDTO createAnnouncementByClassroomId(String classroomId, String userId, String title, String content, List<MultipartFile> files) throws IOException {
         String announcementId = generateNextAnnouncementId();
 
-        // Fetch User and Classroom
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Classroom classroom = classroomRepository.findById(classroomId)
-                .orElseThrow(() -> new RuntimeException("Classroom not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Classroom classroom = classroomRepository.findById(classroomId).orElseThrow(() -> new RuntimeException("Classroom not found"));
 
-        // Create announcement entity
         Announcement announcement = new Announcement();
         announcement.setAnnouncementId(announcementId);
         announcement.setTitle(title);
@@ -90,56 +138,20 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         announcement.setClassroom(classroom);
         announcement.setCreatedAt(LocalDateTime.now());
 
-        List<String> fileUrls = new ArrayList<>();
+        List<String> fileUrls = saveFiles(files, classroomId, userId, announcementId);
         List<String> fileTypes = new ArrayList<>();
+        for (MultipartFile file : files) fileTypes.add(file.getContentType());
 
-        if (files != null && !files.isEmpty()) {
-            File uploadFolder = new File(uploadDirectory);
-            if (!uploadFolder.exists()) uploadFolder.mkdirs();
-
-            int fileCounter = 1;
-            for (MultipartFile file : files) {
-                String originalFilename = file.getOriginalFilename();
-                String extension = "";
-                if (originalFilename != null && originalFilename.contains(".")) {
-                    extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-                }
-
-                String filename = String.format("%s_%s_%s_%d%s",
-                        classroomId,
-                        userId,
-                        announcementId,
-                        fileCounter++,
-                        extension
-                );
-
-                File dest = new File(uploadFolder, filename);
-                file.transferTo(dest);
-
-                fileUrls.add(dest.getPath());
-                fileTypes.add(file.getContentType());
-            }
-        }
-
-        // Save file URLs and types as comma-separated strings
         announcement.setFileUrls(String.join(",", fileUrls));
         announcement.setFileTypes(String.join(",", fileTypes));
 
-        // Save the entity once
         Announcement savedAnnouncement = announcementRepository.save(announcement);
 
-        // Convert to DTO and split the comma-separated strings into lists
         AnnouncementDTO dto = modelMapper.map(savedAnnouncement, AnnouncementDTO.class);
         dto.setClassroomId(classroomId);
         dto.setAnnouncedUserId(userId);
-
-        dto.setFileUrls(savedAnnouncement.getFileUrls() != null
-                ? Arrays.asList(savedAnnouncement.getFileUrls().split(","))
-                : new ArrayList<>());
-
-        dto.setFileTypes(savedAnnouncement.getFileTypes() != null
-                ? Arrays.asList(savedAnnouncement.getFileTypes().split(","))
-                : new ArrayList<>());
+        dto.setFileUrls(fileUrls);
+        dto.setFileTypes(fileTypes);
 
         return dto;
     }
