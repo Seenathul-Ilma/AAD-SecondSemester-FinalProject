@@ -6,6 +6,7 @@ import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.ClassroomRole;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.entity.UserClassroom;
+import lk.ijse.gdse71.smartclassroombackend.exception.ResourceDuplicateException;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
@@ -47,7 +48,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
         int nextSequence = 1;
 
-        if(lastUserClassroom != null) {
+        if (lastUserClassroom != null) {
             String lastId = lastUserClassroom.getUserClassroomId(); // REG20250003
             nextSequence = Integer.parseInt(lastId.substring(fullPrefix.length())) + 1;
         }
@@ -161,45 +162,62 @@ public class UserClassroomServiceImpl implements UserClassroomService {
                 .orElseThrow(() -> new RuntimeException("Classroom not found!"));
 
         List<UserClassroomDTO> joinedDTOs = new ArrayList<>();
+        int skippingCount = 0;
+        String memberRole = ""; // to track the role for duplicate message
 
         for (String memberId : memberIds) {
-            // Generate manual ID
             String newId = generateNextClassroomId("REG");
+            ClassroomRole role = memberId.startsWith("TEA") ? ClassroomRole.TEACHER : ClassroomRole.STUDENT;
 
-            // Fetch student
-            User student = userRepository.findById(memberId)
-                    .orElseThrow(() -> new RuntimeException("Student not found!"));
+            if (memberRole.isEmpty()) {
+                memberRole = role.toString().toLowerCase();
+            }
+
+            // Fetch member
+            //User student = userRepository.findById(memberId)
+            User member = userRepository.findById(memberId)
+                    //.orElseThrow(() -> new RuntimeException("Student not found!"));
+                    .orElseThrow(() -> new RuntimeException(
+                            "The " + role.toString().toLowerCase() + " you are trying to add was not found. Please check the ID:" + memberId
+                    ));
 
             // Check if already joined
-            boolean alreadyJoined = userClassroomRepository.existsByUserAndClassroom(student, classroom);
+            //boolean alreadyJoined = userClassroomRepository.existsByUserAndClassroom(student, classroom);
+            boolean alreadyJoined = userClassroomRepository.existsByUserAndClassroom(member, classroom);
 
-            //if (alreadyJoined) continue; // skip already joined
+            // Skip if already joined
             if (alreadyJoined) {
+                skippingCount += 1;
                 continue;
                 // Student already joined, skip
             }
 
-            // Create UserClassroom
+            // Create and save UserClassroom
             UserClassroom userClassroom = new UserClassroom();
             userClassroom.setUserClassroomId(newId);
-            userClassroom.setUser(student);
+            //userClassroom.setUser(student);
+            userClassroom.setUser(member);
             userClassroom.setClassroom(classroom);
             userClassroom.setJoinedAt(java.time.LocalDateTime.now());
-            userClassroom.setRoleInClassroom(ClassroomRole.STUDENT);
+            userClassroom.setRoleInClassroom(role);
+            //userClassroom.setRoleInClassroom(ClassroomRole.STUDENT);
             userClassroom.setCreator(false);
 
-            // Save
             UserClassroom savedUC = userClassroomRepository.save(userClassroom);
 
             // Map to DTO
-            modelMapper.typeMap(UserClassroom.class, UserClassroomDTO.class)
-                    .addMappings(m -> m.map(src -> src.getUser().getUserId(), UserClassroomDTO::setMemberId))
-                    .addMappings(m -> m.map(src -> src.getClassroom().getClassroomId(), UserClassroomDTO::setClassroomId));
-
             joinedDTOs.add(modelMapper.map(savedUC, UserClassroomDTO.class));
         }
 
+        if (skippingCount == memberIds.size()) {
+            if (memberIds.size() > 1) {
+                throw new RuntimeException("All " + memberRole + "s in the provided list are already members of this classroom.");
+            } else if (memberIds.size() == 1) {
+                throw new ResourceDuplicateException("The " + memberRole + " already joined this classroom.");
+            }
+        }
+
         return joinedDTOs;
-        //return true;
+        // return true
     }
 }
