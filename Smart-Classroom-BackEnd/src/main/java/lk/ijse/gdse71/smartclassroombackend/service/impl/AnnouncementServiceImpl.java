@@ -5,6 +5,8 @@ import lk.ijse.gdse71.smartclassroombackend.entity.Announcement;
 import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.entity.UserClassroom;
+import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
+import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.repository.AnnouncementRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
@@ -167,7 +169,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         announcement.setUpdatedAt(LocalDateTime.now());
 
         if (!announcement.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("Only the announcer can update this announcement");
+            throw new AccessDeniedException("Access denied: Only the announcer can modify this announcement.");
         }
 
         // Handle files
@@ -212,6 +214,43 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         dto.setFileTypes(existingFileTypes);
 
         return dto;
+    }
+
+    @Override
+    public boolean deleteAnnouncement(String announcementId, String deletingUserId) {
+        // Check announcement existence first
+        Announcement announcementToDelete = announcementRepository.findById(announcementId)
+                .orElseThrow(() -> new ResourceNotFoundException("No Announcement found..!"));
+
+        if (!announcementToDelete.getUser().getUserId().equals(deletingUserId)) {
+            throw new AccessDeniedException("Access denied: Only the announcer can delete this announcement.");
+        }
+
+        // delete associated files if exist
+        List<String> existingFileUrls = announcementToDelete.getFileUrls() != null
+                ? new ArrayList<>(Arrays.asList(announcementToDelete.getFileUrls().split(",")))
+                : new ArrayList<>();
+
+
+        for (String pathStr : existingFileUrls) {
+            File file = new File(pathStr.trim());
+            System.out.println("Trying to delete: " + file.getAbsolutePath());
+
+            if (file.exists()) {
+                boolean deleted = file.delete();
+                System.out.println("Deleted: " + deleted);
+
+                if (!deleted) {
+                    throw new RuntimeException("Failed to delete: " + file.getAbsolutePath());
+                }
+            } else {
+                System.out.println("File not found: " + file.getAbsolutePath());
+            }
+        }
+
+        // Perform deletion
+        announcementRepository.delete(announcementToDelete);
+        return true;
     }
 
 }

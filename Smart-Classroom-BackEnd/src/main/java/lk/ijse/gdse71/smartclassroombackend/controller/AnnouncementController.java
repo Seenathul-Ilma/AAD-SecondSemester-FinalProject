@@ -122,4 +122,29 @@ public class AnnouncementController {
         }
     }
 
+    @DeleteMapping("/delete/{announcementId}")
+    public ResponseEntity<ApiResponse> deleteAnnouncement(@PathVariable String announcementId, @RequestParam String deletingUserId){
+
+        boolean isDeleted =  announcementService.deleteAnnouncement(announcementId, deletingUserId);
+        if(!isDeleted){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to delete announcement..!",
+                            isDeleted
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Announcement deleted successfully..!",
+                        isDeleted
+                ),
+                HttpStatus.OK
+        );
+    }
+
 }
