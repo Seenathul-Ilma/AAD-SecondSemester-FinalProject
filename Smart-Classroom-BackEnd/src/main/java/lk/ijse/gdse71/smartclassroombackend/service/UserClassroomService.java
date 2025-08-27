@@ -19,4 +19,9 @@ public interface UserClassroomService {
     void removeByUserClassroomId(String userClassroomId);
 
     void removeByUserAndClassroom(String userId, String classroomId);
+
+    void removeByUserAndClassroomUsingClassroomCode(String userId, String classroomCode);
+
+    void removeListOfByUserClassroomId(Set<String> userClassroomIds);
+
 }

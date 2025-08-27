@@ -236,8 +236,42 @@ public class UserClassroomServiceImpl implements UserClassroomService {
     @Transactional
     public void removeByUserAndClassroom(String userId, String classroomId) {
         if (!userClassroomRepository.existsByUser_UserIdAndClassroom_ClassroomId(userId, classroomId)) {
-            throw new ResourceNotFoundException("Failed to remove. \nThe user you are trying to find is not joined to this classroom (ID: " + userId + ").");
+            throw new ResourceNotFoundException("Failed to remove. \nThe user you are trying to remove is not joined to this classroom (ID: " + userId + ").");
         }
         userClassroomRepository.deleteByUser_UserIdAndClassroom_ClassroomId(userId, classroomId);
     }
+
+    @Override
+    @Transactional
+    public void removeByUserAndClassroomUsingClassroomCode(String userId, String classroomCode) {
+        // Fetch student
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("user not found!"));
+
+        // Fetch classroom
+        Classroom classroom = classroomRepository.findByClassroomCode(classroomCode)
+                .orElseThrow(() -> new RuntimeException("Classroom not found!"));
+
+        // Check if already joined
+        boolean isExist = userClassroomRepository.existsByUserAndClassroom(user, classroom);
+
+        if (!isExist) {
+            throw new ResourceNotFoundException("Failed to remove. \nThe user you are trying to remove is not joined to this classroom (ID: " + userId + ").");
+        }
+
+        userClassroomRepository.deleteByUser_UserIdAndClassroom_ClassroomCode(userId, classroomCode);
+    }
+
+    @Override
+    @Transactional
+    public void removeListOfByUserClassroomId(Set<String> userClassroomIds) {
+        for (String id : userClassroomIds) {
+            UserClassroom userClassroomToDelete = userClassroomRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "UserClassroom not found with ID: " + id
+                    ));
+            userClassroomRepository.delete(userClassroomToDelete);
+        }
+    }
+
 }

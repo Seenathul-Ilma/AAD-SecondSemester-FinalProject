@@ -136,4 +136,34 @@ public class UserClassroomController {
         );
     }
 
+    @DeleteMapping("/removeByCode")
+    public ResponseEntity<ApiResponse> removeByUserAndClassroomUsingClassroomCode(
+            @RequestParam String userId,
+            @RequestParam String classroomCode) {
+
+        userClassroomService.removeByUserAndClassroomUsingClassroomCode(userId, classroomCode);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Deletion successful..!",
+                        null
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping("/removeById/list")
+    public ResponseEntity<ApiResponse> RemoveListOfMembersFromClassroomByUserClassroomId(@RequestBody Set<String> userClassroomIds){
+
+        userClassroomService.removeListOfByUserClassroomId(userClassroomIds);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Deletion successful..!",
+                        null
+                ),
+                HttpStatus.OK
+        );
+    }
+
 }
