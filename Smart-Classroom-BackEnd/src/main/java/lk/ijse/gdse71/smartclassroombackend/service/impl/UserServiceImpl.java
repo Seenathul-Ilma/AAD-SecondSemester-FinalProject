@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
+import jakarta.mail.MessagingException;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean saveUser(UserDTO userDTO, Role role) throws IOException {
+    public boolean saveUser(UserDTO userDTO, Role role) throws IOException, MessagingException {
         String newId = generateNextUserId(role);
 
         if(userRepository.existsById(newId)) {
@@ -107,13 +108,41 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         // Send email asynchronously
-        emailService.sendUserEmail(userDTO.getEmail(),
+        /*emailService.sendUserEmail(userDTO.getEmail(),
                 "Welcome to Smart Classroom - Your Password",
                 "Hello " + userDTO.getName() + ",\n\n" +
                         "Your account has been created.\n" +
                         "User ID: " + userDTO.getUserId() + "\n" +
                         "Password: " + defaultPassword + "\n\n" +
-                        "Please change your password after logging in.");
+                        "Please change your password after logging in.");*/
+
+        String htmlContent = "<html>" +
+                "<body style='font-family: Arial, sans-serif; line-height: 1.6;'>" +
+                "<h2>Welcome to Smart Classroom..!</h2>" +
+                "<p>Hello <strong>" + userDTO.getName() + "</strong>,</p>" +
+                "<p>Your account has been created successfully. Here’s your login info:</p>" +
+                "<table style='border-collapse: collapse; width: 100%; max-width: 400px;'>" +
+                "  <tr style='background-color: #f2f2f2;'>" +
+                "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>User ID</th>" +
+                "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Username</th>" +
+                "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Password</th>" +
+                "  </tr>" +
+                "  <tr style='background-color: #ffffff;'>" +
+                "    <td style='border: 1px solid #ddd; padding: 8px;'>" + userDTO.getUserId() + "</td>" +
+                "    <td style='border: 1px solid #ddd; padding: 8px;'>" + userDTO.getEmail() + "</td>" +
+                "    <td style='border: 1px solid #ddd; padding: 8px;'>" + defaultPassword + "</td>" +
+                "  </tr>" +
+                "</table>" +
+                "<p>Please <strong>change your password</strong> after logging in.</p>" +
+                "<p>Thanks,<br/>Smart Classroom Team</p>" +
+                "</body>" +
+                "</html>";
+
+        emailService.sendUserEmail(
+                userDTO.getEmail(),
+                "Start Your Journey with Smart Classroom Today",
+                htmlContent
+        );
 
         return true;
     }

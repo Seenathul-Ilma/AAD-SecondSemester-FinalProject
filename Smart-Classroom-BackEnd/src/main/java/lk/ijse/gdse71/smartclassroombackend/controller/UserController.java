@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.controller;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
@@ -96,7 +97,7 @@ public class UserController {
     }
 
     @PostMapping("/students/add")
-    public ResponseEntity<ApiResponse> saveStudent(@Valid @RequestBody UserDTO userDTO) throws IOException {
+    public ResponseEntity<ApiResponse> saveStudent(@Valid @RequestBody UserDTO userDTO) throws IOException, MessagingException {
     //public boolean saveStudent(@Valid @RequestBody UserDTO userDTO){
         boolean isSaved = userService.saveUser(userDTO, Role.STUDENT);
         if(!isSaved){
@@ -121,7 +122,7 @@ public class UserController {
     }
 
     @PostMapping("/teachers/add")
-    public ResponseEntity<ApiResponse> saveTeacher(@Valid @RequestBody UserDTO userDTO) throws IOException {
+    public ResponseEntity<ApiResponse> saveTeacher(@Valid @RequestBody UserDTO userDTO) throws IOException, MessagingException {
     //public boolean saveTeacher(@Valid @RequestBody UserDTO userDTO){
 
         boolean isSaved = userService.saveUser(userDTO, Role.TEACHER);

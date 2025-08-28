@@ -1,5 +1,8 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import lk.ijse.gdse71.smartclassroombackend.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +31,18 @@ public class EmailServiceImpl implements EmailService {
     private JavaMailSender mailSender;
 
     @Async
-    public void sendUserEmail(String to, String subject, String body) {
-        try {
+    public void sendUserEmail(String to, String subject, String body) throws MessagingException {
+
+        MimeMessage message = mailSender.createMimeMessage();
+
+        message.setFrom(new InternetAddress("seenathulilma121243@gmail.com"));
+        message.setRecipients(MimeMessage.RecipientType.TO, to);
+        message.setSubject(subject);
+
+        message.setContent(body, "text/html; charset=utf-8");
+
+        mailSender.send(message);
+        /*try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
             message.setSubject(subject);
@@ -40,6 +53,6 @@ public class EmailServiceImpl implements EmailService {
         } catch (Exception e) {
             System.err.println("Failed to send email to " + to + ": " + e.getMessage());
             // Optionally log to DB for retry
-        }
+        }*/
     }
 }

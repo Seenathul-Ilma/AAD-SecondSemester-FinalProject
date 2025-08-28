@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.service;
 
+import jakarta.mail.MessagingException;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import org.springframework.data.domain.Page;
@@ -27,7 +28,7 @@ public interface UserService {
 
     String generateNextUserId(Role role);
 
-    boolean saveUser(UserDTO userDTO, Role role) throws IOException;
+    boolean saveUser(UserDTO userDTO, Role role) throws IOException, MessagingException;
 
     boolean updateUser(UserDTO userDTO, Role role);
 
