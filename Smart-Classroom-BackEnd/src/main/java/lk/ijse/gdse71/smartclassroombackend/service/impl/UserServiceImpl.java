@@ -4,7 +4,9 @@ import jakarta.mail.MessagingException;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
+import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
+import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.EmailService;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * --------------------------------------------
@@ -105,7 +108,19 @@ public class UserServiceImpl implements UserService {
 
         String generatedPassword = generatePassword(12);
 
+        //String hashedPassword = BCrypt.hashpw(generatedPassword, BCrypt.gensalt());
+
         userDTO.setPassword(generatedPassword);
+
+        /*if (BCrypt.checkpw(generatedPassword, userDTO.getPassword())){
+            System.out.println("************* Same *************");
+            System.out.println("Generated Password: "+ generatedPassword);
+            System.out.println("Hashed Password: "+ hashedPassword);
+        } else {
+            System.out.println("************* Diff *************");
+            System.out.println("Generated Password: "+ generatedPassword);
+            System.out.println("Hashed Password: "+ hashedPassword);
+        }*/
 
         User user = modelMapper.map(userDTO, User.class);
         user.setRole(Role.valueOf(userDTO.getRole()));
@@ -187,19 +202,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateUser(UserDTO userDTO, Role role) {
         // Check if user exists
-        User existingUser = userRepository.findById(userDTO.getUserId()).orElse(null);
-        if (existingUser == null) {
-            return false; // userId not found
+        User existingUser = userRepository.findById(userDTO.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+
+        userDTO.setRole(String.valueOf(existingUser.getRole()));
+
+        if (userDTO.getPassword() == null || userDTO.getPassword().isBlank()) {
+            userDTO.setPassword(existingUser.getPassword());
         }
 
-        // Check if role matches
-        if (!existingUser.getRole().equals(role)) {
-            return false; // role mismatch
-        }
-
-        // Map DTO → Entity and save
         User userToUpdate = modelMapper.map(userDTO, User.class);
-        userToUpdate.setRole(role); // ensure role is correct
+        userToUpdate.setRole(existingUser.getRole()); // never override role from request
+
+        // Save
         userRepository.save(userToUpdate);
         return true;
     }
