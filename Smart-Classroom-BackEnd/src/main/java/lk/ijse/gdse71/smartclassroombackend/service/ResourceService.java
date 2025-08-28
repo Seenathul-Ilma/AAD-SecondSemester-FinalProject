@@ -27,4 +27,6 @@ public interface ResourceService {
     boolean deleteMaterial(String materialId, String deletingUserId);
 
     Page<ResourceDTO> getResourcesByClassroomId(String classroomId, int page, int size);
+
+    Page<ResourceDTO> getAllResources(int page, int size);
 }

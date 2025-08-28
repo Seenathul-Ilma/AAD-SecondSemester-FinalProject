@@ -67,6 +67,17 @@ public class ResourceServiceImpl implements ResourceService {
         return resourcePage.map(resource -> modelMapper.map(resource, ResourceDTO.class));
     }
 
+    @Override
+    public Page<ResourceDTO> getAllResources(int page, int size) {
+        Page<Resources> resourcesPage = resourceRepository.findAll(PageRequest.of(page, size));
+        modelMapper.typeMap(Resources.class, ResourceDTO.class).addMappings(mapper -> {
+            mapper.map(src -> src.getUser().getUserId(), ResourceDTO::setUploadedBy);
+            mapper.map(src -> src.getClassroom().getClassroomId(), ResourceDTO::setUploadedTo);
+        });
+
+        return resourcesPage.map(resource -> modelMapper.map(resource, ResourceDTO.class));
+    }
+
     private String generateNextResourceId() {
 
         String year = String.valueOf(LocalDate.now().getYear());

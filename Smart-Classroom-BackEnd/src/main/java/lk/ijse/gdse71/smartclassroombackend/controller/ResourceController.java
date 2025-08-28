@@ -53,6 +53,22 @@ public class ResourceController {
         );
     }
 
+    @GetMapping("/view/resources")
+    public ResponseEntity<ApiResponse> getAllResources(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<ResourceDTO> resourceDTOS = resourceService.getAllResources(page, size);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Resources paginated successfully..!",
+                        resourceDTOS
+                ),
+                HttpStatus.OK
+        );
+    }
+
     @PostMapping(
             value = "/{classroomId}/resources/{userId}/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
