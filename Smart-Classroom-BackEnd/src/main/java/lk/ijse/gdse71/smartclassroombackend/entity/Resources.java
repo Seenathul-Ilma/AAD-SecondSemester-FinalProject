@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * --------------------------------------------
@@ -29,15 +30,27 @@ public class Resources {
     private String resourceId;
 
     private String title;
-    private String filePath;
-    private LocalDate uploadedAt;
 
-    @ManyToOne
+    private String description;
+
+    @Lob
+    @Column(name = "file_path")
+    private String filePath;     // file url
+
+    @Lob
+    @Column(name = "file_type")
+    private String fileType;
+
+    private LocalDateTime uploadedAt;
+
+    private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shared_by")
     private User user;                  // ok
     //private String teacher;    // userId
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shared_to")
     private Classroom classroom;        // ok
     //private String classroom;

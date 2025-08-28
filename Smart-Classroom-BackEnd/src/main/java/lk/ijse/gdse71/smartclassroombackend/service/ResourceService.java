@@ -1,0 +1,21 @@
+package lk.ijse.gdse71.smartclassroombackend.service;
+
+import lk.ijse.gdse71.smartclassroombackend.dto.ResourceDTO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+/**
+ * --------------------------------------------
+ * Author: Zeenathul Ilma
+ * GitHub: https://github.com/Seenathul-Ilma
+ * Website: https://zeenathulilma.vercel.app/
+ * --------------------------------------------
+ * Created: 8/28/2025 7:03 AM
+ * Project: AAD-SecondSemester-FinalProject
+ * --------------------------------------------
+ **/
+
+public interface ResourceService {
+    ResourceDTO uploadMaterialByClassroomId(String classroomId, String userId, String title, String content, MultipartFile file) throws IOException;
+}
