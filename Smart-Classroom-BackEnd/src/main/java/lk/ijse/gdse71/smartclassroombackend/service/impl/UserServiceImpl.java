@@ -5,6 +5,7 @@ import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
+import lk.ijse.gdse71.smartclassroombackend.service.EmailService;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,6 +38,7 @@ public class UserServiceImpl implements UserService {
     // RequiredArgsConstructor annotation (from Lombok) automatically generates a constructor only for final fields and fields marked with @NonNull
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final EmailService emailService;
 
     @Override
     public List<UserDTO> getAllStudents() {
@@ -75,12 +78,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean saveUser(UserDTO userDTO, Role role) {
+    public boolean saveUser(UserDTO userDTO, Role role) throws IOException {
         String newId = generateNextUserId(role);
 
         if(userRepository.existsById(newId)) {
             System.out.println(newId + "User already exist..!");
             return false;
+        }
+
+        if (userDTO.getName() == null || userDTO.getAddress() == null || userDTO.getContact() == null || userDTO.getEmail() == null) {
+            throw new IllegalArgumentException("Name, Address, Contact No and Email are required!");
         }
 
         userDTO.setUserId(newId);
@@ -95,13 +102,19 @@ public class UserServiceImpl implements UserService {
 
         userDTO.setPassword(defaultPassword);
 
-        if (userDTO.getName() == null || userDTO.getAddress() == null || userDTO.getContact() == null || userDTO.getEmail() == null) {
-            throw new IllegalArgumentException("Name, Address, Contact No and Email are required!");
-        }
-
         User user = modelMapper.map(userDTO, User.class);
         user.setRole(Role.valueOf(userDTO.getRole()));
         userRepository.save(user);
+
+        // Send email asynchronously
+        emailService.sendUserEmail(userDTO.getEmail(),
+                "Welcome to Smart Classroom - Your Password",
+                "Hello " + userDTO.getName() + ",\n\n" +
+                        "Your account has been created.\n" +
+                        "User ID: " + userDTO.getUserId() + "\n" +
+                        "Password: " + defaultPassword + "\n\n" +
+                        "Please change your password after logging in.");
+
         return true;
     }
 

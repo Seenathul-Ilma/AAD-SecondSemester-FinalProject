@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -95,7 +96,7 @@ public class UserController {
     }
 
     @PostMapping("/students/add")
-    public ResponseEntity<ApiResponse> saveStudent(@Valid @RequestBody UserDTO userDTO){
+    public ResponseEntity<ApiResponse> saveStudent(@Valid @RequestBody UserDTO userDTO) throws IOException {
     //public boolean saveStudent(@Valid @RequestBody UserDTO userDTO){
         boolean isSaved = userService.saveUser(userDTO, Role.STUDENT);
         if(!isSaved){
@@ -120,7 +121,7 @@ public class UserController {
     }
 
     @PostMapping("/teachers/add")
-    public ResponseEntity<ApiResponse> saveTeacher(@Valid @RequestBody UserDTO userDTO){
+    public ResponseEntity<ApiResponse> saveTeacher(@Valid @RequestBody UserDTO userDTO) throws IOException {
     //public boolean saveTeacher(@Valid @RequestBody UserDTO userDTO){
 
         boolean isSaved = userService.saveUser(userDTO, Role.TEACHER);

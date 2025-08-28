@@ -4,6 +4,7 @@ import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ public interface UserService {
 
     String generateNextUserId(Role role);
 
-    boolean saveUser(UserDTO userDTO, Role role);
+    boolean saveUser(UserDTO userDTO, Role role) throws IOException;
 
     boolean updateUser(UserDTO userDTO, Role role);
 
