@@ -7,6 +7,7 @@ import lk.ijse.gdse71.smartclassroombackend.entity.Announcement;
 import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.Resources;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
+import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.repository.AnnouncementRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.ResourceRepository;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -95,6 +98,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    @Transactional
     public ResourceDTO uploadMaterialByClassroomId(String classroomId, String userId, String title, String description, MultipartFile file) throws IOException {
 
         if (file.isEmpty() || file == null) {
@@ -136,5 +140,44 @@ public class ResourceServiceImpl implements ResourceService {
 
         return dto;
         //return modelMapper.map(uploadedMaterial, ResourceDTO.class);
+    }
+
+    @Override
+    @Transactional
+    public ResourceDTO updateUploadedMaterialByMaterialId(String userId, String materialId, String title, String description, MultipartFile material) throws IOException {
+
+        Resources resources = resourceRepository.findById(materialId)
+                .orElseThrow(() -> new RuntimeException("Material not found"));
+
+        if (!resources.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("Access denied: Only the uploader can modify this material.");
+        }
+
+        if (material == null || material.isEmpty()) {
+            throw new RuntimeException("Material file required..!");
+        }
+
+        resources.setTitle(title);
+        resources.setDescription(description);
+        resources.setUpdatedAt(LocalDateTime.now());
+
+        if (material != null && !material.isEmpty()) {
+            // Delete old file
+            File oldFile = new File(resources.getFilePath());
+            if (oldFile.exists()) oldFile.delete();
+
+            // Save new file
+            String newFilePath = saveFile(material, resources.getClassroom().getClassroomId(), userId, materialId);
+            resources.setFilePath(newFilePath);
+            resources.setFileType(material.getContentType());
+        }
+
+        Resources updatedResource = resourceRepository.save(resources);
+
+        ResourceDTO dto = modelMapper.map(updatedResource, ResourceDTO.class);
+        dto.setUploadedBy(userId);
+        dto.setUploadedTo(resources.getClassroom().getClassroomId());
+
+        return dto;
     }
 }

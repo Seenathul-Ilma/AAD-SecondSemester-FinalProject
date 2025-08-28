@@ -36,7 +36,7 @@ public class ResourceController {
     private final ResourceService resourceService;
 
     @PostMapping(
-            value = "/{classroomId}/resources/{userId}/create",
+            value = "/{classroomId}/resources/{userId}/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<ApiResponse> uploadMaterialToClassroom(
@@ -51,6 +51,33 @@ public class ResourceController {
 
         //ResourceDTO savedResource = resourceService.uploadMaterialByClassroomId(classroomId, userId, title, description, file);
         ResourceDTO savedResource = resourceService.uploadMaterialByClassroomId(classroomId, userId, requestDTO.getTitle(), requestDTO.getDescription(), requestDTO.getFile());
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        201,
+                        "Material uploaded successfully!",
+                        savedResource
+                ),
+                HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping(
+            value = "/{userId}/resources/{materialId}/update",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ApiResponse> updateUploadedMaterialByMaterialId(
+            @PathVariable String userId,
+            @PathVariable String materialId,
+            @Valid ResourceUploadRequestDTO requestDTO
+            /*@RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("file") MultipartFile file*/
+    ) throws IOException {
+
+
+        //ResourceDTO savedResource = resourceService.uploadMaterialByClassroomId(classroomId, userId, title, description, file);
+        ResourceDTO savedResource = resourceService.updateUploadedMaterialByMaterialId( userId, materialId, requestDTO.getTitle(), requestDTO.getDescription(), requestDTO.getFile());
 
         return new ResponseEntity<>(
                 new ApiResponse(
