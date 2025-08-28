@@ -129,8 +129,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     public AnnouncementDTO createAnnouncementByClassroomId(String classroomId, String userId, String title, String content, List<MultipartFile> files) throws IOException {
         String announcementId = generateNextAnnouncementId();
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Classroom classroom = classroomRepository.findById(classroomId).orElseThrow(() -> new RuntimeException("Classroom not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Classroom classroom = classroomRepository.findById(classroomId).orElseThrow(() -> new ResourceNotFoundException("Classroom not found"));
 
         Announcement announcement = new Announcement();
         announcement.setAnnouncementId(announcementId);
@@ -162,7 +162,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     @Transactional
     public AnnouncementDTO updateAnnouncementByAnnouncementId(String userId, String announcementId, String title, String content, List<MultipartFile> files) throws IOException {
         Announcement announcement = announcementRepository.findById(announcementId)
-                .orElseThrow(() -> new RuntimeException("Announcement not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Announcement not found"));
+
+        userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         announcement.setTitle(title);
         announcement.setContent(content);
@@ -217,10 +219,13 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
+    @Transactional
     public boolean deleteAnnouncement(String announcementId, String deletingUserId) {
         // Check announcement existence first
         Announcement announcementToDelete = announcementRepository.findById(announcementId)
                 .orElseThrow(() -> new ResourceNotFoundException("No Announcement found..!"));
+
+        userRepository.findById(deletingUserId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!announcementToDelete.getUser().getUserId().equals(deletingUserId)) {
             throw new AccessDeniedException("Access denied: Only the announcer can delete this announcement.");

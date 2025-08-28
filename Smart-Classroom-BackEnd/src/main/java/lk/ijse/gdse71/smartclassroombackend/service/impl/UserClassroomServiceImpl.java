@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.FileAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,16 +66,16 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
         // Fetch student
         User student = userRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found!"));
 
         // Fetch classroom
         Classroom classroom = classroomRepository.findByClassroomCode(classroomCode)
-                .orElseThrow(() -> new RuntimeException("Classroom not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Classroom not found!"));
 
         // Check if already joined
         boolean alreadyJoined = userClassroomRepository.existsByUserAndClassroom(student, classroom);
         if (alreadyJoined) {
-            throw new RuntimeException("Student already joined this classroom!");
+            throw new ResourceDuplicateException("Student already joined this classroom!");
         }
 
         // Create UserClassroom
@@ -111,7 +112,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
     public List<UserClassroomDTO> joinListOfMembersToClassroomByCode(Set<String> memberIds, String classroomCode) {
         // Fetch classroom
         Classroom classroom = classroomRepository.findByClassroomCode(classroomCode)
-                .orElseThrow(() -> new RuntimeException("Classroom not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Classroom not found!"));
 
         List<UserClassroomDTO> joinedDTOs = new ArrayList<>();
 
@@ -121,7 +122,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
             // Fetch student
             User student = userRepository.findById(memberId)
-                    .orElseThrow(() -> new RuntimeException("Student not found!"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Student not found!"));
 
             // Check if already joined
             boolean alreadyJoined = userClassroomRepository.existsByUserAndClassroom(student, classroom);
@@ -161,7 +162,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
     public List<UserClassroomDTO> joinListOfMembersToClassroomById(Set<String> memberIds, String classroomId) {
         // Fetch classroom
         Classroom classroom = classroomRepository.findByClassroomId(classroomId)
-                .orElseThrow(() -> new RuntimeException("Classroom not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Classroom not found!"));
 
         List<UserClassroomDTO> joinedDTOs = new ArrayList<>();
         int skippingCount = 0;
@@ -179,7 +180,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
             //User student = userRepository.findById(memberId)
             User member = userRepository.findById(memberId)
                     //.orElseThrow(() -> new RuntimeException("Student not found!"));
-                    .orElseThrow(() -> new RuntimeException(
+                    .orElseThrow(() -> new ResourceNotFoundException(
                             "The " + role.toString().toLowerCase() + " you are trying to add was not found. Please check the ID:" + memberId
                     ));
 
@@ -213,7 +214,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
         if (skippingCount == memberIds.size()) {
             if (memberIds.size() > 1) {
-                throw new RuntimeException("All " + memberRole + "s in the provided list are already members of this classroom.");
+                throw new ResourceDuplicateException("All " + memberRole + "s in the provided list are already members of this classroom.");
             } else if (memberIds.size() == 1) {
                 throw new ResourceDuplicateException("The " + memberRole + " already joined this classroom.");
             }
@@ -246,17 +247,17 @@ public class UserClassroomServiceImpl implements UserClassroomService {
     public void removeByUserAndClassroomUsingClassroomCode(String userId, String classroomCode) {
         // Fetch student
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("user not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("user not found!"));
 
         // Fetch classroom
         Classroom classroom = classroomRepository.findByClassroomCode(classroomCode)
-                .orElseThrow(() -> new RuntimeException("Classroom not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Classroom not found!"));
 
         // Check if already joined
         boolean isExist = userClassroomRepository.existsByUserAndClassroom(user, classroom);
 
         if (!isExist) {
-            throw new ResourceNotFoundException("Failed to remove. The user you are trying to remove is not joined to this classroom (ID: " + userId + ").");
+            throw new ResourceNotFoundException("Failed to remove. The user you are trying to remove is not a member of this classroom (ID: " + userId + ").");
         }
 
         userClassroomRepository.deleteByUser_UserIdAndClassroom_ClassroomCode(userId, classroomCode);

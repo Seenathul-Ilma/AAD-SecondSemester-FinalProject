@@ -4,6 +4,7 @@ import lk.ijse.gdse71.smartclassroombackend.dto.ClassroomDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.*;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
+import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
@@ -198,7 +199,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public ClassroomDTO getClassroomById(String classroomId) {
         Classroom foundClassroom = classroomRepository.findById(classroomId)
-                .orElseThrow(() -> new RuntimeException("Cannot find classroom with id: " + classroomId));
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find classroom with id: " + classroomId));
 
         return modelMapper.map(foundClassroom, ClassroomDTO.class);
 

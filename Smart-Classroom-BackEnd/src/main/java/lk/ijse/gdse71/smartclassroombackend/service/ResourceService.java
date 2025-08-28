@@ -22,4 +22,6 @@ public interface ResourceService {
     ResourceDTO uploadMaterialByClassroomId(String classroomId, String userId, String title, String content, MultipartFile file) throws IOException;
 
     ResourceDTO updateUploadedMaterialByMaterialId(String userId, String materialId, String title, String description, MultipartFile file) throws IOException;
+
+    boolean deleteMaterial(String materialId, String deletingUserId);
 }

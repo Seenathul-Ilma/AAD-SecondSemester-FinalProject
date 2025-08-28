@@ -8,6 +8,8 @@ import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.Resources;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
+import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
+import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.repository.AnnouncementRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.ClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.ResourceRepository;
@@ -102,13 +104,13 @@ public class ResourceServiceImpl implements ResourceService {
     public ResourceDTO uploadMaterialByClassroomId(String classroomId, String userId, String title, String description, MultipartFile file) throws IOException {
 
         if (file.isEmpty() || file == null) {
-            throw new RuntimeException("Material file required..!");
+            throw new IllegalArgumentException("Material file required..!");
         }
 
         String materialId = generateNextResourceId();
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Classroom classroom = classroomRepository.findById(classroomId).orElseThrow(() -> new RuntimeException("Classroom not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Classroom classroom = classroomRepository.findById(classroomId).orElseThrow(() -> new ResourceNotFoundException("Classroom not found"));
 
         Resources resources = new Resources();
         resources.setResourceId(materialId);
@@ -147,14 +149,16 @@ public class ResourceServiceImpl implements ResourceService {
     public ResourceDTO updateUploadedMaterialByMaterialId(String userId, String materialId, String title, String description, MultipartFile material) throws IOException {
 
         Resources resources = resourceRepository.findById(materialId)
-                .orElseThrow(() -> new RuntimeException("Material not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Material not found"));
+
+        userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!resources.getUser().getUserId().equals(userId)) {
             throw new AccessDeniedException("Access denied: Only the uploader can modify this material.");
         }
 
         if (material == null || material.isEmpty()) {
-            throw new RuntimeException("Material file required..!");
+            throw new IllegalArgumentException("Material file required..!");
         }
 
         resources.setTitle(title);
@@ -180,4 +184,40 @@ public class ResourceServiceImpl implements ResourceService {
 
         return dto;
     }
+
+    @Override
+    @Transactional
+    public boolean deleteMaterial(String materialId, String deletingUserId) {
+        Resources resourcesToDelete = resourceRepository.findById(materialId)
+                .orElseThrow(() -> new ResourceNotFoundException("Material not found"));
+
+        userRepository.findById(deletingUserId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!resourcesToDelete.getUser().getUserId().equals(deletingUserId)) {
+            throw new AccessDeniedException("Access denied: Only the uploader can delete this material.");
+        }
+
+        String existingFilePath = resourcesToDelete.getFilePath();
+
+        if (existingFilePath != null && !existingFilePath.isBlank()) {
+            File file = new File(existingFilePath.trim());
+            System.out.println("Trying to delete: " + file.getAbsolutePath());
+
+            if (file.exists()) {
+                boolean deleted = file.delete();
+                System.out.println("Deleted: " + deleted);
+
+                if (!deleted) {
+                    throw new RuntimeException("Failed to delete: " + file.getAbsolutePath());
+                }
+            } else {
+                System.out.println("File not found: " + file.getAbsolutePath());
+            }
+        }
+
+        // Delete the resource from DB
+        resourceRepository.delete(resourcesToDelete);
+        return true;
+    }
+
 }

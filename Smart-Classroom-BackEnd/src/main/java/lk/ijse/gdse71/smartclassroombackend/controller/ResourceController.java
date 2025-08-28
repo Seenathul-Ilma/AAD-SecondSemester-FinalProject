@@ -89,4 +89,29 @@ public class ResourceController {
         );
     }
 
+    @DeleteMapping("/delete/materials/{materialId}")
+    public ResponseEntity<ApiResponse> deleteMaterialByMaterialId(@PathVariable String materialId, @RequestParam String deletingUserId) {
+
+        boolean isDeleted = resourceService.deleteMaterial(materialId, deletingUserId);
+        if (!isDeleted) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to delete material..!",
+                            isDeleted
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Material deleted successfully..!",
+                        isDeleted
+                ),
+                HttpStatus.OK
+        );
+    }
+
 }
