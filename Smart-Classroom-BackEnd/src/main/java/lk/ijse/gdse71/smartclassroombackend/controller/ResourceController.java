@@ -7,6 +7,7 @@ import lk.ijse.gdse71.smartclassroombackend.dto.ResourceUploadRequestDTO;
 import lk.ijse.gdse71.smartclassroombackend.service.ResourceService;
 import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,23 @@ import java.util.List;
 public class ResourceController {
 
     private final ResourceService resourceService;
+
+    @GetMapping("/{classroomId}/view/resources")
+    public ResponseEntity<ApiResponse> getAnnouncements(
+            @PathVariable String classroomId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<ResourceDTO> resourceDTOS = resourceService.getResourcesByClassroomId(classroomId, page, size);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Resources paginated successfully..!",
+                        resourceDTOS
+                ),
+                HttpStatus.OK
+        );
+    }
 
     @PostMapping(
             value = "/{classroomId}/resources/{userId}/upload",

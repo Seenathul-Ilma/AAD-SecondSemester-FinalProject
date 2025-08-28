@@ -18,6 +18,8 @@ import lk.ijse.gdse71.smartclassroombackend.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +54,18 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Value("${materials.upload.dir:uploads/materials}")
     private String uploadDirectory; // default folder if not set in application.properties
+
+    @Override
+    public Page<ResourceDTO> getResourcesByClassroomId(String classroomId, int page, int size) {
+        Page<Resources> resourcePage = resourceRepository.findByClassroom_ClassroomId(classroomId, PageRequest.of(page, size));
+
+        modelMapper.typeMap(Resources.class, ResourceDTO.class).addMappings(mapper -> {
+            mapper.map(src -> src.getUser().getUserId(), ResourceDTO::setUploadedBy);
+            mapper.map(src -> src.getClassroom().getClassroomId(), ResourceDTO::setUploadedTo);
+        });
+
+        return resourcePage.map(resource -> modelMapper.map(resource, ResourceDTO.class));
+    }
 
     private String generateNextResourceId() {
 

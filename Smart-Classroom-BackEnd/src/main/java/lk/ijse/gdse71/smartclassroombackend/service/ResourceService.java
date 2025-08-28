@@ -3,6 +3,7 @@ package lk.ijse.gdse71.smartclassroombackend.service;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lk.ijse.gdse71.smartclassroombackend.dto.ResourceDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -24,4 +25,6 @@ public interface ResourceService {
     ResourceDTO updateUploadedMaterialByMaterialId(String userId, String materialId, String title, String description, MultipartFile file) throws IOException;
 
     boolean deleteMaterial(String materialId, String deletingUserId);
+
+    Page<ResourceDTO> getResourcesByClassroomId(String classroomId, int page, int size);
 }
