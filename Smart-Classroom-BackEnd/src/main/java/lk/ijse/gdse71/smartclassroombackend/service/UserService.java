@@ -35,4 +35,6 @@ public interface UserService {
     boolean deleteUser(String id);
 
     Page<UserDTO> getUsersByPaginated(int page, int size, Role student);
+
+    String generatePassword(int length);
 }

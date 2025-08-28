@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final EmailService emailService;
+    private static final SecureRandom random = new SecureRandom();
 
     @Override
     public List<UserDTO> getAllStudents() {
@@ -94,14 +96,16 @@ public class UserServiceImpl implements UserService {
         userDTO.setUserId(newId);
         userDTO.setRole(role.name());
 
-        String defaultPassword;
+        /*String defaultPassword;
         switch (role) {
             case ADMIN -> defaultPassword = "admin1234";
             case TEACHER -> defaultPassword = "teach1234";
             default -> defaultPassword = "abcd1234";
-        }
+        }*/
 
-        userDTO.setPassword(defaultPassword);
+        String generatedPassword = generatePassword(12);
+
+        userDTO.setPassword(generatedPassword);
 
         User user = modelMapper.map(userDTO, User.class);
         user.setRole(Role.valueOf(userDTO.getRole()));
@@ -130,7 +134,7 @@ public class UserServiceImpl implements UserService {
                 "  <tr style='background-color: #ffffff;'>" +
                 "    <td style='border: 1px solid #ddd; padding: 8px;'>" + userDTO.getUserId() + "</td>" +
                 "    <td style='border: 1px solid #ddd; padding: 8px;'>" + userDTO.getEmail() + "</td>" +
-                "    <td style='border: 1px solid #ddd; padding: 8px;'>" + defaultPassword + "</td>" +
+                "    <td style='border: 1px solid #ddd; padding: 8px;'>" + generatedPassword + "</td>" +
                 "  </tr>" +
                 "</table>" +
                 "<p>Please <strong>change your password</strong> after logging in.</p>" +
@@ -145,6 +149,39 @@ public class UserServiceImpl implements UserService {
         );
 
         return true;
+    }
+
+    public String generatePassword(int length) {
+        if(length < 8) {
+            length = 8;
+        }
+
+        String uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String specialChars = "@#$%^&+=";
+        String allTypes = uppercaseLetters + lowercaseLetters + digits + specialChars;
+
+        StringBuilder generatedPassword = new StringBuilder();
+        generatedPassword.append(uppercaseLetters.charAt(random.nextInt(uppercaseLetters.length())));
+        generatedPassword.append(lowercaseLetters.charAt(random.nextInt(lowercaseLetters.length())));
+        generatedPassword.append(digits.charAt(random.nextInt(digits.length())));
+        generatedPassword.append(specialChars.charAt(random.nextInt(specialChars.length())));
+
+        for (int i = 4; i < length; i++){
+            generatedPassword.append(allTypes.charAt(random.nextInt(allTypes.length())));
+        }
+
+        char[] passwordArray = generatedPassword.toString().toCharArray();
+        for (int x=0; x<passwordArray.length; x++){
+            int y = random.nextInt(passwordArray.length);
+            char temp = passwordArray[x];
+            passwordArray[x] = passwordArray[y];
+            passwordArray[y] = temp;
+        }
+
+        return String.valueOf(generatedPassword);
+
     }
 
     @Override
