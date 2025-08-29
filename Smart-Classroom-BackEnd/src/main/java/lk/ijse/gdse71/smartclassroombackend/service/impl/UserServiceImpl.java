@@ -8,6 +8,7 @@ import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
+import lk.ijse.gdse71.smartclassroombackend.service.BrevoEmailService;
 import lk.ijse.gdse71.smartclassroombackend.service.EmailService;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final EmailService emailService;
+    private final BrevoEmailService brevoEmailService;
     private static final SecureRandom random = new SecureRandom();
 
     @Override
@@ -135,6 +137,9 @@ public class UserServiceImpl implements UserService {
                         "Password: " + defaultPassword + "\n\n" +
                         "Please change your password after logging in.");*/
 
+        String emailRole = userDTO.getRole().toLowerCase();
+        emailRole = emailRole.substring(0,1).toUpperCase() + emailRole.substring(1);
+
         String htmlContent = "<html>" +
                 "<body style='font-family: Arial, sans-serif; line-height: 1.6;'>" +
                 "<h2>Welcome to Smart Classroom..!</h2>" +
@@ -142,7 +147,8 @@ public class UserServiceImpl implements UserService {
                 "<p>Your account has been created successfully. Here’s your login info:</p>" +
                 "<table style='border-collapse: collapse; width: 100%; max-width: 400px;'>" +
                 "  <tr style='background-color: #f2f2f2;'>" +
-                "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>User ID</th>" +
+                //"    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>User ID</th>" +
+                "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>"+ emailRole + " ID</th>" +
                 "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Username</th>" +
                 "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Password</th>" +
                 "  </tr>" +
@@ -162,6 +168,12 @@ public class UserServiceImpl implements UserService {
                 "Start Your Journey with Smart Classroom Today",
                 htmlContent
         );*/
+
+        brevoEmailService.sendEmail(
+                userDTO.getEmail(),
+                "Start Your Journey with Smart Classroom Today",
+                htmlContent
+        );
 
         return true;
     }
