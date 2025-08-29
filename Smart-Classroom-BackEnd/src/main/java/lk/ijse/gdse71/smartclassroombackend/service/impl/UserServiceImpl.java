@@ -157,11 +157,11 @@ public class UserServiceImpl implements UserService {
                 "</body>" +
                 "</html>";
 
-        emailService.sendUserEmail(
+        /*emailService.sendUserEmail(
                 userDTO.getEmail(),
                 "Start Your Journey with Smart Classroom Today",
                 htmlContent
-        );
+        );*/
 
         return true;
     }
