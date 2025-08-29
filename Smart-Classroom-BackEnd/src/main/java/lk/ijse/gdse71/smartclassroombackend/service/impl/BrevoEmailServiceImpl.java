@@ -1,7 +1,12 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import lk.ijse.gdse71.smartclassroombackend.service.BrevoEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -28,14 +33,39 @@ public class BrevoEmailServiceImpl implements BrevoEmailService {
 
     //@Async
     public void sendEmail(String to, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("seenathulilma121243@gmail.com"); // Must be verified in Brevo
-        //message.setFrom("95cd54001@smtp-brevo.com"); // your Gmail address
-        message.setReplyTo("seenathulilma121243@gmail.com");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+
+            message.setFrom(new InternetAddress("seenathulilma121243@gmail.com"));
+            message.setRecipients(MimeMessage.RecipientType.TO, to);
+            message.setSubject(subject);
+
+            message.setContent(body, "text/html; charset=utf-8");
+
+            mailSender.send(message);
+        } catch (AddressException e) {
+            System.err.println("AddressException: Failed to send email to " + to + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (MessagingException e) {
+            System.err.println("MessagingException: Failed to send email to " + to + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        /*try{
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("seenathulilma121243@gmail.com"); // Must be verified in Brevo
+            //message.setFrom("95cd54001@smtp-brevo.com"); // your Gmail address
+            message.setReplyTo("seenathulilma121243@gmail.com");
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
+            mailSender.send(message);
+            System.out.println("Email sent to " + to);
+        } catch (MailException e) {
+            System.err.println("Failed to send email to " + to + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        }*/
     }
 
     @Async

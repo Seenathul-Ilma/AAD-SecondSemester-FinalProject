@@ -31,7 +31,31 @@ public class TestBraveEmailController {
 
     @GetMapping("/send-test-email")
     public String sendTestEmail() {
-        emailService.sendEmail("zeenathulilma121243@gmail.com", "Test Email Set", "Hello from Brevo via Gmail! (❁´◡`❁)😁😍");
+
+        String htmlContent = "<html>" +
+                "<body style='font-family: Arial, sans-serif; line-height: 1.6;'>" +
+                "<h2>Welcome to Smart Classroom..!</h2>" +
+                "<p>Hello,</p>" +
+                "<p>Your account has been created successfully. Here’s your login info:</p>" +
+                "<table style='border-collapse: collapse; width: 100%; max-width: 400px;'>" +
+                "  <tr style='background-color: #f2f2f2;'>" +
+                "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>User ID</th>" +
+                "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Username</th>" +
+                "    <th style='border: 1px solid #ddd; padding: 8px; text-align: left;'>Password</th>" +
+                "  </tr>" +
+                "</table>" +
+                "<p>Please <strong>change your password</strong> after logging in.</p>" +
+                "<p>Thanks,<br/>Smart Classroom Team</p>" +
+                "</body>" +
+                "</html>";
+
+        emailService.sendEmail(
+                "zeenathulilma121243@gmail.com",
+                "Start Your Journey with Smart Classroom Today",
+                htmlContent
+        );
+
+        //emailService.sendEmail("zeenathulilma121243@gmail.com", "Test Email Set", "Hello from Brevo via Gmail! (❁´◡`❁)😁😍");
         return "Email Sent!";
     }
 
