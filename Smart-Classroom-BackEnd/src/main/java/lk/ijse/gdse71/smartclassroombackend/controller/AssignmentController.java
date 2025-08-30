@@ -36,7 +36,7 @@ public class AssignmentController {
     private final AssignmentService assignmentService;
 
     @PostMapping(
-            value = "/{classroomId}/assignments/{userId}/create",
+            value = "/{classroomId}/assignments/{userId}/assign",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<ApiResponse> createAssignment(
@@ -55,6 +55,43 @@ public class AssignmentController {
                     new ApiResponse(
                             201,
                             "Assignment created successfully!",
+                            savedAssignment
+                    ),
+                    HttpStatus.CREATED
+            );
+        } catch (IOException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            500,
+                            "File upload failed: " + e.getMessage(),
+                            null
+                    ),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+
+    @PutMapping(
+            value = "/{userId}/assignments/{assignmentId}/update",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ApiResponse> updateAssignment(
+            @PathVariable String assignmentId,
+            @PathVariable String userId,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam("content") String content,
+            @RequestParam("dueDate") LocalDateTime dueDate,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) {
+
+        try {
+            AssignmentDTO savedAssignment = assignmentService.updateAssignmentByAssignmentId(assignmentId, userId, title, content, file, dueDate);
+
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            201,
+                            "Assignment updated successfully!",
                             savedAssignment
                     ),
                     HttpStatus.CREATED

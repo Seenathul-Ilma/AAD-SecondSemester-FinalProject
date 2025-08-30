@@ -3,6 +3,8 @@ package lk.ijse.gdse71.smartclassroombackend.service.impl;
 import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.AssignmentDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.*;
+import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
+import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.repository.AnnouncementRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.AssignmentRepository;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -132,6 +135,60 @@ public class AssignmentServiceImpl implements AssignmentService {
         dto.setAssignedBy(userId);
         dto.setFilePath(filePath);
         dto.setFileType(fileType);
+
+        return dto;
+    }
+
+    @Override
+    public AssignmentDTO updateAssignmentByAssignmentId(String assignmentId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException {
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
+
+        userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!assignment.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("Access denied: Only the creator can modify this assignment.");
+        }
+
+        if (file.isEmpty() || file == null) {
+            throw new IllegalArgumentException("Assignment file required..!");
+        }
+
+        assignment.setTitle(title);
+        assignment.setDescription(content);
+        assignment.setAssignedDate(assignment.getAssignedDate());
+        assignment.setUpdatedAt(LocalDateTime.now());
+
+        if (dueDate.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Due date cannot be in the past");
+        }
+
+        assignment.setDueDate(dueDate);
+
+        String subject = assignment.getClassroom().getSubject().replace(" ", "");
+        String level = assignment.getClassroom().getClassLevel().replace(" ", "");
+        String assignmentCategory = subject + "_" + level;
+        System.out.println("AssignmentCategory: "+assignmentCategory);
+
+        assignment.setUser(assignment.getUser());
+        assignment.setClassroom(assignment.getClassroom());
+
+        if (file != null && !file.isEmpty()) {
+            // Delete old file
+            File oldFile = new File(assignment.getFilePath());
+            if (oldFile.exists()) oldFile.delete();
+
+            // Save new file
+            String newFilePath = saveFile(file, assignment.getClassroom().getClassroomId(), userId, assignmentId, assignmentCategory);
+            assignment.setFilePath(newFilePath);
+            assignment.setFileType(file.getContentType());
+        }
+
+        Assignment updatedAssignment = assignmentRepository.save(assignment);
+
+        AssignmentDTO dto = modelMapper.map(updatedAssignment, AssignmentDTO.class);
+        dto.setAssignedTo(updatedAssignment.getClassroom().getClassroomId());
+        dto.setAssignedBy(updatedAssignment.getUser().getUserId());
 
         return dto;
     }
