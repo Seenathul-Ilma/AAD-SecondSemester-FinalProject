@@ -65,7 +65,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public String saveFile(MultipartFile file, String classroomId, String userId, String assignmentId) throws IOException {
+    public String saveFile(MultipartFile file, String classroomId, String userId, String assignmentId, String assignmentCategory) throws IOException {
 
         File uploadFolder = new File(uploadDirectory);
         if (!uploadFolder.exists()) uploadFolder.mkdirs();
@@ -77,8 +77,11 @@ public class AssignmentServiceImpl implements AssignmentService {
             extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
 
+        String safeAssignmentCategory = assignmentCategory.replaceAll("[^a-zA-Z0-9_-]", "_");
+
         // Unique filename using timestamp
-        String filename = String.format("%s_%s_%s_%d%s",
+        String filename = String.format("%s_%s_%s_%s_%d%s",
+                safeAssignmentCategory,
                 classroomId,
                 userId,
                 assignmentId,
@@ -108,7 +111,12 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignment.setAssignedDate(LocalDateTime.now());
         assignment.setDueDate(dueDate);
 
-        String filePath = saveFile(file, classroomId, userId, assignmentId);
+        String subject = classroom.getSubject().replace(" ", "");
+        String level = classroom.getClassLevel().replace(" ", "");
+        String assignmentCategory = subject + "_" + level;
+        System.out.println("AssignmentCategory: "+assignmentCategory);
+
+        String filePath = saveFile(file, classroomId, userId, assignmentId, assignmentCategory);
         assignment.setFilePath(filePath);
 
         String fileType = file.getContentType();

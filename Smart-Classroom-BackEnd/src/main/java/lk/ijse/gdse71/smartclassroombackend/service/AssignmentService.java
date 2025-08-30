@@ -10,7 +10,7 @@ public interface AssignmentService {
 
     String generateNextAssignmentId();
 
-    String saveFile(MultipartFile file, String classroomId, String userId, String assignmentId) throws IOException;
+    String saveFile(MultipartFile file, String classroomId, String userId, String assignmentId, String assignmentCategory) throws IOException;
 
     AssignmentDTO createAssignmentByClassroomId(String classroomId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException;
 }
