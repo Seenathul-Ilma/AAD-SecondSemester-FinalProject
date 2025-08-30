@@ -108,4 +108,29 @@ public class AssignmentController {
         }
     }
 
+    @DeleteMapping("/delete/assignments/{assignmentId}")
+    public ResponseEntity<ApiResponse> deleteAssignmentByAssignmentId(@PathVariable String assignmentId, @RequestParam String deletingUserId) {
+
+        boolean isDeleted = assignmentService.deleteAssignment(assignmentId, deletingUserId);
+        if (!isDeleted) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to delete assignment..!",
+                            isDeleted
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Assignment deleted successfully..!",
+                        isDeleted
+                ),
+                HttpStatus.OK
+        );
+    }
+
 }

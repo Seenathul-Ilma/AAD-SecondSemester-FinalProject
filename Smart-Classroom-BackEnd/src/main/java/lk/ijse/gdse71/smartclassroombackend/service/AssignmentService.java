@@ -15,4 +15,6 @@ public interface AssignmentService {
     AssignmentDTO createAssignmentByClassroomId(String classroomId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException;
 
     AssignmentDTO updateAssignmentByAssignmentId(String assignmentId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException;
+
+    boolean deleteAssignment(String assignmentId, String deletingUserId);
 }

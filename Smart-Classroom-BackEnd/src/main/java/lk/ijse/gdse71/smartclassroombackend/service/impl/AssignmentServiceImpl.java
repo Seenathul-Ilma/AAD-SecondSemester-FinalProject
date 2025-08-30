@@ -192,4 +192,38 @@ public class AssignmentServiceImpl implements AssignmentService {
 
         return dto;
     }
+
+    @Override
+    public boolean deleteAssignment(String assignmentId, String deletingUserId) {
+        Assignment assignmentToDelete = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
+
+        userRepository.findById(deletingUserId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!assignmentToDelete.getUser().getUserId().equals(deletingUserId)) {
+            throw new AccessDeniedException("Access denied: Only the uploader can delete this assignment.");
+        }
+
+        String existingFilePath = assignmentToDelete.getFilePath();
+
+        if (existingFilePath != null && !existingFilePath.isBlank()) {
+            File file = new File(existingFilePath.trim());
+            System.out.println("Trying to delete: " + file.getAbsolutePath());
+
+            if (file.exists()) {
+                boolean deleted = file.delete();
+                System.out.println("Deleted: " + deleted);
+
+                if (!deleted) {
+                    throw new RuntimeException("Failed to delete: " + file.getAbsolutePath());
+                }
+            } else {
+                System.out.println("File not found: " + file.getAbsolutePath());
+            }
+        }
+
+        // Delete the resource from DB
+        assignmentRepository.delete(assignmentToDelete);
+        return true;
+    }
 }
