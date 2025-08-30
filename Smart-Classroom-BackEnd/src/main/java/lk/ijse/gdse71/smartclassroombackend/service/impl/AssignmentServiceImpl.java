@@ -2,6 +2,7 @@ package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.AssignmentDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.ResourceDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.*;
 import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
@@ -14,6 +15,8 @@ import lk.ijse.gdse71.smartclassroombackend.service.AssignmentService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +51,30 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Value("${assignments.upload.dir:uploads/assignments}")
     private String uploadDirectory;      // default folder if not set in application.properties
+
+
+    @Override
+    public Page<AssignmentDTO> getAssignmentsByClassroomId(String classroomId, int page, int size) {
+        Page<Assignment> assignmentPage = assignmentRepository.findByClassroom_ClassroomId(classroomId, PageRequest.of(page, size));
+
+        modelMapper.typeMap(Assignment.class, AssignmentDTO.class).addMappings(mapper -> {
+            mapper.map(src -> src.getUser().getUserId(), AssignmentDTO::setAssignedBy);
+            mapper.map(src -> src.getClassroom().getClassroomId(), AssignmentDTO::setAssignedTo);
+        });
+
+        return assignmentPage.map(assignment -> modelMapper.map(assignment, AssignmentDTO.class));
+    }
+
+    @Override
+    public Page<AssignmentDTO> getAllAssignments(int page, int size) {
+        Page<Assignment> assignmentPage = assignmentRepository.findAll(PageRequest.of(page, size));
+        modelMapper.typeMap(Assignment.class, AssignmentDTO.class).addMappings(mapper -> {
+            mapper.map(src -> src.getUser().getUserId(), AssignmentDTO::setAssignedBy);
+            mapper.map(src -> src.getClassroom().getClassroomId(), AssignmentDTO::setAssignedTo);
+        });
+
+        return assignmentPage.map(assignment -> modelMapper.map(assignment, AssignmentDTO.class));
+    }
 
     @Override
     public String generateNextAssignmentId() {

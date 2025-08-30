@@ -2,9 +2,11 @@ package lk.ijse.gdse71.smartclassroombackend.controller;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.AssignmentDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.ResourceDTO;
 import lk.ijse.gdse71.smartclassroombackend.service.AssignmentService;
 import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,39 @@ import java.util.List;
 public class AssignmentController {
 
     private final AssignmentService assignmentService;
+
+    @GetMapping("/{classroomId}/view/assignments")
+    public ResponseEntity<ApiResponse> getAnnouncements(
+            @PathVariable String classroomId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<AssignmentDTO> assignmentDTOS = assignmentService.getAssignmentsByClassroomId(classroomId, page, size);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Assignments paginated successfully..!",
+                        assignmentDTOS
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/view/assignments")
+    public ResponseEntity<ApiResponse> getAllResources(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<AssignmentDTO> assignmentDTOS = assignmentService.getAllAssignments(page, size);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Assignments paginated successfully..!",
+                        assignmentDTOS
+                ),
+                HttpStatus.OK
+        );
+    }
 
     @PostMapping(
             value = "/{classroomId}/assignments/{userId}/assign",

@@ -1,6 +1,8 @@
 package lk.ijse.gdse71.smartclassroombackend.service;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.AssignmentDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.ResourceDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,4 +19,8 @@ public interface AssignmentService {
     AssignmentDTO updateAssignmentByAssignmentId(String assignmentId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException;
 
     boolean deleteAssignment(String assignmentId, String deletingUserId);
+
+    Page<AssignmentDTO> getAssignmentsByClassroomId(String classroomId, int page, int size);
+
+    public Page<AssignmentDTO> getAllAssignments(int page, int size);
 }
