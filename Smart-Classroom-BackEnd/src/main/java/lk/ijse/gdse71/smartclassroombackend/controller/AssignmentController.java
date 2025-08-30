@@ -1,0 +1,74 @@
+package lk.ijse.gdse71.smartclassroombackend.controller;
+
+import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.AssignmentDTO;
+import lk.ijse.gdse71.smartclassroombackend.service.AssignmentService;
+import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * --------------------------------------------
+ * Author: Zeenathul Ilma
+ * GitHub: https://github.com/Seenathul-Ilma
+ * Website: https://zeenathulilma.vercel.app/
+ * --------------------------------------------
+ * Created: 8/29/2025 9:48 AM
+ * Project: AAD-SecondSemester-FinalProject
+ * --------------------------------------------
+ **/
+
+
+@CrossOrigin // to allow frontend
+@RestController
+@RequestMapping("/api/v1/edusphere/classrooms")
+@RequiredArgsConstructor
+public class AssignmentController {
+
+    private final AssignmentService assignmentService;
+
+    @PostMapping(
+            value = "/{classroomId}/assignments/{userId}/create",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ApiResponse> createAssignment(
+            @PathVariable String classroomId,
+            @PathVariable String userId,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam("content") String content,
+            @RequestParam("dueDate") LocalDateTime dueDate,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) {
+
+        try {
+            AssignmentDTO savedAssignment = assignmentService.createAssignmentByClassroomId(classroomId, userId, title, content, file, dueDate);
+
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            201,
+                            "Assignment created successfully!",
+                            savedAssignment
+                    ),
+                    HttpStatus.CREATED
+            );
+        } catch (IOException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            500,
+                            "File upload failed: " + e.getMessage(),
+                            null
+                    ),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+}

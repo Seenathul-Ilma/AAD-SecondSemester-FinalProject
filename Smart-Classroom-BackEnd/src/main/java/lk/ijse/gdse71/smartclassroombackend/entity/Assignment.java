@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -35,16 +36,26 @@ public class Assignment {
 
     private String description;
 
-    private LocalDate assignedDate;
+    private LocalDateTime assignedDate;
 
-    private LocalDate dueDate;
+    private LocalDateTime updatedAt;
 
-    @ManyToOne
+    private LocalDateTime dueDate;
+
+    @Lob
+    @Column(name = "file_path")
+    private String filePath;     // file url
+
+    @Lob
+    @Column(name = "file_type")
+    private String fileType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_by")
     private User user;                              // ok
     //private String teacher;     // userId
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_classroom_id")
     private Classroom classroom;                    // ok
     //private String classroom;   // classroomId
