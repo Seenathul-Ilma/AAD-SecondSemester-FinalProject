@@ -2,10 +2,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize Lucide icons after the DOM is loaded
   lucide.createIcons();
 
-  loadTeachers(1, default_page_size);
+  loadDataPaginated(1, default_page_size);
 });
 
-const api = "http://localhost:8080/api/v1/edusphere/";
+const api = "http://localhost:8080/api/v1/edusphere/users/";
 const default_page_size = 5;
 const max_visible_pages = 7;
 
@@ -78,20 +78,22 @@ function renderRows(items) {
 }
 
 // ===== Data fetching =====
-function loadTeachers(page1 = 1, size = state.size) {
+function loadDataPaginated(page1 = 1, size = state.size) {
   const zeroBasedPage = Math.max(0, page1 - 1);
   $.ajax({
     url: api + `teachers?page=${zeroBasedPage}&size=${size}`,
     method: "GET",
     dataType: "json",
     success: function (response) {
+      const data = response.data || {};  // unwrap the ApiResponse
+
       const {
         content = [],
         number = 0,
         size: respSize = size,
         totalPages = 1,
         totalElements = 0,
-      } = response;
+      } = data;   // destructure from data
 
       state.page = (number ?? 0) + 1; // convert 0-based -> 1-based
       state.size = respSize ?? size;

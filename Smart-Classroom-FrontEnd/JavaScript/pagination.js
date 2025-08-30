@@ -136,6 +136,7 @@ function handlePagerClick(e) {
 function gotoPage(p) {
     const next = clamp(p, 1, Math.max(1, state.totalPages));
     if (next !== state.page) {
-        loadStudents(next, state.size);
+        //loadStudents(next, state.size);
+        loadDataPaginated(next, state.size);
     }
 }
