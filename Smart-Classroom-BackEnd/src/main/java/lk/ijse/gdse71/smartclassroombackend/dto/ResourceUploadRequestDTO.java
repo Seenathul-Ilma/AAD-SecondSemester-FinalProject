@@ -28,6 +28,6 @@ public class ResourceUploadRequestDTO {
     private String description;
 
     // MultipartFile cannot be validated with @Valid easily; you can check manually
-    private MultipartFile file;
+    //private MultipartFile file;
 }
 

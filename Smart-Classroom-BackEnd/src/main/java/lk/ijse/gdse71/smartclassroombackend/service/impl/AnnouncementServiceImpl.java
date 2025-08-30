@@ -140,6 +140,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         announcement.setClassroom(classroom);
         announcement.setCreatedAt(LocalDateTime.now());
 
+        if (files == null) files = new ArrayList<>();
+
         List<String> fileUrls = saveFiles(files, classroomId, userId, announcementId);
         List<String> fileTypes = new ArrayList<>();
         for (MultipartFile file : files) fileTypes.add(file.getContentType());
@@ -173,6 +175,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         if (!announcement.getUser().getUserId().equals(userId)) {
             throw new AccessDeniedException("Access denied: Only the announcer can modify this announcement.");
         }
+
+        if (files == null) files = new ArrayList<>();
 
         // Handle files
         List<String> existingFileUrls = announcement.getFileUrls() != null

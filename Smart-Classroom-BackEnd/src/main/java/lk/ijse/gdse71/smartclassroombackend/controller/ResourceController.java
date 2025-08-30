@@ -76,6 +76,7 @@ public class ResourceController {
     public ResponseEntity<ApiResponse> uploadMaterialToClassroom(
             @PathVariable String classroomId,
             @PathVariable String userId,
+            @RequestParam(value = "file", required = true) MultipartFile file,
             @Valid ResourceUploadRequestDTO requestDTO
             /*@RequestParam("title") String title,
             @RequestParam("description") String description,
@@ -84,7 +85,7 @@ public class ResourceController {
 
 
         //ResourceDTO savedResource = resourceService.uploadMaterialByClassroomId(classroomId, userId, title, description, file);
-        ResourceDTO savedResource = resourceService.uploadMaterialByClassroomId(classroomId, userId, requestDTO.getTitle(), requestDTO.getDescription(), requestDTO.getFile());
+        ResourceDTO savedResource = resourceService.uploadMaterialByClassroomId(classroomId, userId, requestDTO.getTitle(), requestDTO.getDescription(), file);
 
         return new ResponseEntity<>(
                 new ApiResponse(
@@ -103,6 +104,7 @@ public class ResourceController {
     public ResponseEntity<ApiResponse> updateUploadedMaterialByMaterialId(
             @PathVariable String userId,
             @PathVariable String materialId,
+            @RequestParam(value = "file", required = true) MultipartFile file,
             @Valid ResourceUploadRequestDTO requestDTO
             /*@RequestParam("title") String title,
             @RequestParam("description") String description,
@@ -111,7 +113,7 @@ public class ResourceController {
 
 
         //ResourceDTO savedResource = resourceService.uploadMaterialByClassroomId(classroomId, userId, title, description, file);
-        ResourceDTO savedResource = resourceService.updateUploadedMaterialByMaterialId( userId, materialId, requestDTO.getTitle(), requestDTO.getDescription(), requestDTO.getFile());
+        ResourceDTO savedResource = resourceService.updateUploadedMaterialByMaterialId( userId, materialId, requestDTO.getTitle(), requestDTO.getDescription(), file);
 
         return new ResponseEntity<>(
                 new ApiResponse(
