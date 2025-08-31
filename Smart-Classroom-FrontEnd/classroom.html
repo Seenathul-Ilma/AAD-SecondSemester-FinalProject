@@ -219,7 +219,7 @@
               >
                 <!-- Header -->
                 <div
-                  class="p-5 border-b border-slate-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl"
+                  class="p-4 border-b border-slate-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl"
                 >
                   <div class="flex items-center justify-between">
                     <div>
@@ -242,27 +242,44 @@
 
                 <!-- Classroom cards -->
                 <div class="overflow-x-auto">
-                  <div class="size-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4 m-4 classroom-card-container">
+                  <div
+                    id="classroom-card-container"
+                    class="size-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4 mx-4 my-3"
+                  >
                     <!-- JS injects classroom cards here -->
                     <div
-                            class="classroom-card bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg hover:shadow-slate-200/20 dark:hover:shadow-slate-900/20 transition-all duration-300 group"
-                            data-name="grade-07-maths"
+                      class="classroom-card bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg hover:shadow-slate-200/20 dark:hover:shadow-slate-900/20 transition-all duration-300 group"
+                      data-name="grade-07-maths"
                     >
                       <!-- Classroom Image -->
-                      <div class="relative h-24 rounded-t-2xl overflow-hidden"> <!-- reduced from h-30 -->
-                        <img src="./Assets/images/learn-book.jpg" alt="Grade 07 Maths" class="w-full h-full object-cover">
-\                        <div class="absolute top-2 right-2 p-2 rounded-full text-slate-400 dark:text-slate-800 bg-slate-100 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors">
-                          <i data-lucide="square-arrow-out-up-right" class="w-4 h-4"></i>
+                      <div class="relative h-30 rounded-t-2xl overflow-hidden">
+                        <!-- reduced from h-30 -->
+                        <img
+                          src="./Assets/images/learn-book.jpg"
+                          alt="Grade 07 Maths"
+                          class="w-full h-full object-cover"
+                        />
+                        <div
+                          class="absolute top-2 right-2 p-2 rounded-full text-slate-600/100 dark:text-slate-800 bg-slate-100 hover:bg-slate-100 hover:text-slate-800 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+                        >
+                          <i
+                            data-lucide="square-arrow-out-up-right"
+                            class="w-4 h-4 hover:scale-120 dark:hover:scale-none"
+                          ></i>
                         </div>
                       </div>
 
                       <!-- Card Content -->
-                      <div class="p-3">
+                      <div class="p-2">
                         <!-- Grade / Subject / Medium -->
-                        <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        <p
+                          class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+                        >
                           Maths
                         </p>
-                        <div class="flex items-center space-x-2 mb-3 text-slate-600 dark:text-slate-400">
+                        <div
+                          class="flex items-center space-x-2 mb-2 text-slate-600 dark:text-slate-400"
+                        >
                           <i data-lucide="swatch-book" class="w-4 h-4"></i>
                           <span>Tamil Medium</span>
                           <span class="text-xs">Grade 07</span>
@@ -270,10 +287,15 @@
 
                         <!-- Action Buttons -->
                         <div class="flex gap-2">
-                          <button class="flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
-                            <i data-lucide="pencil-ruler" class="w-4 h-4"></i>Edit
+                          <button
+                            class="flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm"
+                          >
+                            <i data-lucide="pencil-ruler" class="w-4 h-4"></i
+                            >Edit
                           </button>
-                          <button class="flex-1 bg-red-100 dark:bg-red-700/20 hover:bg-red-200 dark:hover:bg-red-700/40 text-red-700 dark:text-red-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
+                          <button
+                            class="flex-1 bg-red-100 dark:bg-red-700/20 hover:bg-red-200 dark:hover:bg-red-700/40 text-red-700 dark:text-red-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm"
+                          >
                             <i data-lucide="trash-2" class="w-4 h-4"></i>Delete
                           </button>
                         </div>
@@ -282,8 +304,6 @@
                   </div>
                   <div id="pagination-container"></div>
                 </div>
-
-
               </div>
             </div>
           </div>
