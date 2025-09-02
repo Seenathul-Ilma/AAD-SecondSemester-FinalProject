@@ -10,18 +10,15 @@ import lombok.NoArgsConstructor;
  * GitHub: https://github.com/Seenathul-Ilma
  * Website: https://zeenathulilma.vercel.app/
  * --------------------------------------------
- * Created: 9/2/2025 6:28 PM
+ * Created: 9/2/2025 8:58 PM
  * Project: AAD-SecondSemester-FinalProject
  * --------------------------------------------
  **/
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-public class RegisterDTO {
-    private String name;
+@NoArgsConstructor
+@AllArgsConstructor
+public class InviteTeacherDTO {
     private String email;
-    private String password;
-    private String role;
-    private String token;
 }
+

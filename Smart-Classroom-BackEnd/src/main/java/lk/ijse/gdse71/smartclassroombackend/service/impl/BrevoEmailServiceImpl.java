@@ -6,7 +6,6 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lk.ijse.gdse71.smartclassroombackend.service.BrevoEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -82,6 +81,27 @@ public class BrevoEmailServiceImpl implements BrevoEmailService {
             } catch (Exception e) {
                 System.err.println("Failed to send email to: " + email + " | Error: " + e.getMessage());
             }
+        }
+    }
+
+    @Override
+    public void sendInvitationEmail(String email, String subject, String body) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+
+            message.setFrom(new InternetAddress("seenathulilma121243@gmail.com"));
+            message.setRecipients(MimeMessage.RecipientType.TO, email);
+            message.setSubject(subject);
+
+            message.setContent(body, "text/html; charset=utf-8");
+
+            mailSender.send(message);
+        } catch (AddressException e) {
+            System.err.println("AddressException: Failed to send email to " + email + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (MessagingException e) {
+            System.err.println("MessagingException: Failed to send email to " + email + ": " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }

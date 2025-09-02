@@ -6,4 +6,6 @@ public interface BrevoEmailService {
     void sendEmail(String to, String subject, String body);
 
     void sendBulkEmail(List<String> recipients, String subject, String body);
+
+    void sendInvitationEmail(String email, String subject, String body);
 }
