@@ -19,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data           // Includes @Getter, @Setter, @ToString
+@Builder
 @Entity
 public class User {
     @Id

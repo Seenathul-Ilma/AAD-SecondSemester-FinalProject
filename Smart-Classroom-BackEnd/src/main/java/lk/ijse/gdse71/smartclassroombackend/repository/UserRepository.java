@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,4 +33,5 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findUserByUserIdAndRole(String id, Role role);
 
+    Optional<User> findByEmail(String email);
 }
