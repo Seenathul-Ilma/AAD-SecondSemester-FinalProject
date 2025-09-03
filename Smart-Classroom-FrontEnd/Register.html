@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edusphere | Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'edu-blue': '#1e40af',
+            'edu-light': '#dbeafe',
+            'edu-dark': '#1e3a8a'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+      <div class="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
+        <i data-lucide="school" class="w-10 h-10 font-medium text-white"></i>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">Join Edusphere</h2>
+      <p class="text-gray-600">Create your account to start learning</p>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="bg-white rounded-lg shadow-xl p-8 space-y-6">
+      <form class="space-y-6" id="registrationForm">
+        <!-- Name Field -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
+            </div>
+            <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-gray-400"
+                    placeholder="Enter your full name"
+            >
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+            </div>
+            <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-gray-400"
+                    placeholder="Enter your email address"
+            >
+          </div>
+        </div>
+
+        <!-- Token Field -->
+        <div>
+          <label for="token" class="block text-sm font-medium text-gray-700 mb-2">Registration Token</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i data-lucide="key" class="w-5 h-5 text-gray-400"></i>
+            </div>
+            <input
+                    id="token"
+                    name="token"
+                    type="text"
+                    required
+                    class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-gray-400"
+                    placeholder="Enter your registration token"
+            >
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i data-lucide="lock" class="w-5 h-5 text-gray-400"></i>
+            </div>
+            <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    class="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-gray-400"
+                    placeholder="Create a strong password"
+            >
+            <button
+                    type="button"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onclick="togglePassword()"
+            >
+              <i id="eye-icon" data-lucide="eye" class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"></i>
+            </button>
+          </div>
+          <p class="mt-1 text-sm text-gray-500">Password must be at least 8 characters long</p>
+        </div>
+
+        <!-- Terms and Conditions -->
+        <div class="flex items-center">
+          <input
+                  id="terms"
+                  name="terms"
+                  type="checkbox"
+                  required
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          >
+          <label for="terms" class="ml-3 block text-sm text-gray-900">
+            I agree to the <a href="#" class="text-blue-600 hover:text-blue-500 font-medium">Terms of Service</a> and <a href="#" class="text-blue-600 hover:text-blue-500 font-medium">Privacy Policy</a>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+                type="submit"
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition duration-200 ease-in-out hover:scale-105 active:scale-95"
+        >
+          <i data-lucide="user-plus" class="w-5 h-5 mr-2"></i>
+          Create Account
+        </button>
+      </form>
+
+      <!-- Login Link -->
+      <div class="text-center pt-4 border-t border-gray-200">
+        <p class="text-sm text-gray-600">
+          Already have an account?
+          <a href="#" class="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">
+            Sign in here
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Success & Error Message (Hidden by default) -->
+    <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+      <div class="flex">
+        <i data-lucide="check-circle" class="w-5 h-5 mr-2 mt-0.5"></i>
+        <span>Registration successful! Welcome to Edusphere.</span>
+      </div>
+    </div>
+
+    <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+      <div class="flex">
+        <i data-lucide="check-circle" class="w-5 h-5 mr-2 mt-0.5"></i>
+        <span>Invalid..........................</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="Assets/lib/jquery-3.7.1.min.js"></script>
+<script src="JavaScript/registration.js"></script>
+
+</body>
+</html>

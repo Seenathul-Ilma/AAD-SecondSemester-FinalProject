@@ -30,7 +30,8 @@ public class Invitation {
     @Column(name = "token", nullable = false, unique = true, updatable = false)
     private String token;
 
-    @Column(name = "email", nullable = false, unique = true)
+    //@Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)
