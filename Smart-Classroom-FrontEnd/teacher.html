@@ -8,17 +8,19 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!--<style>
-    .active-link {
-      background: linear-gradient(to right, var(&#45;&#45;tw-gradient-from), var(&#45;&#45;tw-gradient-to));
-      color: #fff;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
+    <style>
+      .active-link {
+        background-image: linear-gradient(to right, #2563EB, #8B5CF6); /* Direct color values for from-blue-600 and to-purple-600 */
+        color: #fff;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+      }
 
-    .dark .active-link {
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
-    }
-  </style>-->
+      .dark .active-link {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+      }
+    </style>
   </head>
   <body class="bg-gray-100 dark:bg-gray-900">
     <!-- Wrapper -->
@@ -55,96 +57,91 @@
 
           <!-- Navigation -->
           <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <ul>
-              <li>
-                <a
-                  href="index.html"
-                  class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg active-link"
-                >
-                  <i
-                    data-lucide="home"
-                    class="w-5 h-5 transition-all duration-200"
-                  ></i>
-                  <span class="font-medium">Dashboard</span>
-                  <i
-                    data-lucide="dot"
-                    class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse"
-                  ></i>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="teacher.html"
-                  class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
-                >
-                  <i
-                    data-lucide="users"
-                    class="w-5 h-5 transition-all duration-200"
-                  ></i>
-                  <span class="font-medium">Teachers</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="student.html"
-                  class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
-                >
-                  <i
-                    data-lucide="users"
-                    class="w-5 h-5 transition-all duration-200"
-                  ></i>
-                  <span class="font-medium">Students</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="classroom.html"
-                  class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
-                >
-                  <i
-                    data-lucide="landmark"
-                    class="w-5 h-5 transition-all duration-200"
-                  ></i>
-                  <span class="font-medium">Classrooms</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
-                >
-                  <i
-                    data-lucide="package"
-                    class="w-5 h-5 transition-all duration-200"
-                  ></i>
-                  <span class="font-medium">Materials</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
-                >
-                  <i
-                    data-lucide="message-square"
-                    class="w-5 h-5 transition-all duration-200"
-                  ></i>
-                  <span class="font-medium">Messages</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
-                >
-                  <i
-                    data-lucide="user-circle"
-                    class="w-5 h-5 transition-all duration-200"
-                  ></i>
-                  <span class="font-medium">Profile</span>
-                </a>
-              </li>
-            </ul>
+            <a
+                    href="index.html"
+                    data-page="index"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group"
+            >
+              <i
+                      data-lucide="home"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Dashboard</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+
+            </a>
+            <a
+                    href="teacher.html"
+                    data-page="teacher"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="users"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Teachers</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="student.html"
+                    data-page="student"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="users"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Students</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="classroom.html"
+                    data-page="classroom"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="landmark"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Classrooms</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="#"
+                    data-page="materials"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="package"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Materials</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="#"
+                    data-page="messages"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="message-square"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Messages</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="profile.html"
+                    data-page="profile"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="user-circle"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Profile</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
           </nav>
 
           <!-- Side Bar Footer -->
@@ -367,8 +364,12 @@
       </div>
     </div>
 
+
+    <script src="Assets/lib/jquery-3.7.1.min.js"></script>
+    <script src="JavaScript/pageNavigate.js"></script>
+
     <script src="JavaScript/teacher.js"></script>
     <script src="JavaScript/pagination.js"></script>
-    <script src="Assets/lib/jquery-3.7.1.min.js"></script>
+
   </body>
 </html>
