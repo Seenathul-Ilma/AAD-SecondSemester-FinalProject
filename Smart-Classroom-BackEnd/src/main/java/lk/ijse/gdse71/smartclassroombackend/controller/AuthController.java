@@ -1,17 +1,22 @@
 package lk.ijse.gdse71.smartclassroombackend.controller;
 
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lk.ijse.gdse71.smartclassroombackend.dto.AuthDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.AuthResponseDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.RegisterDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
+import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.AuthService;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
 import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lk.ijse.gdse71.smartclassroombackend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * --------------------------------------------
@@ -38,6 +44,8 @@ import java.io.IOException;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterDTO dto) throws IOException, MessagingException {
@@ -73,5 +81,110 @@ public class AuthController {
                 new ApiResponse(200, "User logged in successfully", authService.authenticate(authDTO))
         );
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse> refreshToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+
+        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
+            return new ResponseEntity<>(
+                    new ApiResponse(401, "Invalid or expired refresh token", null),
+                    HttpStatus.UNAUTHORIZED
+            );
+        }
+
+        String username = jwtUtil.extractUsername(refreshToken);
+
+        String newAccessToken = jwtUtil.generateAccessToken(username);
+        String newRefreshToken = jwtUtil.generateRefreshToken(username); // optional (rotate)
+
+        AuthResponseDTO responseDTO = new AuthResponseDTO(
+                newAccessToken,
+                newRefreshToken,
+                "Bearer",
+                username,
+                userRepository.findByEmail(username).get().getRole().name()
+        );
+
+        return ResponseEntity.ok(new ApiResponse(200, "Token refreshed successfully", responseDTO));
+    }
+
+
+    @PostMapping("/login-cookie")
+    public ResponseEntity<ApiResponse> loginCookie(@RequestBody AuthDTO authDTO) {
+        AuthResponseDTO authResponse = authService.authenticate(authDTO);
+
+        // Create Access Token cookie (short-lived, e.g. 15 min)
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", authResponse.getAccessToken())
+                .httpOnly(true)       // prevent JS access
+                .secure(true)         // HTTPS only
+                .sameSite("Strict")   // protect from CSRF
+                .path("/")
+                .maxAge(60 * 15)      // 15 minutes
+                .build();
+
+        // Create Refresh Token cookie (long-lived, e.g. 7 days)
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authResponse.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(60 * 60 * 24 * 7) // 7 days
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(new ApiResponse(200, "User logged in successfully", null));
+    }
+
+
+    @PostMapping("/refresh-token-cookie")
+    public ResponseEntity<ApiResponse> refreshTokenCookie(HttpServletRequest request) {
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("refreshToken")) {
+                    refreshToken = cookie.getValue();
+                }
+            }
+        }
+
+        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
+            return new ResponseEntity<>(
+                    new ApiResponse(401, "Invalid or expired refresh token", null),
+                    HttpStatus.UNAUTHORIZED
+            );
+        }
+
+        String username = jwtUtil.extractUsername(refreshToken);
+        String newAccessToken = jwtUtil.generateAccessToken(username);
+        String newRefreshToken = jwtUtil.generateRefreshToken(username); // rotate if needed
+
+        // Update cookies
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", newAccessToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(60 * 15)
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(60 * 60 * 24 * 7)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(new ApiResponse(200, "Token refreshed successfully", null));
+    }
+
+
+
 }
 

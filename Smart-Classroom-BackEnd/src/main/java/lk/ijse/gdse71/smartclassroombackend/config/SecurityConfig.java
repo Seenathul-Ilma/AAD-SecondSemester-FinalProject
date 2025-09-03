@@ -52,7 +52,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:63342")); // frontend origin
+                    config.setAllowedOrigins(List.of("http://localhost:63342", "http://127.0.0.1:5500")); // frontend origin - localhost & VS code live server
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
