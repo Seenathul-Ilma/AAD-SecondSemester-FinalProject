@@ -57,30 +57,36 @@
     data: JSON.stringify(payload),
     dataType: "json",
     success: function(response) {
-    successDiv.textContent = response.message || 'Registration successful!';
-    successDiv.classList.remove('hidden');
-    successDiv.scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('registrationForm').reset();
-    lucide.createIcons();
-    console.log('Registration successful:', response);
-},
+        successDiv.textContent = response.message || 'Registration successful!';
+        successDiv.classList.remove('hidden');
+        successDiv.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('registrationForm').reset();
+        lucide.createIcons();
+        console.log('Registration successful:', response);
+
+        // Redirect after small delay
+        setTimeout(() => {
+            window.location.href = "../login.html";
+        }, 1000);
+
+    },
     error: function(xhr) {
-    let errorMessage = "An error occurred. Please try again.";
-    try {
-    const responseJSON = JSON.parse(xhr.responseText);
-    if (responseJSON && responseJSON.message) {
-    errorMessage = responseJSON.message;
-}
-} catch (e) {
-    console.error("Error parsing JSON response:", e);
-}
-    errorDiv.textContent = errorMessage;
-    errorDiv.classList.remove('hidden');
-    errorDiv.scrollIntoView({ behavior: 'smooth' });
-    //console.error("Registration error:", xhr.responseText);
-}
-});
-});
+        let errorMessage = "An error occurred. Please try again.";
+        try {
+        const responseJSON = JSON.parse(xhr.responseText);
+        if (responseJSON && responseJSON.message) {
+        errorMessage = responseJSON.message;
+    }
+    } catch (e) {
+        console.error("Error parsing JSON response:", e);
+    }
+        errorDiv.textContent = errorMessage;
+        errorDiv.classList.remove('hidden');
+        errorDiv.scrollIntoView({ behavior: 'smooth' });
+        //console.error("Registration error:", xhr.responseText);
+    }
+    });
+    });
 
     // Floating label effect
     document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(input => {
