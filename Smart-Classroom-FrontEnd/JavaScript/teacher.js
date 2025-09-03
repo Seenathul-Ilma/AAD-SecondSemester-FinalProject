@@ -10,14 +10,15 @@ const default_page_size = 5;
 const max_visible_pages = 7;
 
 function getAvatar(teacher) {
+  const name = teacher.name || ""; // ensure it's a string
   if (teacher.profileImg) {
     return `
         <img src="${teacher.profileImg}" 
              class="w-10 h-10 rounded-full object-cover" 
-             alt="${teacher.name}" />
+             alt="${name}" />
       `;
   } else {
-    const firstLetter = teacher.name.charAt(0).toUpperCase();
+    const firstLetter = name ? name.charAt(0).toUpperCase() : "?";
     return `
         <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
           ${firstLetter}
@@ -83,6 +84,9 @@ function loadDataPaginated(page1 = 1, size = state.size) {
   $.ajax({
     url: api + `teachers?page=${zeroBasedPage}&size=${size}`,
     method: "GET",
+    xhrFields: {
+      withCredentials: true
+    }, // must have this
     dataType: "json",
     success: function (response) {
       const data = response.data || {};  // unwrap the ApiResponse

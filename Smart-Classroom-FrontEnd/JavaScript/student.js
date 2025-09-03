@@ -86,6 +86,9 @@ function loadDataPaginated(page1 = 1, size = state.size) {
   $.ajax({
     url: api + `students?page=${zeroBasedPage}&size=${size}`,
     method: "GET",
+    xhrFields: {
+      withCredentials: true
+    }, // must have this
     dataType: "json",
     success: function (response) {
       const data = response.data || {};  // unwrap the ApiResponse
