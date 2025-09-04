@@ -59,6 +59,31 @@ $("#loginForm").submit(function (e) {
         data: JSON.stringify({ email, password }),
         success: function (response) {
             const token = response.data?.accessToken || response.data?.token;
+            const role = response.data?.role; // <-- capture role from backend
+
+            if (token && role) {
+                localStorage.setItem("accessToken", token);
+                localStorage.setItem("email", email);
+                localStorage.setItem("role", role); // store role for later
+            }
+            console.log("Token:", token, "Role:", role);
+
+            $("#successMessage").removeClass("hidden");
+            $("#loginForm")[0].reset();
+
+            // Redirect based on role
+            setTimeout(() => {
+                if (role === "ADMIN") {
+                    window.location.href = "inviteTeacher.html";
+                } else if (role === "TEACHER") {
+                    window.location.href = "teacher.html";
+                } else {
+                    window.location.href = "student.html"; // default
+                }
+            }, 1000);
+        },
+        /*success: function (response) {
+            const token = response.data?.accessToken || response.data?.token;
             if (token) {
                 localStorage.setItem("accessToken", token);
                 localStorage.setItem("email", email);
@@ -72,7 +97,7 @@ $("#loginForm").submit(function (e) {
             setTimeout(() => {
                 window.location.href = "index.html";
             }, 1000);
-        },
+        },*/
         error: function (xhr) {
             const message = xhr.responseJSON?.message || "Login failed!";
             $("#errorText").text(message);
