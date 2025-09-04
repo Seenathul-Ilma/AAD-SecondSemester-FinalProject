@@ -1,10 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize Lucide icons after the DOM is loaded
   lucide.createIcons();
-
-  //loadStudents();
   loadDataPaginated(1, default_page_size);
 
+  const openBtn = document.getElementById("create-new-student");
+  const modal = document.getElementById("studentModal");
+  const closeBtn = document.getElementById("closeStudentModal");
+
+  openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+  closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.add("hidden");
+  });
 });
 
 const api = "http://localhost:8080/api/v1/edusphere/users/";
@@ -13,175 +19,180 @@ const max_visible_pages = 7;
 
 function getAvatar(student) {
   if (student.profileImg) {
-    return `
-        <img src="${student.profileImg}" 
-             class="w-10 h-10 rounded-full object-cover" 
-             alt="${student.name}" />
-      `;
+    return `<img src="${student.profileImg}" class="w-10 h-10 rounded-full object-cover" alt="${student.name}" />`;
   } else {
     const firstLetter = student.name.charAt(0).toUpperCase();
-    return `
-        <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-          ${firstLetter}
-        </div>
-      `;
+    return `<div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">${firstLetter}</div>`;
   }
 }
 
+// ====================== Token Refresh ======================
+function refreshAccessToken() {
+  return $.ajax({
+    url: "http://localhost:8080/api/v1/auth/refresh",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({ refreshToken: localStorage.getItem("refreshToken") })
+  }).done(function(response) {
+    localStorage.setItem("accessToken", response.accessToken);
+  });
+}
 
-// ===== Rendering =====
+// ====================== AJAX with Token ======================
+function ajaxWithToken(options) {
+  const accessToken = localStorage.getItem("accessToken");
+  options.headers = options.headers || {};
+  options.headers["Authorization"] = "Bearer " + accessToken;
+
+  const originalError = options.error;
+  options.error = function(xhr, status, error) {
+    if (xhr.status === 401 || xhr.status === 403) {
+      refreshAccessToken().done(function() {
+        ajaxWithToken(options);
+      }).fail(function() {
+        alert("Session expired. Please log in again.");
+        window.location.href = "/login.html";
+      });
+    } else if (originalError) {
+      originalError(xhr, status, error);
+    }
+  };
+  return $.ajax(options);
+}
+
+// ====================== Render Rows ======================
 function renderRows(items) {
   const $tbody = $("#student-table-tbody");
   $tbody.empty();
 
   items.forEach(student => {
     const row = `
-
       <tr class="border-b border-slate-200/50 dark:border-slate-700/50 dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow transition-colors">
-            <td class="p-4">
-              ${getAvatar(student)}
-            </td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        student.userId
-    }</td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        student.name
-    }</td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        student.nic
-    }</td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        student.contact
-    }</td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        student.email
-    }</td>
-            <td class="px-6 py-4">
-              <div class="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg p-1 w-fit">
-                <button aria-label="Send Message" class="p-2 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
-                  <i data-lucide="message-circle-more" class="size-5"></i>
-                </button>
-                <div class="w-px h-6 bg-gray-300 mx-1"></div>
-                <button aria-label="Edit" class="p-2 text-green-600 hover:bg-green-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
-                  <i data-lucide="pencil" class="size-5"></i>
-                </button>
-                <div class="w-px h-6 bg-gray-300 mx-1"></div>
-                <button aria-label="Delete" class="p-2 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
-                  <i data-lucide="trash" class="size-5"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
+        <td class="p-4">${getAvatar(student)}</td>
+        <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${student.userId}</td>
+        <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${student.name}</td>
+        <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${student.nic}</td>
+        <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${student.contact}</td>
+        <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${student.email}</td>
+        <td class="px-6 py-4">
+          <div class="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg p-1 w-fit">
+            <button aria-label="Send Message" class="p-2 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
+              <i data-lucide="message-circle-more" class="size-5"></i>
+            </button>
+            <div class="w-px h-6 bg-gray-300 mx-1"></div>
+            <button id="edit-student" aria-label="Edit" class="p-2 text-green-600 hover:bg-green-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
+              <i data-lucide="pencil" class="size-5"></i>
+            </button>
+            <div class="w-px h-6 bg-gray-300 mx-1"></div>
+            <button aria-label="Delete" class="p-2 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
+              <i data-lucide="trash" class="size-5"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
     `;
     $tbody.append(row);
   });
 
-  // Refresh lucid icons
   if (window.lucide?.createIcons) lucide.createIcons();
 }
 
-// ===== Data fetching =====
-function loadDataPaginated(page1 = 1, size = default_page_size) {
+// ====================== Load Data Paginated ======================
+function loadDataPaginated(page1 = 1, size = state.size) {
   const zeroBasedPage = Math.max(0, page1 - 1);
-  const token = localStorage.getItem("accessToken"); // your JWT token
 
-  $.ajax({
+  ajaxWithToken({
     url: `${api}students?page=${zeroBasedPage}&size=${size}`,
     method: "GET",
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "", // send token if available
-    },
     dataType: "json",
-    success: function (response) {
-      const data = response.data || {}; // unwrap ApiResponse
+    success: function(response) {
+      const data = response.data || {};  // unwrap the ApiResponse
+
       const {
         content = [],
         number = 0,
         size: respSize = size,
         totalPages = 1,
         totalElements = 0,
-      } = data;
+      } = data;   // destructure from data
 
-      // Update state
-      state.page = number + 1; // convert 0-based -> 1-based
-      state.size = respSize;
-      state.totalPages = totalPages;
-      state.totalElements = totalElements;
+      state.page = (number ?? 0) + 1; // convert 0-based -> 1-based
+      state.size = respSize ?? size;
+      state.totalPages = totalPages ?? 1;
+      state.totalElements = totalElements ?? 0;
 
       renderRows(content);
       renderPaginationFooter();
     },
-    error: function (xhr, status, error) {
-      console.error("Error loading students:", xhr.responseJSON || error);
-
-      if (xhr.status === 401) {
+    error: function(xhr) {
+      console.error("Error loading students:", xhr.responseJSON || xhr);
+      if(xhr.status === 401) {
         alert("Session expired or unauthorized. Please log in again.");
-        // optionally redirect to login page
         window.location.href = "/login.html";
-      } else {
-        alert("Failed to load student data. Please try again.");
       }
-    },
+    }
   });
 }
 
-/*
-function loadStudents() {
-  $.ajax({
-    url: "http://localhost:8080/api/v1/edusphere/students",
-    method: "GET",
-    dataType: "json",
-    success: function (students) {
-      const $tbody = $("#student-table-tbody");
-      $tbody.empty();
+/*// ====================== Pagination Footer ======================
+function renderPaginationFooter() {
+  const paginationDiv = $("#pagination");
+  paginationDiv.empty();
 
-      students.forEach((student) => {
-        const row = `
-          <tr class="border-b border-slate-200/50 dark:border-slate-700/50 dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow transition-colors">
-            <td class="p-4">
-              ${getAvatar(student)}
-            </td>
-            <td class="p-4 font-light text-sm text-slate-700 dark:text-slate-400">${
-              student.userId
-            }</td>
-            <td class="p-4 font-light text-sm text-slate-700 dark:text-slate-400">${
-              student.name
-            }</td>
-            <td class="p-4 font-light text-sm text-slate-700 dark:text-slate-400">${
-              student.nic
-            }</td>
-            <td class="p-4 font-light text-sm text-slate-700 dark:text-slate-400">${
-              student.contact
-            }</td>
-            <td class="p-4 font-light text-base text-slate-700 dark:text-slate-400">${
-              student.email
-            }</td>
-            <td class="px-6 py-4">
-              <div class="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg p-1 w-fit">
-                <button aria-label="Send Message" class="p-2 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
-                  <i data-lucide="message-circle-more" class="size-5"></i>
-                </button>
-                <div class="w-px h-6 bg-gray-300 mx-1"></div>
-                <button aria-label="Edit" class="p-2 text-green-600 hover:bg-green-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
-                  <i data-lucide="pencil" class="size-5"></i>
-                </button>
-                <div class="w-px h-6 bg-gray-300 mx-1"></div>
-                <button aria-label="Delete" class="p-2 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
-                  <i data-lucide="trash" class="size-5"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-        $tbody.append(row);
-      });
+  let start = Math.max(1, state.page - Math.floor(max_visible_pages / 2));
+  let end = Math.min(state.totalPages, start + max_visible_pages - 1);
+  start = Math.max(1, end - max_visible_pages + 1);
 
-      // Refresh Lucide icons after new rows are inserted
-      lucide.createIcons();
-    },
-    error: function (xhr, status, error) {
-      console.error("Error loading students:", error);
-      alert("Failed to load student data. Please try again.");
-    },
+  for (let i = start; i <= end; i++) {
+    const btn = $(`<button class="page-btn ${i === state.page ? 'active' : ''}" data-page="${i}">${i}</button>`);
+    paginationDiv.append(btn);
+  }
+
+  $(".page-btn").on("click", function () {
+    const page = $(this).data("page");
+    loadDataPaginated(page, state.size);
   });
 }*/
+
+// ====================== Save Student ======================
+function saveStudent(studentData) {
+  ajaxWithToken({
+    url: `${api}students/add`,
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(studentData),
+    success: function(response) {
+      console.log(response);
+      alert("Student added successfully!");
+      $("#studentModal").addClass("hidden");
+      $("#studentForm")[0].reset();
+      loadDataPaginated(1, state.size);
+    },
+    error: function(xhr) {
+      if(xhr.status === 400) {
+        const errors = xhr.responseJSON?.data || {};
+        alert("Validation failed: " + JSON.stringify(errors));
+      } else {
+        console.error("Failed to save student.", xhr.responseJSON || xhr);
+      }
+    }
+  });
+}
+
+// ====================== Form Submit ======================
+$("#studentForm").on("submit", function(e) {
+  e.preventDefault();
+
+  const studentData = {
+    name: $("#name").val(),
+    nic: $("#nic").val(),
+    email: $("#email").val(),
+    contact: $("#contact").val(),
+    address: $("#address").val(),
+    emergencyContact: $("#emergencyContact").val(),
+    relationship: $("#relationship").val()
+  };
+
+  console.log("Submitting studentData:", studentData); // check data
+  saveStudent(studentData);
+});
