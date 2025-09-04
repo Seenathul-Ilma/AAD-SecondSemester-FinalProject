@@ -87,7 +87,7 @@ function renderRows(items) {
               <i data-lucide="pencil" class="size-5"></i>
             </button>
             <div class="w-px h-6 bg-gray-300 mx-1"></div>
-            <button aria-label="Delete" class="p-2 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
+            <button aria-label="Delete" class="delete-student p-2 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
               <i data-lucide="trash" class="size-5"></i>
             </button>
           </div>
@@ -218,5 +218,35 @@ $("#student-table-tbody").on("click", ".edit-student", function () {
   $("#address").val(student.address ?? "");
   $("#emergencyContact").val(student.emergencyContact ?? "");
   $("#relationship").val(student.relationship ?? "");
+});
+
+
+// Attach delete handler
+$("#student-table-tbody").on("click", ".delete-student", function () {
+  const index = $(this).closest("tr").index();
+  const student = state.currentPageData[index];
+
+  if (!student || !student.userId) {
+    alert("Could not identify student for deletion.");
+    return;
+  }
+
+  // Confirm before delete
+  if (!confirm(`Are you sure you want to delete ${student.name}?`)) {
+    return;
+  }
+
+  ajaxWithToken({
+    url: `${api}delete/${student.userId}`,
+    method: "DELETE",
+    success: function () {
+      alert("Student deleted successfully!");
+      loadDataPaginated(state.page, state.size); // reload current page
+    },
+    error: function (xhr) {
+      console.error("Failed to delete student:", xhr.responseJSON || xhr);
+      alert(xhr.responseJSON?.message || "Failed to delete student.");
+    }
+  });
 });
 
