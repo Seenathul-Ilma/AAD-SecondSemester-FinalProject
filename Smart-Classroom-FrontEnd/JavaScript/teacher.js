@@ -1,8 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize Lucide icons after the DOM is loaded
   lucide.createIcons();
-
   loadDataPaginated(1, default_page_size);
+
+  const openBtn = document.getElementById("create-new-teacher");
+  const modal = document.getElementById("teacherModal");
+  const closeBtn = document.getElementById("closeTeacherModal");
+  const cancelBtn = document.getElementById("cancelBtn");
+
+  openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+  closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+  cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.add("hidden");
+  });
 });
 
 const api = "http://localhost:8080/api/v1/edusphere/users/";
@@ -10,21 +21,46 @@ const default_page_size = 5;
 const max_visible_pages = 7;
 
 function getAvatar(teacher) {
-  const name = teacher.name || ""; // ensure it's a string
   if (teacher.profileImg) {
-    return `
-        <img src="${teacher.profileImg}" 
-             class="w-10 h-10 rounded-full object-cover" 
-             alt="${name}" />
-      `;
+    return `<img src="${teacher.profileImg}" class="w-10 h-10 rounded-full object-cover" alt="${teacher.name}" />`;
   } else {
-    const firstLetter = name ? name.charAt(0).toUpperCase() : "?";
-    return `
-        <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-          ${firstLetter}
-        </div>
-      `;
+    const firstLetter = teacher.name.charAt(0).toUpperCase();
+    return `<div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">${firstLetter}</div>`;
   }
+}
+
+// ====================== Token Refresh ======================
+function refreshAccessToken() {
+  return $.ajax({
+    url: "http://localhost:8080/api/v1/auth/refresh",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({ refreshToken: localStorage.getItem("refreshToken") })
+  }).done(function(response) {
+    localStorage.setItem("accessToken", response.accessToken);
+  });
+}
+
+// ====================== AJAX with Token ======================
+function ajaxWithToken(options) {
+  const accessToken = localStorage.getItem("accessToken");
+  options.headers = options.headers || {};
+  options.headers["Authorization"] = "Bearer " + accessToken;
+
+  const originalError = options.error;
+  options.error = function(xhr, status, error) {
+    if (xhr.status === 401 || xhr.status === 403) {
+      refreshAccessToken().done(function() {
+        ajaxWithToken(options);
+      }).fail(function() {
+        alert("Session expired. Please log in again.");
+        window.location.href = "login.html";
+      });
+    } else if (originalError) {
+      originalError(xhr, status, error);
+    }
+  };
+  return $.ajax(options);
 }
 
 // ===== Rendering =====
@@ -39,21 +75,11 @@ function renderRows(items) {
             <td class="p-4">
               ${getAvatar(teacher)}
             </td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        teacher.userId
-    }</td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        teacher.name
-    }</td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        teacher.nic
-    }</td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        teacher.contact
-    }</td>
-            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${
-        teacher.email
-    }</td>
+            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${teacher.userId}</td>
+            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${teacher.name}</td>
+            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${teacher.nic}</td>
+            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${teacher.contact}</td>
+            <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${teacher.email}</td>
             <td class="px-6 py-4">
               <div class="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg p-1 w-fit">
                 <button aria-label="Send Message" class="p-2 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
@@ -81,19 +107,13 @@ function renderRows(items) {
 // ===== Data fetching =====
 function loadDataPaginated(page1 = 1, size = state.size) {
   const zeroBasedPage = Math.max(0, page1 - 1);
-  const token = localStorage.getItem("accessToken"); // your JWT token
+  //const token = localStorage.getItem("accessToken"); // your JWT token
 
-  $.ajax({
-    url: api + `teachers?page=${zeroBasedPage}&size=${size}`,
+  ajaxWithToken({
+    url: `${api}teachers?page=${zeroBasedPage}&size=${size}`,
     method: "GET",
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "", // send token if available
-    },
-    /*xhrFields: {
-      withCredentials: true
-    }, // must have this*/
     dataType: "json",
-    success: function (response) {
+    success: function(response) {
       const data = response.data || {};  // unwrap the ApiResponse
 
       const {
@@ -109,17 +129,20 @@ function loadDataPaginated(page1 = 1, size = state.size) {
       state.totalPages = totalPages ?? 1;
       state.totalElements = totalElements ?? 0;
 
+      state.currentPageData = content;
+
       renderRows(content);
       renderPaginationFooter();
     },
-    error: function (xhr, status, error) {
-      console.error("Error loading teachers:", error);
-      alert("Failed to load teacher data. Please try again.");
-    },
+    error: function(xhr) {
+      console.error("Error loading teachers:", xhr.responseJSON || xhr);
+      if(xhr.status === 401) {
+        alert("Session expired or unauthorized. Please log in again.");
+        window.location.href = "login.html";
+      }
+    }
   });
 }
-
-
 
 // ------ Invite teachers by Admin
 const $inviteEmailInput = $("#inviteEmail");
