@@ -66,7 +66,7 @@
 
         // Redirect after small delay
         setTimeout(() => {
-            window.location.href = "../login.html";
+            window.location.href = "login.html";
         }, 1000);
 
     },

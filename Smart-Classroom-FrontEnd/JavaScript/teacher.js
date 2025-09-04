@@ -236,6 +236,36 @@ function updateTeacher(teacherId, teacherData) {
 }
 
 
+// Attach delete handler
+$("#teacher-table-tbody").on("click", ".delete-teacher", function () {
+  const index = $(this).closest("tr").index();
+  const teacher = state.currentPageData[index];
+
+  if (!teacher || !teacher.userId) {
+    alert("Could not identify teacher for deletion.");
+    return;
+  }
+
+  // Confirm before delete
+  if (!confirm(`Are you sure you want to delete ${teacher.name}?`)) {
+    return;
+  }
+
+  ajaxWithToken({
+    url: `${api}delete/${teacher.userId}`,
+    method: "DELETE",
+    success: function () {
+      alert("Teacher deleted successfully!");
+      loadDataPaginated(state.page, state.size); // reload current page
+    },
+    error: function (xhr) {
+      console.error("Failed to delete teacher:", xhr.responseJSON || xhr);
+      alert(xhr.responseJSON?.message || "Failed to delete teacher.");
+    }
+  });
+});
+
+
 // ------ Invite teachers by Admin
 const $inviteEmailInput = $("#inviteEmail");
 const $sendInviteBtn = $("#sendInviteBtn");

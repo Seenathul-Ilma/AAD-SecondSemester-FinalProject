@@ -74,7 +74,7 @@ $("#loginForm").submit(function (e) {
             // Redirect based on role
             setTimeout(() => {
                 if (role === "ADMIN") {
-                    window.location.href = "inviteTeacher.html";
+                    window.location.href = "adminDashboard.html";
                 } else if (role === "TEACHER") {
                     window.location.href = "teacher.html";
                 } else {
