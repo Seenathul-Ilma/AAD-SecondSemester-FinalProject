@@ -81,37 +81,46 @@ function renderRows(items) {
 }
 
 // ===== Data fetching =====
-function loadDataPaginated(page1 = 1, size = state.size) {
+function loadDataPaginated(page1 = 1, size = default_page_size) {
   const zeroBasedPage = Math.max(0, page1 - 1);
+  const token = localStorage.getItem("accessToken"); // your JWT token
+
   $.ajax({
-    url: api + `students?page=${zeroBasedPage}&size=${size}`,
+    url: `${api}students?page=${zeroBasedPage}&size=${size}`,
     method: "GET",
-    xhrFields: {
-      withCredentials: true
-    }, // must have this
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "", // send token if available
+    },
     dataType: "json",
     success: function (response) {
-      const data = response.data || {};  // unwrap the ApiResponse
-
+      const data = response.data || {}; // unwrap ApiResponse
       const {
         content = [],
         number = 0,
         size: respSize = size,
         totalPages = 1,
         totalElements = 0,
-      } = data;   // destructure from data
+      } = data;
 
-      state.page = (number ?? 0) + 1;     // convert 0-based -> 1-based
-      state.size = respSize ?? size;
-      state.totalPages = totalPages ?? 1;
-      state.totalElements = totalElements ?? 0;
+      // Update state
+      state.page = number + 1; // convert 0-based -> 1-based
+      state.size = respSize;
+      state.totalPages = totalPages;
+      state.totalElements = totalElements;
 
       renderRows(content);
       renderPaginationFooter();
     },
     error: function (xhr, status, error) {
-      console.error("Error loading students:", error);
-      alert("Failed to load student data. Please try again.");
+      console.error("Error loading students:", xhr.responseJSON || error);
+
+      if (xhr.status === 401) {
+        alert("Session expired or unauthorized. Please log in again.");
+        // optionally redirect to login page
+        window.location.href = "/login.html";
+      } else {
+        alert("Failed to load student data. Please try again.");
+      }
     },
   });
 }

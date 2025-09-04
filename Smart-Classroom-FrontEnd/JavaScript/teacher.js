@@ -81,12 +81,17 @@ function renderRows(items) {
 // ===== Data fetching =====
 function loadDataPaginated(page1 = 1, size = state.size) {
   const zeroBasedPage = Math.max(0, page1 - 1);
+  const token = localStorage.getItem("accessToken"); // your JWT token
+
   $.ajax({
     url: api + `teachers?page=${zeroBasedPage}&size=${size}`,
     method: "GET",
-    xhrFields: {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "", // send token if available
+    },
+    /*xhrFields: {
       withCredentials: true
-    }, // must have this
+    }, // must have this*/
     dataType: "json",
     success: function (response) {
       const data = response.data || {};  // unwrap the ApiResponse

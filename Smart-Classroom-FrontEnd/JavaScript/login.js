@@ -53,15 +53,18 @@ $("#loginForm").submit(function (e) {
 
     // Send login request
     $.ajax({
-        url: "http://localhost:8080/api/v1/auth/login-cookie",
+        url: "http://localhost:8080/api/v1/auth/login",
         method: "POST",
         contentType: "application/json",
-        xhrFields: {
-            withCredentials: true
-        }, // must have this
         data: JSON.stringify({ email, password }),
         success: function (response) {
-            // Cookies automatically stored by browser
+            const token = response.data?.accessToken || response.data?.token;
+            if (token) {
+                localStorage.setItem("accessToken", token);
+                localStorage.setItem("email", email);
+            }
+            console.log("Token: "+ token)
+
             $("#successMessage").removeClass("hidden");
             $("#loginForm")[0].reset();
 

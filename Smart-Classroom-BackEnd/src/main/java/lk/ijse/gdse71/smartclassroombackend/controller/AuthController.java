@@ -110,7 +110,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/login-cookie")
+    /*@PostMapping("/login-cookie")
     public ResponseEntity<ApiResponse> loginCookie(@RequestBody AuthDTO authDTO) {
         AuthResponseDTO authResponse = authService.authenticate(authDTO);
 
@@ -183,7 +183,7 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(new ApiResponse(200, "Token refreshed successfully", null));
     }
-
+*/
 
 
 }
