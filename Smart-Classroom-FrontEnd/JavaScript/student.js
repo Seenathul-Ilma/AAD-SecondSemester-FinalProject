@@ -199,14 +199,23 @@ $("#studentForm").on("submit", function(e) {
   };
 
   console.log("Submitting studentData:", studentData); // check data
-  saveStudent(studentData);
+
+  //saveStudent(studentData);
+
+  if (editingStudentId) {
+    // Update student
+    updateStudent(editingStudentId, studentData);
+  } else {
+    // Add student
+    saveStudent(studentData);
+  }
 });
 
 // Attach click handler to tbody, listen for .edit-student
 $("#student-table-tbody").on("click", ".edit-student", function () {
   const index = $(this).closest("tr").index();
   const student = state.currentPageData[index]; // get the correct student
-
+  editingStudentId = student.userId; // save for update later
   console.log("Full student object:", student);
 
   // Fill modal with student details
@@ -218,8 +227,34 @@ $("#student-table-tbody").on("click", ".edit-student", function () {
   $("#address").val(student.address ?? "");
   $("#emergencyContact").val(student.emergencyContact ?? "");
   $("#relationship").val(student.relationship ?? "");
+
+
+
 });
 
+function updateStudent(studentId, studentData) {
+  // Add required userId field directly
+  studentData.userId = studentId;
+
+  ajaxWithToken({
+    url: `${api}students/edit`,
+    method: "PUT",
+    contentType: "application/json",
+    data: JSON.stringify(studentData),
+    success: function (response) {
+      alert(response.message || "Student updated successfully!");
+      $("#studentModal").addClass("hidden");
+      $("#studentForm")[0].reset();
+      editingStudentId = null; // reset edit mode
+      loadDataPaginated(state.page, state.size); // reload current page
+    },
+    error: function (xhr) {
+      const message =
+          xhr.responseJSON?.message || "Failed to update student.";
+      alert(message); // simple alert for errors
+    }
+  });
+}
 
 // Attach delete handler
 $("#student-table-tbody").on("click", ".delete-student", function () {
