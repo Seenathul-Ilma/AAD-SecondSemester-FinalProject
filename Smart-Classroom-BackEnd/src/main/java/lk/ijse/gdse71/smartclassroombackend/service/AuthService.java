@@ -82,9 +82,9 @@ public class AuthService {
         }
 
         // Check if email already exists
-        /*if (userRepository.findByEmail(registerDTO.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(registerDTO.getEmail()).isPresent()) {
             throw new ResourceDuplicateException("Email already exists.");
-        }*/
+        }
 
         // Validate invitation token
         Invitation invitation = invitationRepository.findById(registerDTO.getToken())

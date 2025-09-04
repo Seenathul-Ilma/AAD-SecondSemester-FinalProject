@@ -60,6 +60,12 @@ public class UserController {
         );
     }
 
+    @GetMapping("/getById")
+    public ResponseEntity<UserDTO> getProfile(@RequestParam String email) {
+        UserDTO user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(user);
+    }
+
     /*@GetMapping("/teachers")
     public List<UserDTO> getAllTeachers(){
         return userService.getAllTeachers();

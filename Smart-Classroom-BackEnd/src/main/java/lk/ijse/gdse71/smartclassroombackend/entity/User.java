@@ -38,7 +38,7 @@ public class User {
     @Column
     private String contact;
 
-    @Column
+    @Column(unique = true)
     private String email;
 
     @Column
@@ -65,17 +65,17 @@ public class User {
     //@OneToMany(mappedBy = "receiver")
     //private List<Chat> receivedMessages;   // ok
 
-    //@OneToMany(mappedBy = "user")
-    //private List<Assignment> assignments;   // ok
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Assignment> assignments;   // ok
 
-    //@OneToMany(mappedBy = "user")
-    //private List<Announcement> announcements;  // ok
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Announcement> announcements;  // ok
 
-    //@OneToMany(mappedBy = "user")
-    //private List<Resources> resources;  // ok
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Resources> resources;  // ok
 
-    //@OneToMany(mappedBy = "user")
-    //private List<UserClassroom> userClassrooms;   // ok
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserClassroom> userClassrooms;   // ok
 
     //@OneToMany(mappedBy = "user")
     //private List<Submission> submissions;       // ok

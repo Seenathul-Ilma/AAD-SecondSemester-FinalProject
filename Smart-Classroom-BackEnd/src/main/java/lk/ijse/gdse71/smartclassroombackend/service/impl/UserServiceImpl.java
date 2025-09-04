@@ -16,7 +16,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -86,6 +88,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean saveUser(UserDTO userDTO, Role role) throws IOException, MessagingException {
         String newId = generateNextUserId(role);
 
@@ -110,11 +113,12 @@ public class UserServiceImpl implements UserService {
 
         String generatedPassword = generatePassword(12);
 
-        //String hashedPassword = BCrypt.hashpw(generatedPassword, BCrypt.gensalt());
+        String hashedPassword = BCrypt.hashpw(generatedPassword, BCrypt.gensalt());
 
-        userDTO.setPassword(generatedPassword);
+        //userDTO.setPassword(generatedPassword);
+        userDTO.setPassword(hashedPassword);
 
-        /*if (BCrypt.checkpw(generatedPassword, userDTO.getPassword())){
+        if (BCrypt.checkpw(generatedPassword, hashedPassword)){
             System.out.println("************* Same *************");
             System.out.println("Generated Password: "+ generatedPassword);
             System.out.println("Hashed Password: "+ hashedPassword);
@@ -122,7 +126,7 @@ public class UserServiceImpl implements UserService {
             System.out.println("************* Diff *************");
             System.out.println("Generated Password: "+ generatedPassword);
             System.out.println("Hashed Password: "+ hashedPassword);
-        }*/
+        }
 
         User user = modelMapper.map(userDTO, User.class);
         user.setRole(Role.valueOf(userDTO.getRole()));
@@ -212,26 +216,61 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO getUserByEmail(String email) {
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+        System.out.println(email);
+        System.out.println(existingUser.getUserId());
+        System.out.println(existingUser.getEmail());
+        System.out.println(existingUser.getPassword());
+
+        return modelMapper.map(existingUser, UserDTO.class);
+    }
+
+    @Override
+    @Transactional
     public boolean updateUser(UserDTO userDTO, Role role) {
         // Check if user exists
         User existingUser = userRepository.findById(userDTO.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
 
-        userDTO.setRole(String.valueOf(existingUser.getRole()));
+        userDTO.setRole(existingUser.getRole().name());
 
-        if (userDTO.getPassword() == null || userDTO.getPassword().isBlank()) {
-            userDTO.setPassword(existingUser.getPassword());
+        String newPassword = userDTO.getPassword();
+        String finalPassword;
+
+        if (newPassword == null || newPassword.isBlank()) {
+            // No new password provided keep existing hash
+            finalPassword = existingUser.getPassword();
+            System.out.println("Keeping existing password for user: " + userDTO.getUserId());
+        } else if (BCrypt.checkpw(newPassword, existingUser.getPassword())) {
+            // New password matches the existing password keep existing hash
+            finalPassword = existingUser.getPassword();
+            System.out.println("New password same as old, not updating for user: " + userDTO.getUserId());
+        } else {
+            // New password is different hash it
+            finalPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+            System.out.println("Updating password for user: " + userDTO.getUserId());
+            System.out.println("New hashed password: " + finalPassword);
         }
 
+        // Update DTO
+        userDTO.setPassword(finalPassword);
+
+        // Map DTO -> Entity
         User userToUpdate = modelMapper.map(userDTO, User.class);
-        userToUpdate.setRole(existingUser.getRole()); // never override role from request
+
+        // Always set role from existing user (ignore request role)
+        userToUpdate.setRole(existingUser.getRole());
 
         // Save
         userRepository.save(userToUpdate);
         return true;
     }
 
+
     @Override
+    @Transactional
     public boolean deleteUser(String id) {
         // Fetch the user by ID
         User userToDelete = userRepository.findById(id).orElse(null);

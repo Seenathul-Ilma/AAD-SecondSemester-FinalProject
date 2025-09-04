@@ -37,4 +37,6 @@ public interface UserService {
     Page<UserDTO> getUsersByPaginated(int page, int size, Role student);
 
     String generatePassword(int length);
+
+    UserDTO getUserByEmail(String email);
 }
