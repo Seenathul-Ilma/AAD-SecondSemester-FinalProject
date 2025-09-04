@@ -379,7 +379,7 @@
           <div class="max-w-4xl mx-auto space-y-6">
             <!-- Profile Header Card -->
             <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
-              <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8">
+              <!--<div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8">
                 <div class="flex flex-col md:flex-row items-center md:items-center space-y-4 md:space-y-0 md:space-x-6">
                   <div class="relative">
                     <div class="w-24 h-24 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center shadow-lg ring-4 ring-white/20" id="profileImageContainer">
@@ -392,7 +392,7 @@
                     <input type="file" id="profileImageInput" class="hidden" accept="image/*">
                   </div>
                 </div>
-              </div>
+              </div>-->
             </div>
 
             <!-- Profile Form Card -->
@@ -412,7 +412,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <i data-lucide="user" class="w-5 h-5 text-slate-700 dark:text-slate-200"></i>
                         </div>
-                        <input id="name" name="name" type="text" required class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="Enter your full name" value="John Doe">
+                        <input id="name" name="name" type="text" required class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="John Doe" value="">
                       </div>
                       <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                     </div>
@@ -424,7 +424,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <i data-lucide="credit-card" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
                         </div>
-                        <input id="nic" name="nic" type="text" required pattern="^[0-9]{9}[vVxX]$|^[0-9]{12}$" class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="Enter your NIC number" value="123456789V">
+                        <input id="nic" name="nic" type="text" required pattern="^[0-9]{9}[vVxX]$|^[0-9]{12}$" class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="200034523456" value="">
                       </div>
                       <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                     </div>
@@ -436,7 +436,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <i data-lucide="mail" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
                         </div>
-                        <input id="email" name="email" type="email" required class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="Enter your email address" value="john.doe@example.com">
+                        <input id="email" name="email" type="email" required class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="johndoe@gmail.com" value="">
                       </div>
                       <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                     </div>
@@ -448,7 +448,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <i data-lucide="phone" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
                         </div>
-                        <input id="contact" name="contact" type="tel" required pattern="^[\+]?[0-9\s\-\(\)]+$" class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="Enter your contact number" value="+94 71 234 5678">
+                        <input id="contact" name="contact" type="tel" required pattern="^[\+]?[0-9\s\-\(\)]+$" class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="0700000000" value="">
                       </div>
                       <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                     </div>
@@ -460,7 +460,7 @@
                         <div class="absolute top-3 left-3 pointer-events-none">
                           <i data-lucide="map-pin" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
                         </div>
-                        <textarea id="address" name="address" rows="3" required class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 resize-none bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="Enter your complete address">123 Main Street, Colombo 07, Western Province, Sri Lanka</textarea>
+                        <textarea id="address" name="address" rows="3" required class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 resize-none bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="123 Main Street, Colombo 07, Western Province, Sri Lanka"></textarea>
                       </div>
                       <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                     </div>
@@ -481,7 +481,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <i data-lucide="phone-call" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
                         </div>
-                        <input id="emergencyContact" name="emergencyContact" type="tel" required pattern="^[\+]?[0-9\s\-\(\)]+$" class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="Enter emergency contact number" value="+94 77 987 6543">
+                        <input id="emergencyContact" name="emergencyContact" type="tel" required pattern="^[\+]?[0-9\s\-\(\)]+$" class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200" placeholder="0700000000" value="">
                       </div>
                       <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                     </div>

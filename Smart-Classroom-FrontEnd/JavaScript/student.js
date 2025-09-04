@@ -5,9 +5,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const openBtn = document.getElementById("create-new-student");
   const modal = document.getElementById("studentModal");
   const closeBtn = document.getElementById("closeStudentModal");
+  const cancelBtn = document.getElementById("cancelBtn");
 
   openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
   closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+  cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
+
   modal.addEventListener("click", (e) => {
     if (e.target === modal) modal.classList.add("hidden");
   });
@@ -51,7 +54,7 @@ function ajaxWithToken(options) {
         ajaxWithToken(options);
       }).fail(function() {
         alert("Session expired. Please log in again.");
-        window.location.href = "/login.html";
+        window.location.href = "login.html";
       });
     } else if (originalError) {
       originalError(xhr, status, error);
@@ -80,7 +83,7 @@ function renderRows(items) {
               <i data-lucide="message-circle-more" class="size-5"></i>
             </button>
             <div class="w-px h-6 bg-gray-300 mx-1"></div>
-            <button id="edit-student" aria-label="Edit" class="p-2 text-green-600 hover:bg-green-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
+            <button aria-label="Edit" class="edit-student p-2 text-green-600 hover:bg-green-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
               <i data-lucide="pencil" class="size-5"></i>
             </button>
             <div class="w-px h-6 bg-gray-300 mx-1"></div>
@@ -121,6 +124,8 @@ function loadDataPaginated(page1 = 1, size = state.size) {
       state.totalPages = totalPages ?? 1;
       state.totalElements = totalElements ?? 0;
 
+      state.currentPageData = content;
+
       renderRows(content);
       renderPaginationFooter();
     },
@@ -128,7 +133,7 @@ function loadDataPaginated(page1 = 1, size = state.size) {
       console.error("Error loading students:", xhr.responseJSON || xhr);
       if(xhr.status === 401) {
         alert("Session expired or unauthorized. Please log in again.");
-        window.location.href = "/login.html";
+        window.location.href = "login.html";
       }
     }
   });
@@ -196,3 +201,22 @@ $("#studentForm").on("submit", function(e) {
   console.log("Submitting studentData:", studentData); // check data
   saveStudent(studentData);
 });
+
+// Attach click handler to tbody, listen for .edit-student
+$("#student-table-tbody").on("click", ".edit-student", function () {
+  const index = $(this).closest("tr").index();
+  const student = state.currentPageData[index]; // get the correct student
+
+  console.log("Full student object:", student);
+
+  // Fill modal with student details
+  $("#studentModal").removeClass("hidden");
+  $("#name").val(student.name);
+  $("#nic").val(student.nic);
+  $("#contact").val(student.contact);
+  $("#email").val(student.email);
+  $("#address").val(student.address ?? "");
+  $("#emergencyContact").val(student.emergencyContact ?? "");
+  $("#relationship").val(student.relationship ?? "");
+});
+
