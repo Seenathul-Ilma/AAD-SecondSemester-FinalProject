@@ -118,3 +118,75 @@ function loadDataPaginated(page1 = 1, size = state.size) {
     },
   });
 }
+
+
+
+// ------ Invite teachers by Admin
+const $inviteEmailInput = $("#inviteEmail");
+const $sendInviteBtn = $("#sendInviteBtn");
+const $inviteMessage = $("#inviteMessage");
+const $inviteMessageText = $("#inviteMessageText");
+const $inviteError = $("#inviteError");
+const $inviteErrorText = $("#inviteErrorText");
+
+// Send Invite Button
+$sendInviteBtn.on("click", function() {
+  const email = $inviteEmailInput.val().trim();
+
+  // Clear previous messages
+  $inviteMessage.addClass("hidden");
+  $inviteError.addClass("hidden");
+
+  // Validate input
+  if (!email) {
+    $inviteErrorText.text("Please enter an email address.");
+    $inviteError.removeClass("hidden");
+    return;
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    $inviteErrorText.text("Please enter a valid email address.");
+    $inviteError.removeClass("hidden");
+    return;
+  }
+
+  // Disable button while sending
+  $sendInviteBtn.prop("disabled", true).html('<i data-lucide="send" class="w-4 h-4 mr-2"></i> Sending...');
+
+  // AJAX call
+  $.ajax({
+    url: "http://localhost:8080/api/v1/admin/invite-teacher",
+    method: "POST",
+    contentType: "application/json",
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("accessToken")
+    },
+    data: JSON.stringify({ email }),
+    success: function(response) {
+      if (response.success) {
+        $inviteMessageText.text(`Invite sent to ${email}!`);
+        $inviteMessage.removeClass("hidden");
+        $inviteEmailInput.val("");
+        setTimeout(() => $inviteMessage.addClass("hidden"), 4000);
+      } else {
+        $inviteErrorText.text(response.message || "Failed to send invite.");
+        $inviteError.removeClass("hidden");
+      }
+    },
+    error: function() {
+      $inviteErrorText.text("Something went wrong. Try again.");
+      $inviteError.removeClass("hidden");
+    },
+    complete: function() {
+      $sendInviteBtn.prop("disabled", false).html('<i data-lucide="send" class="w-4 h-4 mr-2"></i> Send Invite');
+    }
+  });
+});
+
+// Close buttons
+$("#closeInviteMessage").on("click", () => $inviteMessage.addClass("hidden"));
+$("#closeInviteError").on("click", () => $inviteError.addClass("hidden"));
+
+// Initialize Lucide icons
+lucide.createIcons();
