@@ -86,11 +86,11 @@ function renderRows(items) {
                   <i data-lucide="message-circle-more" class="size-5"></i>
                 </button>
                 <div class="w-px h-6 bg-gray-300 mx-1"></div>
-                <button aria-label="Edit" class="p-2 text-green-600 hover:bg-green-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
+                <button aria-label="Edit" class="edit-teacher p-2 text-green-600 hover:bg-green-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
                   <i data-lucide="pencil" class="size-5"></i>
                 </button>
                 <div class="w-px h-6 bg-gray-300 mx-1"></div>
-                <button aria-label="Delete" class="p-2 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
+                <button aria-label="Delete" class="delete-teacher p-2 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
                   <i data-lucide="trash" class="size-5"></i>
                 </button>
               </div>
@@ -143,6 +143,98 @@ function loadDataPaginated(page1 = 1, size = state.size) {
     }
   });
 }
+
+// ====================== Form Submit ======================
+/*
+$("#teacherForm").on("submit", function(e) {
+  e.preventDefault();
+
+  const teacherData = {
+    name: $("#name").val(),
+    nic: $("#nic").val(),
+    email: $("#email").val(),
+    contact: $("#contact").val(),
+    address: $("#address").val(),
+    emergencyContact: $("#emergencyContact").val(),
+    relationship: $("#relationship").val()
+  };
+
+  console.log("Submitting teacherData:", teacherData); // check data
+  saveTeacher(teacherData);
+});
+*/
+
+$("#teacher-table-tbody").on("click", ".edit-teacher", function () {
+  const index = $(this).closest("tr").index();
+  const teacher = state.currentPageData[index]; // get the correct student
+  editingTeacherId = teacher.userId; // save for update later
+
+  console.log("Full teacher object:", teacher);
+
+  // Fill modal with student details
+  $("#teacherModal").removeClass("hidden");
+  $("#name").val(teacher.name);
+  $("#nic").val(teacher.nic);
+  $("#contact").val(teacher.contact);
+  $("#email").val(teacher.email);
+  $("#address").val(teacher.address ?? "");
+  $("#emergencyContact").val(teacher.emergencyContact ?? "");
+  $("#relationship").val(teacher.relationship ?? "");
+});
+
+
+$("#teacherForm").on("submit", function(e) {
+  e.preventDefault();
+
+  const teacherData = {
+    name: $("#name").val(),
+    nic: $("#nic").val(),
+    email: $("#email").val(),
+    contact: $("#contact").val(),
+    address: $("#address").val(),
+    emergencyContact: $("#emergencyContact").val(),
+    relationship: $("#relationship").val()
+  };
+
+  console.log("Updating teacherData:", teacherData); // check data
+
+  updateTeacher(editingTeacherId, teacherData);
+
+  /*if (editingTeacherId) {
+    // Update student
+    updateTeacher(editingTeacherId, teacherData);
+  } else {
+    // Add student
+    saveTeacher(teacherData);
+  }*/
+
+});
+
+
+function updateTeacher(teacherId, teacherData) {
+  // Add required userId field directly
+  teacherData.userId = teacherId;
+
+  ajaxWithToken({
+    url: `${api}teachers/edit`,
+    method: "PUT",
+    contentType: "application/json",
+    data: JSON.stringify(teacherData),
+    success: function (response) {
+      alert(response.message || "Teacher updated successfully!");
+      $("#teacherModal").addClass("hidden");
+      $("#teacherForm")[0].reset();
+      editingTeacherId = null; // reset edit mode
+      loadDataPaginated(state.page, state.size); // reload current page
+    },
+    error: function (xhr) {
+      const message =
+          xhr.responseJSON?.message || "Failed to update teacher..";
+      alert(message); // simple alert for errors
+    }
+  });
+}
+
 
 // ------ Invite teachers by Admin
 const $inviteEmailInput = $("#inviteEmail");
