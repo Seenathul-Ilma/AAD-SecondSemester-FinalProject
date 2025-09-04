@@ -32,20 +32,28 @@ public class JwtUtil {
 
     // Generate Access Token
     public String generateAccessToken(String username) {
+        Date exp = new Date(System.currentTimeMillis() + accessTokenExpiration);
+        System.out.println("Access Token Expires At: " + exp);
+
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                //.setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .setExpiration(exp)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     // Generate Refresh Token
     public String generateRefreshToken(String username) {
+        Date exp = new Date(System.currentTimeMillis() + refreshTokenExpiration);
+        System.out.println("Refresh Token Expires At: " + exp);
+
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                //.setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .setExpiration(exp)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
