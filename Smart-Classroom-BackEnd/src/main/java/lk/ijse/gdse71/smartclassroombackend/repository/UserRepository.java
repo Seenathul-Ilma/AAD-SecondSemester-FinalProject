@@ -1,5 +1,7 @@
 package lk.ijse.gdse71.smartclassroombackend.repository;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import org.springframework.data.domain.Page;
@@ -38,4 +40,5 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByRole(Role role);
 
+    boolean existsByEmail(@NotBlank(message = "Email is required") @Email(message = "Email must be valid") String email);
 }

@@ -45,21 +45,16 @@ public class AuthService {
 
     // Login using Spring Security AuthenticationManager
     public AuthResponseDTO authenticate(AuthDTO authDTO) {
-
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            authDTO.getEmail(),
-                            authDTO.getPassword()
-                    )
-            );
-        } catch (Exception e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
-
+        // Fetch user from DB
         User user = userRepository.findByEmail(authDTO.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Check password manually (since DB stores encoded password)
+        if (!passwordEncoder.matches(authDTO.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid username or password");
+        }
+
+        // If match → generate tokens
         String accessToken = jwtUtil.generateAccessToken(user.getEmail());
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
 

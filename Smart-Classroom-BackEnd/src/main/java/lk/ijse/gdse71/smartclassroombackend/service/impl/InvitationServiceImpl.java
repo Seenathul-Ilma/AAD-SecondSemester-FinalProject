@@ -3,7 +3,9 @@ package lk.ijse.gdse71.smartclassroombackend.service.impl;
 import lk.ijse.gdse71.smartclassroombackend.dto.InvitationDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Invitation;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
+import lk.ijse.gdse71.smartclassroombackend.exception.ResourceDuplicateException;
 import lk.ijse.gdse71.smartclassroombackend.repository.InvitationRepository;
+import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.BrevoEmailService;
 import lk.ijse.gdse71.smartclassroombackend.service.InvitationService;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +30,15 @@ import java.time.LocalDateTime;
 public class InvitationServiceImpl implements InvitationService {
 
     private final InvitationRepository invitationRepository;
+    private final UserRepository userRepository;
     private final BrevoEmailService emailService;
     private final ModelMapper modelMapper;
 
     public InvitationDTO createInvitation(String email, Role role) {
+        if(userRepository.existsByEmail(email)) {
+            throw new ResourceDuplicateException("Email already exist..!");
+        }
+
         LocalDateTime expiryDate = LocalDateTime.now().plusDays(7);
 
         Invitation invitation = Invitation.create(email, role, expiryDate);

@@ -6,6 +6,7 @@ import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
+import lk.ijse.gdse71.smartclassroombackend.exception.ResourceDuplicateException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.BrevoEmailService;
@@ -93,8 +94,11 @@ public class UserServiceImpl implements UserService {
         String newId = generateNextUserId(role);
 
         if(userRepository.existsById(newId)) {
-            System.out.println(newId + "User already exist..!");
-            return false;
+            throw new ResourceDuplicateException("User already exist..!");
+        }
+
+        if(userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new ResourceDuplicateException("Email already exist..!");
         }
 
         if (userDTO.getName() == null || userDTO.getAddress() == null || userDTO.getContact() == null || userDTO.getEmail() == null) {
