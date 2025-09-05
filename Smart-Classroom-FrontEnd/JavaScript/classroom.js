@@ -8,19 +8,38 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeBtn = document.getElementById("closeClassroomModal");
   //const cancelBtn = document.getElementById("cancelBtn");
 
-  openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+  // Check role
+  const userRole = localStorage.getItem("role");
+  if (userRole !== "TEACHER") {
+    // Hide create-classroom button for students/admins
+    if (openBtn) openBtn.style.display = "none";
+  } else {
+    // Only attach events if teacher
+    openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+    closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.add("hidden");
+    });
+  }
+
+  /*openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
   closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
- //cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
+  //cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
 
   modal.addEventListener("click", (e) => {
     if (e.target === modal) modal.classList.add("hidden");
-  });
+  });*/
 
 });
 
 const api = "http://localhost:8080/api/v1/edusphere/classroom/";
 const default_page_size = 8;
 const max_visible_pages = 7;
+
+// ===== Global trackers for edit mode =====
+let editingClassroomId = null; // holds the id of the classroom being edited
+let editingTeacherId = null;   // holds the logged-in teacher id
 
 // ====================== Token Refresh ======================
 function refreshAccessToken() {
@@ -42,13 +61,17 @@ function ajaxWithToken(options) {
 
   const originalError = options.error;
   options.error = function(xhr, status, error) {
-    if (xhr.status === 401 || xhr.status === 403) {
+    if (xhr.status === 401) {
+      // Unauthorized -> refresh token
       refreshAccessToken().done(function() {
         ajaxWithToken(options);
       }).fail(function() {
         alert("Session expired. Please log in again.");
         window.location.href = "login.html";
       });
+    } else if (xhr.status === 403) {
+      // Forbidden -> show proper message
+      alert(xhr.responseJSON?.message || "You are not authorized to perform this action.");
     } else if (originalError) {
       originalError(xhr, status, error);
     }
@@ -69,14 +92,20 @@ function renderCards(items) {
     // Only show buttons if role is TEACHER
     const actionButtons = userRole === "TEACHER" ? `
       <div class="flex gap-2">
-        <button class="classroom-edit flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
+        <button class="edit-classroom flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
           <i data-lucide="pencil-ruler" class="w-4 h-4"></i>Edit
         </button>
-        <button class="classroom-delete flex-1 bg-red-100 dark:bg-red-700/20 hover:bg-red-200 dark:hover:bg-red-700/40 text-red-700 dark:text-red-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
+        <button class="delete-classroom flex-1 bg-red-100 dark:bg-red-700/20 hover:bg-red-200 dark:hover:bg-red-700/40 text-red-700 dark:text-red-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
           <i data-lucide="trash-2" class="w-4 h-4"></i>Delete
         </button>
       </div>
-    ` : ""; // empty string for non-teachers
+    ` : `
+      <div class="flex">
+        <button class="classroom-enter flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
+          <i data-lucide="university" class="w-4 h-4"></i>Enter Classroom
+        </button>
+      </div>
+    `; // empty string for non-teachers
 
     const card = `
       <div
@@ -86,7 +115,7 @@ function renderCards(items) {
         <div class="relative h-24 rounded-t-2xl overflow-hidden">
           <img src="Assets/images/learn-book.jpg" alt="${classroom.classLevel}" class="w-full h-full object-cover">
           <div class="absolute top-2 right-2 p-2 rounded-full text-slate-600/100 dark:text-slate-800 bg-slate-100 hover:bg-slate-100 hover:text-slate-800 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors">
-            <i data-lucide="square-arrow-out-up-right" class="w-4 h-4 hover:scale-120 dark:hover:scale-none"></i>
+            <i data-lucide="square-arrow-out-up-right" class="classroom-enter w-4 h-4 hover:scale-120 dark:hover:scale-none"></i>
           </div>
           <div class="absolute top-2 left-2 bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 text-xs font-medium px-3 py-1 rounded-lg flex items-center gap-2 shadow">
             <span id="classroomCode">${classroom.classroomCode}</span>
@@ -157,6 +186,12 @@ function loadDataPaginated(page1 = 1, size = state.size) {
 
 // ====================== Save Classroom ======================
 function saveClassroom(classroomData) {
+  const userRole = localStorage.getItem("role");
+  if (userRole !== "TEACHER") {
+    alert("Only teachers can create classrooms!");
+    return;
+  }
+
   const teacherId = localStorage.getItem("userId"); // logged-in teacher id
 
   console.log("inside classroom: "+ teacherId)
@@ -201,8 +236,61 @@ $("#classroom-form").on("submit", function(e) {
 
   console.log("Submitting classroomData:", classroomData);
 
-  saveClassroom(classroomData);
+  /*saveClassroom(classroomData);*/
+
+  if (editingTeacherId) {
+    // Update
+    updateClassroom(editingTeacherId, editingClassroomId, classroomData);
+  } else {
+    // Add
+    saveClassroom(classroomData);
+  }
+
 });
+
+
+// Attach click handler to tbody, listen for .edit-student
+$("#classroom-card-container").on("click", ".edit-classroom", function () {
+  const index = $(this).closest(".classroom-card").index(); // safer selector
+  const classroom = state.currentPageData[index];
+
+  editingClassroomId = classroom.classroomId; // save classroom id for update
+  editingTeacherId = localStorage.getItem("userId");
+
+  console.log("Editing classroom:", classroom);
+
+  $("#classroomModal").removeClass("hidden");
+
+  // Populate fields
+  const [grade, level] = (classroom.classLevel || "").split(" ");
+  $("#classLevelOption").val(grade || "");
+  $("#classLevelText").val(level || "");
+  $("#subject").val(classroom.subject);
+  $("#description").val(classroom.description);
+});
+
+
+function updateClassroom(teacherId, classroomId, classroomData) {
+  ajaxWithToken({
+    url: `${api}edit/${classroomId}?updatingTeacherId=${teacherId}`,
+    method: "PUT",
+    contentType: "application/json",
+    data: JSON.stringify(classroomData),
+    success: function (response) {
+      alert(response.message || "Classroom updated successfully!");
+      $("#classroomModal").addClass("hidden");
+      $("#classroom-form")[0].reset();
+      editingClassroomId = null; // reset edit mode
+      editingTeacherId = null;
+      loadDataPaginated(state.page, state.size);
+    },
+    error: function (xhr) {
+      const message = xhr.responseJSON?.message || "Failed to update classroom.";
+      alert(message);
+    }
+  });
+}
+
 
 
 // ====================== Form Submit ======================

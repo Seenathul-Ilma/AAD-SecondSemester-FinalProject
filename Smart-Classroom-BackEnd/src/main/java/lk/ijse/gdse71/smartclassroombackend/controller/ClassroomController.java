@@ -141,7 +141,7 @@ public class ClassroomController {
         );
     }
 
-    @PutMapping("/edit")
+    /*@PutMapping("/edit")
     public ResponseEntity<ApiResponse> updateClassroom(@Valid @RequestBody ClassroomDTO classroomDTO, @RequestParam String updatingTeacherId) {
         ClassroomDTO updatedClassroom = classroomService.updateClassroom(classroomDTO, updatingTeacherId);
 
@@ -165,6 +165,27 @@ public class ClassroomController {
                 HttpStatus.OK
         );
     }
+*/
+
+    @PutMapping("/edit/{classroomId}")
+    public ResponseEntity<ApiResponse> updateClassroom(
+            @PathVariable String classroomId,
+            @Valid @RequestBody ClassroomDTO classroomDTO,
+            @RequestParam String updatingTeacherId) {
+
+        classroomDTO.setClassroomId(classroomId);
+        ClassroomDTO updatedClassroom = classroomService.updateClassroom(classroomDTO, updatingTeacherId);
+
+        if (updatedClassroom == null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse(400, "Failed to update classroom..!", null));
+        }
+
+        return ResponseEntity
+                .ok(new ApiResponse(200, "Classroom updated successfully..!", updatedClassroom));
+    }
+
 
     @DeleteMapping("/delete/{classroomId}")
     public ResponseEntity<ApiResponse> deleteClassroom(@PathVariable String classroomId, @RequestParam String deletingTeacherId){
