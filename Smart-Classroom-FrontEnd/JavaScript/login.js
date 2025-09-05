@@ -59,14 +59,17 @@ $("#loginForm").submit(function (e) {
         data: JSON.stringify({ email, password }),
         success: function (response) {
             const token = response.data?.accessToken || response.data?.token;
-            const role = response.data?.role; // <-- capture role from backend
+            const role = response.data?.role;
+            const userId = response.data?.userId; // <-- capture userId from backend
 
-            if (token && role) {
+            if (token && role && userId) {
                 localStorage.setItem("accessToken", token);
                 localStorage.setItem("email", email);
-                localStorage.setItem("role", role); // store role for later
+                localStorage.setItem("role", role);
+                localStorage.setItem("userId", userId); // <-- store userId
             }
-            console.log("Token:", token, "Role:", role);
+
+            console.log("Token:", token, "Role:", role, "UserId:", userId);
 
             $("#successMessage").removeClass("hidden");
             $("#loginForm")[0].reset();
