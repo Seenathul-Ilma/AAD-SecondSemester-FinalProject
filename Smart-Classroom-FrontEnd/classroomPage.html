@@ -32,58 +32,143 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-all duration-500">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <div class="w-64 min-h-screen transition duration-300 ease-in-out bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col relative z-10">
-            <div class="p-5 border-b border-gray-200 dark:border-gray-700">
+        <div
+                class="w-64 min-h-screen transition duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10"
+        >
+            <div
+                    class="p-5 border-b border-slate-200/50 dark:border-slate-700/50"
+            >
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <i data-lucide="school" class="w-6 h-6 font-medium text-white"></i>
+                    <div
+                            class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
+                    >
+                        <i
+                                data-lucide="school"
+                                class="w-6 h-6 font-medium text-white"
+                        ></i>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold text-gray-800 dark:text-white">EduSphere</h1>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Admin Panel</p>
+                        <h1 class="text-xl font-bold text-slate-800 dark:text-white">
+                            EduSphere
+                        </h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">
+                            Admin Panel
+                        </p>
                     </div>
                 </div>
             </div>
 
             <!-- Navigation -->
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-                <a href="index.html" class="w-full text-gray-700 dark:text-gray-200 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
-                    <i data-lucide="home" class="w-5 h-5"></i>
+                <a
+                        href="index.html"
+                        data-page="index"
+                        class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group"
+                >
+                    <i
+                            data-lucide="home"
+                            class="w-5 h-5 transition-all duration-200"
+                    ></i>
                     <span class="font-medium">Dashboard</span>
+                    <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+
                 </a>
-                <a href="teacher.html" class="w-full text-gray-700 dark:text-gray-200 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
-                    <i data-lucide="users" class="w-5 h-5"></i>
+                <a
+                        href="teacher.html"
+                        data-page="teacher"
+                        class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+                >
+                    <i
+                            data-lucide="users"
+                            class="w-5 h-5 transition-all duration-200"
+                    ></i>
                     <span class="font-medium">Teachers</span>
+                    <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
                 </a>
-                <a href="student.html" class="w-full text-gray-700 dark:text-gray-200 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
-                    <i data-lucide="users" class="w-5 h-5"></i>
+                <a
+                        href="student.html"
+                        data-page="student"
+                        class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+                >
+                    <i
+                            data-lucide="users"
+                            class="w-5 h-5 transition-all duration-200"
+                    ></i>
                     <span class="font-medium">Students</span>
+                    <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
                 </a>
-                <a href="classroom.html" class="w-full text-white flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg">
-                    <i data-lucide="landmark" class="w-5 h-5"></i>
+                <a
+                        href="classroom.html"
+                        data-page="classroom"
+                        class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+                >
+                    <i
+                            data-lucide="landmark"
+                            class="w-5 h-5 transition-all duration-200"
+                    ></i>
                     <span class="font-medium">Classrooms</span>
+                    <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
                 </a>
-                <a href="#" class="w-full text-gray-700 dark:text-gray-200 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
-                    <i data-lucide="package" class="w-5 h-5"></i>
+                <a
+                        href="#"
+                        data-page="materials"
+                        class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+                >
+                    <i
+                            data-lucide="package"
+                            class="w-5 h-5 transition-all duration-200"
+                    ></i>
                     <span class="font-medium">Materials</span>
+                    <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
                 </a>
-                <a href="#" class="w-full text-gray-700 dark:text-gray-200 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
-                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                <a
+                        href="#"
+                        data-page="messages"
+                        class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+                >
+                    <i
+                            data-lucide="message-square"
+                            class="w-5 h-5 transition-all duration-200"
+                    ></i>
                     <span class="font-medium">Messages</span>
+                    <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
                 </a>
-                <a href="profile.html" class="w-full text-gray-700 dark:text-gray-200 flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
-                    <i data-lucide="user-circle" class="w-5 h-5"></i>
+                <a
+                        href="profile.html"
+                        data-page="profile"
+                        class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+                >
+                    <i
+                            data-lucide="user-circle"
+                            class="w-5 h-5 transition-all duration-200"
+                    ></i>
                     <span class="font-medium">Profile</span>
+                    <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
                 </a>
             </nav>
 
             <!-- Side Bar Footer -->
-            <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-                <div class="flex items-center space-x-3 p-3 rounded-xl bg-gray-100 dark:bg-gray-700">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">MM</div>
+            <div
+                    class="p-4 border-t border-slate-200/50 dark:border-slate-700/50"
+            >
+                <!-- Footer Wrapper -->
+                <div
+                        class="flex items-center space-x-3 p-3 rounded-xl bg-gray-100 dark:bg-slate-800"
+                >
+                    <img
+                            src="Assets/images/user-profile-male.avif"
+                            alt="user"
+                            class="w-10 h-10 rounded-full ring-2 ring-blue-500"
+                    />
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-800 dark:text-white truncate">Mirzan Musawwir</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Administrator</p>
+                        <p
+                                class="text-sm font-medium text-slate-800 dark:text-white truncate"
+                        >
+                            Mirzan Musawwir
+                        </p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                            Administrator
+                        </p>
                     </div>
                 </div>
             </div>
@@ -92,32 +177,35 @@
         <!-- Main Content With Header -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Header Part Only -->
-            <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+            <div
+                    class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 px-6 py-4"
+            >
                 <!-- Header -->
                 <div class="flex items-center justify-between">
                     <!-- Header Left Section -->
                     <div class="flex items-center space-x-4">
                         <!-- Menu Button -->
-                        <button class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <button
+                                class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        >
                             <i data-lucide="menu" class="w-5 h-5"></i>
                         </button>
 
                         <!-- Page Detail -->
                         <div class="hidden md:block">
-                            <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">Classroom Management</h1>
-                            <p class="text-gray-600 dark:text-gray-300">Welcome back, Mirzan! Manage your classrooms efficiently</p>
+                            <h1
+                                    class="text-xl font-black text-slate-800 dark:text-slate-100"
+                            >
+                                Classroom Page
+                            </h1>
+                            <p class="text-slate-600 dark:text-slate-300">
+                                Welcome back, Mirzan! Here's what's happening today
+                            </p>
                         </div>
                     </div>
 
-                    <!-- Header Right Section -->
-                    <div class="flex items-center space-x-3">
-                        <button class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                            <i data-lucide="bell" class="w-5 h-5"></i>
-                        </button>
-                        <button class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                            <i data-lucide="settings" class="w-5 h-5"></i>
-                        </button>
-                    </div>
+                    <!-- Header center content -->
+                    <div></div>
                 </div>
             </div>
 
@@ -274,6 +362,7 @@
 <!-- Quill CDN -->
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script src="Assets/lib/jquery-3.7.1.min.js"></script>
+<script src="JavaScript/pageNavigate.js"></script>
 <script src="JavaScript/classroomPage.js"></script>
 <script src="JavaScript/pagination.js"></script>
 

@@ -258,9 +258,29 @@
              return;
          }
 
-         items.forEach((announcement) => {
+        const userId = localStorage.getItem("userId");
+
+        items.forEach((announcement) => {
+
+             const actionButtons = (announcement.announcedUserId === userId) ? `
+                 <div class="absolute top-4 right-4 dropdown">
+            <button class="action-btn p-1.5 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+            </button>
+            <div class="dropdown-menu hidden absolute right-0 mt-2 w-32 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
+                <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="edit" data-id="${announcement.id}">
+                    <i data-lucide="edit-3" class="w-4 h-4 inline-block mr-1"></i>Edit
+                </div>
+                <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="delete" data-id="${announcement.id}">
+                    <i data-lucide="trash-2" class="w-4 h-4 inline-block mr-1"></i>Delete
+                </div>
+            </div>
+        </div>
+             `: "";
+
              const card = `
-                  <div class="bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 p-5 shadow-sm">
+                  <div class="bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 p-5 shadow-sm relative">
+                     ${actionButtons}
                 <div class="flex items-start gap-3 mb-4">
                   <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
                     ${getUserInitials(announcement.announcedUserName || announcement.creator?.name)}
@@ -295,6 +315,19 @@
          // Refresh icons after dynamic render
          if (window.lucide?.createIcons) lucide.createIcons();
     }
+
+     // Toggle dropdown visibility
+     $("#announcement-cards-container").on('click', '.action-btn', function (e) {
+         e.stopPropagation(); // prevent click from bubbling up
+         const $menu = $(this).siblings('.dropdown-menu');
+         $('.dropdown-menu').not($menu).addClass('hidden');
+         $menu.toggleClass('hidden');
+     });
+
+     // Close dropdown if clicked outside
+     $(document).on('click', () => {
+         $('.dropdown-menu').addClass('hidden');
+     });
 
     function loadDataPaginated(page1 = 1, size = state.size) {
         const zeroBasedPage = Math.max(0, page1 - 1);
