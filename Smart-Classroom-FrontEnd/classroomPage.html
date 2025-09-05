@@ -8,28 +8,22 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
+
         .ql-container {
-            font-size: 15px;
-            font-weight: lighter;
-            border-bottom-left-radius: 4px;
-            border-bottom-right-radius: 4px;
+            font-size: 16px;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
         }
         .ql-toolbar {
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
         }
-
-        /* Make the Quill editor text white */
-        .ql-editor {
-            color: white;
-            background-color: #1f2937; /* optional: dark background */
+        .file-preview {
+            transition: all 0.3s ease;
         }
-
-        /* Optional: placeholder color */
-        .ql-editor.ql-blank::before {
-            color: #9ca3af; /* light gray placeholder */
+        .file-preview:hover {
+            transform: translateY(-2px);
         }
-
 
     </style>
 </head>
@@ -166,7 +160,7 @@
                             </div>
 
                             <!-- Announcement Cards -->
-                            <div class="space-y-4">
+                            <div class="space-y-4" id="announcement-cards-container">
                                 <!-- Example Announcement 1 -->
                                 <div class="bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 p-5 shadow-sm">
                                     <div class="flex items-start gap-3 mb-4">
@@ -192,30 +186,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Example Announcement 2 -->
-                                <div class="bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 p-5 shadow-sm">
-                                    <div class="flex items-start gap-3 mb-4">
-                                        <div class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-sm">MM</div>
-                                        <div>
-                                            <h3 class="font-semibold text-gray-800 dark:text-white">Mirzan Musawwir</h3>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Yesterday</p>
-                                        </div>
-                                    </div>
-                                    <div class="text-gray-700 dark:text-gray-300 mb-4">
-                                        <h4 class="font-medium text-lg mb-2">New Study Materials Available</h4>
-                                        <p>I've uploaded new study materials for the upcoming chapter. Please download them from the resources section and go through them before our next class.</p>
-                                    </div>
-                                    <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                                        <button class="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400">
-                                            <i data-lucide="message-circle" class="w-4 h-4"></i>
-                                            <span>3 comments</span>
-                                        </button>
-                                        <button class="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400">
-                                            <i data-lucide="share" class="w-4 h-4"></i>
-                                            <span>Share</span>
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -240,43 +210,70 @@
     </div>
 </div>
 
-<!-- Announcement Modal with Quill Editor -->
-<div id="announcementModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-2xl overflow-hidden">
-        <div class="p-5 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Create New Announcement</h3>
-            <!--<p class="text-gray-600 dark:text-gray-300">Share important updates with your class</p>-->
-        </div>
+    <!-- Announcement Modal with Quill Editor, Title and File Input -->
+    <div id="announcementModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white">Create New Announcement</h3>
+            </div>
 
-        <div class="p-5">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">MM</div>
-                <div>
-                    <h4 id="announcementUserName" class="font-semibold text-gray-800 dark:text-white">Mirzan Musawwir</h4>
-                    <p id="announcementClassInfo" class="text-xs text-gray-500 dark:text-gray-400">Posting to: Grade 10 Mathematics</p>
+            <div class="p-5">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm" id="userInitials">MM</div>
+                    <div>
+                        <h4 id="announcementUserName" class="font-semibold text-gray-800 dark:text-white">Mirzan Musawwir</h4>
+                        <p id="announcementClassInfo" class="text-xs text-gray-500 dark:text-gray-400">Posting to: Grade 10 Mathematics</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Quill Editor Container -->
-            <div id="editor-container" class="mb-4">
-                <div id="editor" class="h-48"></div>
-            </div>
+                <!-- Title Input -->
+                <div class="mb-4">
+                    <input type="text" id="announcementTitleInput" placeholder="Title of announcement"
+                           class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" />
+                </div>
 
-            <div class="flex justify-end gap-3">
-                <button id="cancelAnnouncementBtn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    Cancel
-                </button>
-                <button id="postAnnouncementBtn" class="px-4 py-2 bg-blue-600 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg transition-colors flex items-center gap-2">
-                    <i data-lucide="send" class="w-4 h-4"></i>
-                    <span>Post Announcement</span>
-                </button>
+                <!-- Quill Editor Container -->
+                <div id="editor-container" class="mb-4 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                    <div id="editor" class="h-48"></div>
+                </div>
+
+                <!-- File Attachment Section -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Attachments</label>
+
+                    <!-- File Input Button -->
+                    <div class="flex items-center gap-3 mb-3">
+                        <input type="file" id="fileInput" class="hidden" multiple>
+                        <button id="fileSelectBtn" class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            <i data-lucide="paperclip" class="w-4 h-4"></i>
+                            <span>Add Files</span>
+                        </button>
+                        <span id="fileCount" class="text-sm text-gray-500 dark:text-gray-400 hidden">0 files selected</span>
+                    </div>
+
+                    <!-- File Previews -->
+                    <div id="filePreviews" class="space-y-2 max-h-32 overflow-y-auto hidden">
+                        <!-- File previews will be added here dynamically -->
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button id="cancelAnnouncementBtn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        Cancel
+                    </button>
+                    <button id="postAnnouncementBtn" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg transition-colors flex items-center gap-2 hover:from-blue-700 hover:to-purple-700">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                        <span>Post Announcement</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <!-- Quill CDN -->
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="Assets/lib/jquery-3.7.1.min.js"></script>
 <script src="JavaScript/classroomPage.js"></script>
+
 </body>
 </html>

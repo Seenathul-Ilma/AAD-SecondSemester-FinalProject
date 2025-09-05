@@ -114,7 +114,7 @@ function renderCards(items) {
     const card = `
       <div
         class="classroom-card bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 hover:shadow-lg hover:shadow-slate-200/20 dark:hover:shadow-slate-900/20 transition-all duration-300 group"
-        data-name="${classroom.classroomCode}"
+        data-id="${classroom.classroomId}" data-name="${classroom.classroomCode}"
       >
         <div class="relative h-24 rounded-t-2xl overflow-hidden">
           <img src="Assets/images/learn-book.jpg" alt="${classroom.classLevel}" class="w-full h-full object-cover">
@@ -146,6 +146,15 @@ function renderCards(items) {
   // Refresh Lucide icons
   if (window.lucide?.createIcons) lucide.createIcons();
 }
+
+// Navigate to classroom.html with classroomId in URL
+$("#classroom-card-container").on("click", ".classroom-enter", function () {
+  const classroomId = $(this).closest(".classroom-card").data("id");
+  if (!classroomId) return;
+
+  // Redirect to classroom.html with classroomId as query param
+  window.location.href = `classroomPage.html?classroomId=${classroomId}`;
+});
 
 
 // ===== Data fetching =====
