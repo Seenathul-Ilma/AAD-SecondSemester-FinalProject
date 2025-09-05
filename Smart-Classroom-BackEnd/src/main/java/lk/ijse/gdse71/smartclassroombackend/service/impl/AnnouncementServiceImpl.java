@@ -156,6 +156,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         dto.setAnnouncedUserId(userId);
         dto.setFileUrls(fileUrls);
         dto.setFileTypes(fileTypes);
+        dto.setAnnouncedUserName(user.getName());
+        dto.setClassroomName(classroom.getClassLevel()+" | "+classroom.getSubject());
 
         return dto;
     }
@@ -218,6 +220,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         dto.setAnnouncedUserId(savedAnnouncement.getUser().getUserId());
         dto.setFileUrls(existingFileUrls);
         dto.setFileTypes(existingFileTypes);
+        dto.setAnnouncedUserName(announcement.getUser().getName());
+        dto.setClassroomName(announcement.getClassroom().getClassLevel()+" | "+announcement.getClassroom().getSubject());
 
         return dto;
     }

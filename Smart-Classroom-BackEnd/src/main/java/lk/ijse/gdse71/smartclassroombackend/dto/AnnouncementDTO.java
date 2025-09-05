@@ -41,5 +41,8 @@ public class AnnouncementDTO {
 
     private String announcedUserId; // teacher/admin
 
+    // extra for response
+    private String classroomName;
+    private String announcedUserName;
 }
 
