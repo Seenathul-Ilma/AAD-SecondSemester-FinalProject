@@ -103,7 +103,8 @@ public class AuthController {
                 newRefreshToken,
                 "Bearer",
                 username,
-                userRepository.findByEmail(username).get().getRole().name()
+                userRepository.findByEmail(username).get().getRole().name(),
+                userRepository.findByEmail(username).get().getUserId()
         );
 
         return ResponseEntity.ok(new ApiResponse(200, "Token refreshed successfully", responseDTO));

@@ -63,7 +63,8 @@ public class AuthService {
                 refreshToken,
                 "Bearer",
                 user.getEmail(),
-                user.getRole().name()
+                user.getRole().name(),
+                user.getUserId()
         );
     }
 

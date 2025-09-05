@@ -30,4 +30,6 @@ public class AuthResponseDTO {
 
     private String role;     // optional: role-based access
 
+    private String userId;
+
 }
