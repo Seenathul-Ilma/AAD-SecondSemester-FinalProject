@@ -84,6 +84,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             // Map nested IDs manually
             dto.setClassroomId(announcement.getClassroom().getClassroomId());
             dto.setAnnouncedUserId(announcement.getUser().getUserId());
+            dto.setClassroomName(announcement.getClassroom().getClassLevel()+" | "+announcement.getClassroom().getSubject());
+            dto.setAnnouncedUserName(announcement.getUser().getName());
 
             return dto;
         });

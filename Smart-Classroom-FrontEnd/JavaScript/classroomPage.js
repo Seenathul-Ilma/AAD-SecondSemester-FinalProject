@@ -1,18 +1,13 @@
- // API configuration
-    const api = "http://localhost:8080/api/v1/edusphere/classrooms/";
-    const classroomId = new URLSearchParams(window.location.search).get("classroomId");
-
-    // Get user info from localStorage or default
-    const userId = localStorage.getItem("userId") || "user123";
-    const userName = localStorage.getItem("userName") || "Mirzan Musawwir";
-
-    // Initialize the page
+ // Initialize the page
     document.addEventListener("DOMContentLoaded", function () {
         lucide.createIcons(); // Initialize icons
+
+        loadDataPaginated(1, default_page_size);
 
         // Set user information
         document.getElementById('announcementUserName').textContent = userName;
         document.getElementById('userInitials').textContent = getUserInitials(userName);
+        console.log("Initials: "+ userName)
 
         // Update class info if classroomId is available
         if (classroomId) {
@@ -20,6 +15,17 @@
             `Posting to: Classroom ${classroomId}`;
         }
     });
+
+    // API configuration
+     const api = "http://localhost:8080/api/v1/edusphere/classrooms/";
+     const classroomId = new URLSearchParams(window.location.search).get("classroomId");
+     const default_page_size = 10;
+     const max_visible_pages = 7;
+
+     // Get user info from localStorage or default
+     const userId = localStorage.getItem("userId");
+     const userName = localStorage.getItem("userName");
+
 
     // Initialize Quill editor
     const quill = new Quill('#editor', {
@@ -110,8 +116,7 @@
                  if (data.status === 201) {
                      alert("Announcement created successfully!");
                      closeModal();
-                     // TODO: refresh announcements list
-                     // loadAnnouncements();
+                     loadDataPaginated(state.page, state.size);
                  } else {
                      alert(data.message || "Failed to create announcement.");
                  }
@@ -195,10 +200,12 @@
     }
 
     function getUserInitials(name) {
-        return name.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 2);
+        if (!name || typeof name !== "string") return "?";  // fallback
+        return name.trim().charAt(0).toUpperCase();
     }
 
-    // Token refresh function (if needed)
+
+     // Token refresh function (if needed)
     // ====================== Token Refresh ======================
     function refreshAccessToken() {
         return $.ajax({
@@ -212,8 +219,8 @@
     }
 
 
- // ====================== AJAX with Token ======================
- function ajaxWithToken(options) {
+    // ====================== AJAX with Token ======================
+    function ajaxWithToken(options) {
      const accessToken = localStorage.getItem("accessToken");
      options.headers = options.headers || {};
      options.headers["Authorization"] = "Bearer " + accessToken;
@@ -239,4 +246,126 @@
      };
      return $.ajax(options);
  }
+
+    function renderAnnouncements(items) {
+        const $div = $("#announcement-cards-container");
+        $div.empty();
+
+         if (!items || items.length === 0) {
+            $div.html(`
+                <p class="text-center text-gray-500 dark:text-gray-400">No announcements yet.</p>
+            `);
+             return;
+         }
+
+         items.forEach((announcement) => {
+             const card = `
+                  <div class="bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 p-5 shadow-sm">
+                <div class="flex items-start gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                    ${getUserInitials(announcement.announcedUserName || announcement.creator?.name)}
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">${announcement.announcedUserName}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                      ${formatRelativeTime(announcement.createdAt)}
+                    </p>
+                  </div>
+                </div>
+                <div class="text-gray-700 dark:text-gray-300 mb-4">
+                  <h4 class="font-medium text-lg mb-2">${announcement.title}</h4>
+                  <div>${announcement.content}</div>
+                </div>
+                <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                  <button class="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    <span>${announcement.commentCount || 0} comments</span>
+                  </button>
+                  <button class="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400">
+                    <i data-lucide="share" class="w-4 h-4"></i>
+                    <span>Share</span>
+                  </button>
+                </div>
+              </div>
+            `;
+
+             $div.append(card);
+         });
+
+         // Refresh icons after dynamic render
+         if (window.lucide?.createIcons) lucide.createIcons();
+    }
+
+    function loadDataPaginated(page1 = 1, size = state.size) {
+        const zeroBasedPage = Math.max(0, page1 - 1);
+
+        ajaxWithToken({
+             url: `${api}${classroomId}/view/announcements?page=${zeroBasedPage}&size=${size}`,
+             method: "GET",
+             dataType: "json",
+             success: function (response) {
+                 const data = response.data || {};  // unwrap the ApiResponse
+
+                 const {
+                     content = [],
+                     number = 0,
+                     size: respSize = size,
+                     totalPages = 1,
+                     totalElements = 0,
+                 } = data;   // destructure from data
+
+                 state.page = (number ?? 0) + 1; // convert 0-based -> 1-based
+                 state.size = respSize ?? size;
+                 state.totalPages = totalPages ?? 1;
+                 state.totalElements = totalElements ?? 0;
+
+                 state.currentPageData = data;
+
+                 // Correct
+                 renderAnnouncements(data.content);
+                 renderPaginationFooter();
+
+             },
+             error: function (xhr) {
+                 console.error("Error loading announcements:", xhr.responseJSON || xhr);
+                 if (xhr.status === 401) {
+                     alert("Session expired. Please log in again.");
+                     window.location.href = "login.html";
+                 }
+             }
+         });
+    }
+
+    function formatRelativeTime(dateString) {
+     if (!dateString) return "";
+
+     const date = new Date(dateString);
+     const now = new Date();
+     const diffMs = now - date;
+
+     const seconds = Math.floor(diffMs / 1000);
+     const minutes = Math.floor(seconds / 60);
+     const hours   = Math.floor(minutes / 60);
+     const days    = Math.floor(hours / 24);
+
+     if (seconds < 60) {
+         return "just now";
+     } else if (minutes < 60) {
+         return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+     } else if (hours < 24) {
+         return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+     } else if (days < 7) {
+         return `${days} day${days !== 1 ? "s" : ""} ago`;
+     } else {
+         // fallback to a readable date
+         return date.toLocaleDateString(undefined, {
+             year: "numeric",
+             month: "short",
+             day: "numeric"
+         });
+     }
+ }
+
+
+
 
