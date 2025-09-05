@@ -71,7 +71,9 @@ function ajaxWithToken(options) {
       });
     } else if (xhr.status === 403) {
       // Forbidden -> show proper message
-      alert(xhr.responseJSON?.message || "You are not authorized to perform this action.");
+      alert(xhr.responseJSON?.message || "Only creator can edit classrooms. You're not the creator of this classroom.");
+    }else if (xhr.status === 400) {
+      alert(xhr.responseJSON?.message || "Failed to update the classroom..");
     } else if (originalError) {
       originalError(xhr, status, error);
     }
@@ -86,11 +88,13 @@ function renderCards(items) {
   $div.empty();
 
   // Get user role from localStorage (or wherever you store it)
-  const userRole = localStorage.getItem("role"); // e.g., "TEACHER", "STUDENT"
+  const userRole = localStorage.getItem("role"); // "TEACHER", "STUDENT"
+  const userId = localStorage.getItem("userId");
 
   items.forEach((classroom) => {
     // Only show buttons if role is TEACHER
-    const actionButtons = userRole === "TEACHER" ? `
+    //const actionButtons = userRole === "TEACHER" ? `
+    const actionButtons = (userRole === "TEACHER" && classroom.creatorId === userId) ? `
       <div class="flex gap-2">
         <button class="edit-classroom flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
           <i data-lucide="pencil-ruler" class="w-4 h-4"></i>Edit
@@ -105,7 +109,7 @@ function renderCards(items) {
           <i data-lucide="university" class="w-4 h-4"></i>Enter Classroom
         </button>
       </div>
-    `; // empty string for non-teachers
+    `;
 
     const card = `
       <div
@@ -148,8 +152,12 @@ function renderCards(items) {
 function loadDataPaginated(page1 = 1, size = state.size) {
   const zeroBasedPage = Math.max(0, page1 - 1);
 
+  const paginatingId = localStorage.getItem("userId");
+  const paginatingRole = localStorage.getItem("role");
+
   ajaxWithToken({
-    url: `${api}all/paginated?page=${zeroBasedPage}&size=${size}`,
+    //url: `${api}all/paginated?page=${zeroBasedPage}&size=${size}`,
+    url: `${api}paginated?page=${zeroBasedPage}&size=${size}&userId=${paginatingId}&role=${paginatingRole}`,
     method: "GET",
     dataType: "json",
     success: function(response) {
@@ -163,12 +171,24 @@ function loadDataPaginated(page1 = 1, size = state.size) {
         totalElements = 0,
       } = data;   // destructure from data
 
+      console.log("content length: "+ content.length)
+      if (content.length === 0) {
+        $("#classroom-card-container").html(`
+          <div class="text-center text-gray-500 py-6">
+            You haven't joined any classroom yet.
+          </div>
+        `);
+        return;
+      }
+
       state.page = (number ?? 0) + 1; // convert 0-based -> 1-based
       state.size = respSize ?? size;
       state.totalPages = totalPages ?? 1;
       state.totalElements = totalElements ?? 0;
 
       state.currentPageData = content;
+
+      console.log("Loaded classrooms:", content); // DEBUG
 
       renderCards(content);
       renderPaginationFooter();
@@ -231,7 +251,7 @@ $("#classroom-form").on("submit", function(e) {
     classLevel: `${$("#classLevelOption").val()} ${$("#classLevelText").val()}`,
     //level: $("#classLevelText").val(),
     subject: $("#subject").val(),
-    description: $("#description").val()
+    description: $("#description").val(),
   };
 
   console.log("Submitting classroomData:", classroomData);
@@ -291,6 +311,33 @@ function updateClassroom(teacherId, classroomId, classroomData) {
   });
 }
 
+
+$("#classroom-card-container").on("click", ".delete-classroom", function () {
+  const index = $(this).closest(".classroom-card").index();
+  const classroom = state.currentPageData[index];
+  const deletingTeacherId = localStorage.getItem("userId");
+
+  if (!confirm(`Are you sure you want to delete classroom ${classroom.classroomCode}?`)) return;
+
+  ajaxWithToken({
+    url: `${api}${classroom.classroomId}?deletingTeacherId=${deletingTeacherId}`,
+    method: "DELETE",
+    success: function(response) {
+      alert(response.message || "Classroom deleted successfully!");
+      loadDataPaginated(state.page, state.size);
+    },
+    error: function(xhr) {
+      if (xhr.status === 403) {
+        alert(xhr.responseJSON?.message || "You are not authorized to delete this classroom.");
+      } else if (xhr.status === 404) {
+        alert(xhr.responseJSON?.message || "Classroom not found.");
+      } else {
+        console.error("Failed to delete classroom.", xhr.responseJSON || xhr);
+        alert("Failed to delete classroom.");
+      }
+    }
+  });
+});
 
 
 // ====================== Form Submit ======================
