@@ -96,7 +96,6 @@ public class ClassroomServiceImpl implements ClassroomService {
         //User creatingTeacher = userRepository.findById(creatingTeacherId).orElseThrow(() -> new ResourceNotFoundException("Teacher not found..!"));
         User creatingTeacher = userRepository.findUserByUserIdAndRole(creatingTeacherId, Role.TEACHER).orElseThrow(() -> new AccessDeniedException("Only a verified teacher can create a classroom"));
 
-
         UserClassroom joinClassroom = new UserClassroom();
         String newUserClassroomId = generateNextClassroomId("REG");
         joinClassroom.setUserClassroomId(newUserClassroomId);
@@ -107,8 +106,12 @@ public class ClassroomServiceImpl implements ClassroomService {
         joinClassroom.setJoinedAt(LocalDateTime.now());
 
         userClassroomRepository.save(joinClassroom);
-        return modelMapper.map(savedClassroom, ClassroomDTO.class);
+        //return modelMapper.map(savedClassroom, ClassroomDTO.class);
 
+        ClassroomDTO dto = modelMapper.map(savedClassroom, ClassroomDTO.class);
+        dto.setCreatorId(creatingTeacherId);
+
+        return dto;
     }
 
     private String generateUniqueClassroomCode() {
@@ -212,5 +215,35 @@ public class ClassroomServiceImpl implements ClassroomService {
 
         return modelMapper.map(foundClassroom, ClassroomDTO.class);
     }
+
+    @Override
+    public Page<ClassroomDTO> getClassroomsByRole(String userId, Role role, int page, int size) {
+        if (role == Role.ADMIN) {
+            // Admin sees all classrooms
+            return classroomRepository.findAll(PageRequest.of(page, size))
+                    .map(c -> {
+                        ClassroomDTO dto = modelMapper.map(c, ClassroomDTO.class);
+                        userClassroomRepository.findByClassroom_ClassroomIdAndIsCreatorTrue(c.getClassroomId())
+                                .ifPresent(uc -> dto.setCreatorId(uc.getUser().getUserId()));
+                        return dto;
+                    });
+        } else {
+            // Students and Teachers → only their joined classrooms
+            Page<UserClassroom> userClassrooms =
+                    userClassroomRepository.findByUser_UserId(userId, PageRequest.of(page, size));
+
+            return userClassrooms.map(uc -> {
+                ClassroomDTO dto = modelMapper.map(uc.getClassroom(), ClassroomDTO.class);
+                if (uc.isCreator()) {
+                    dto.setCreatorId(userId); // mark them as creator if true
+                } else {
+                    userClassroomRepository.findByClassroom_ClassroomIdAndIsCreatorTrue(uc.getClassroom().getClassroomId())
+                            .ifPresent(cuc -> dto.setCreatorId(cuc.getUser().getUserId()));
+                }
+                return dto;
+            });
+        }
+    }
+
 
 }

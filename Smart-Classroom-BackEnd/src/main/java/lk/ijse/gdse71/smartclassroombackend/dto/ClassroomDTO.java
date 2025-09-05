@@ -36,4 +36,7 @@ public class ClassroomDTO {
     private String description;
 
     private String classroomCode;
+
+    private String creatorId;  // ID of the teacher who created the classroom
+
 }

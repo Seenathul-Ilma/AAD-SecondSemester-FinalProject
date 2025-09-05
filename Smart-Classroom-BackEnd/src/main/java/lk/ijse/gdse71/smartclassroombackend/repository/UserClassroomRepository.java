@@ -3,8 +3,13 @@ package lk.ijse.gdse71.smartclassroombackend.repository;
 import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.entity.UserClassroom;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 /**
  * --------------------------------------------
@@ -31,4 +36,8 @@ public interface UserClassroomRepository extends JpaRepository<UserClassroom, St
     void deleteByUser_UserIdAndClassroom_ClassroomId(String userId, String classroomId);
 
     void deleteByUser_UserIdAndClassroom_ClassroomCode(String userId, String classroomCode);
+
+    Optional<UserClassroom> findByClassroom_ClassroomIdAndIsCreatorTrue(String classroomId);
+
+    Page<UserClassroom> findByUser_UserId(String userId, Pageable pageable);
 }

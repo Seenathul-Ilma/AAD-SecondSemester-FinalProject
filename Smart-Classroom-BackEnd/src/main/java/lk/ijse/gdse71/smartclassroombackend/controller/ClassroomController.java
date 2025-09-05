@@ -87,7 +87,20 @@ public class ClassroomController {
                 ),
                 HttpStatus.CREATED
         );
+    }
 
+    @GetMapping("/paginated")
+    public ResponseEntity<ApiResponse> getClassroomsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String userId,
+            @RequestParam Role role
+    ) {
+        Page<ClassroomDTO> classrooms = classroomService.getClassroomsByRole(userId, role, page, size);
+
+        return ResponseEntity.ok(
+                new ApiResponse(200, "Classrooms fetched successfully", classrooms)
+        );
     }
 
     @GetMapping("/code/{classroomCode}")
