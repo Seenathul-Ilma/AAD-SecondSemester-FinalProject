@@ -68,7 +68,10 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     @Override
     public Page<AnnouncementDTO> getAnnouncementsForClassroomByClassroomId(String classroomId, int page, int size) {
-        Page<Announcement> announcementPage = announcementRepository.findByClassroom_ClassroomId(classroomId, PageRequest.of(page, size));
+        //Page<Announcement> announcementPage = announcementRepository.findByClassroom_ClassroomId(classroomId, PageRequest.of(page, size));
+        Page<Announcement> announcementPage = announcementRepository
+                .findByClassroom_ClassroomIdOrderByCreatedAtDesc(classroomId, PageRequest.of(page, size));
+
         return announcementPage.map(announcement -> {
             AnnouncementDTO dto = modelMapper.map(announcement, AnnouncementDTO.class);
 

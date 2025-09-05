@@ -13,4 +13,6 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Stri
     Page<Announcement> findByClassroom_ClassroomId(String classroomId, Pageable pageable);
 
     Announcement findTopByOrderByAnnouncementIdDesc();
+
+    Page<Announcement> findByClassroom_ClassroomIdOrderByCreatedAtDesc(String classroomId, PageRequest of);
 }
