@@ -277,6 +277,7 @@ $(document).ready(function() {
 });
 
 const userId = localStorage.getItem("userId");
+const userRole = localStorage.getItem("role");
 const api = "http://localhost:8080/api/v1/edusphere/users/";
 
 // ===== Load profile data via AJAX =====
@@ -299,8 +300,19 @@ function loadProfileData() {
             $('#profileName').text(data.name || '');
             $('#profileEmail').text(data.email || '');
 
+            if(data.name) {
+                const nameParts = data.name.split(" ");
+                const firstTwoPartOfName = nameParts.slice(0, 2).join(" "); // "Seenathul Ilma"
+                $('#sidebar-profile-name').text(firstTwoPartOfName);
+            } else {
+                $('#sidebar-profile-name').text("Edusphere Member");
+            }
+
+            $('#sidebar-role').text(getRoleDisplayName(userRole));
+
             if (data.profileImg) {
-                $('#profileImage').attr('src', data.profileImg).removeClass('hidden');
+                $('#profileImage').attr('src', "http://localhost:8080/profiles/" + data.profileImg).removeClass('hidden');
+                $('#sidebar-profile-image').attr('src', "http://localhost:8080/profiles/" + data.profileImg).removeClass('hidden');
                 $('#defaultAvatar').addClass('hidden');
             } else {
                 $('#profileImage').addClass('hidden');
@@ -329,12 +341,12 @@ function updateProfile() {
 
     const profileImageFile = $('#profileImageInput')[0].files[0];
     if (profileImageFile) {
-        formData.append('profileImg', profileImageFile);
+        formData.append('profileImage', profileImageFile);
     }
 
-    $.ajax({
-        url: '/api/profile/update',
-        method: 'POST',
+    ajaxWithToken({
+        url: `${api}profile/update/${userRole}/${userId}`,
+        method: 'PUT',
         data: formData,
         processData: false,
         contentType: false,
@@ -342,6 +354,7 @@ function updateProfile() {
             $('#profileName').text($('#name').val());
             $('#profileEmail').text($('#email').val());
             showMessage('successMessage');
+            loadProfileData();
         },
         error: function(xhr) {
             let errorMsg = xhr.responseJSON?.message || 'Failed to update profile.';
@@ -372,4 +385,15 @@ function togglePassword() {
     lucide.createIcons();
 }
 
-
+function getRoleDisplayName(role) {
+    switch(role) {
+        case 'ADMIN':
+            return 'Administrator';
+        case 'TEACHER':
+            return 'Educator';
+        case 'STUDENT':
+            return 'Learner';
+        default:
+            return 'User';
+    }
+}
