@@ -51,7 +51,6 @@ function ajaxWithToken(options) {
   const originalError = options.error;
   options.error = function(xhr, status, error) {
     if (xhr.status === 401) {
-      // Unauthorized -> refresh token
       refreshAccessToken().done(function() {
         ajaxWithToken(options); // retry original request
       }).fail(function() {
@@ -59,14 +58,16 @@ function ajaxWithToken(options) {
         window.location.href = "login.html";
       });
     } else if (xhr.status === 403) {
-      // Forbidden -> show warning
-      showMessage("warning", xhr.responseJSON?.message || "Access Denied..!");
+      // Forbidden -> action-specific
+      showMessage("warning", xhr.responseJSON?.message || "You don’t have permission to perform this action.");
     } else if (xhr.status === 400) {
-      // Bad request -> show warning
-      showMessage("warning", xhr.responseJSON?.message || "Validation failed.");
+      // Validation issue
+      showMessage("warning", xhr.responseJSON?.message || "Please fill all required fields correctly.");
+    } else if (xhr.status === 409) {
+      // Conflict (e.g. duplicate email)
+      showMessage("error", xhr.responseJSON?.message || "This email is already registered.");
     } else if (xhr.status >= 500) {
-      // Server error
-      showMessage("error", "Server error. Please try again later.");
+      showMessage("error", "Unexpected server error. Please try again later.");
     } else if (originalError) {
       originalError(xhr, status, error);
     }
@@ -181,7 +182,12 @@ function saveStudent(studentData) {
     data: JSON.stringify(studentData),
     success: function(response) {
       console.log(response);
-      showMessage("success", "Student added successfully!");
+
+      // Test toast here
+      console.log("Trying to show toast...");
+      showMessage("success", "Student added successfully..!");
+
+      console.log("saved successfully..")
       $("#studentModal").addClass("hidden");
       $("#studentForm")[0].reset();
       loadDataPaginated(1, state.size);
@@ -208,37 +214,65 @@ function saveStudent(studentData) {
         console.error("Failed to save student:", res);
       }
     }
-
-
   });
 }
 
+
 // ====================== Form Submit ======================
+// NIC regex: old (9 digits + V/X) or new (12 digits)
+function isValidNIC(nic) {
+  const oldNicPattern = /^[0-9]{9}[VXvx]$/;
+  const newNicPattern = /^[0-9]{12}$/;
+  return oldNicPattern.test(nic) || newNicPattern.test(nic);
+}
+
 $("#studentForm").on("submit", function(e) {
   e.preventDefault();
 
   const studentData = {
-    name: $("#name").val(),
-    nic: $("#nic").val(),
-    email: $("#email").val(),
-    contact: $("#contact").val(),
-    address: $("#address").val(),
-    emergencyContact: $("#emergencyContact").val(),
-    relationship: $("#relationship").val()
+    name: $("#name").val().trim(),
+    nic: $("#nic").val().trim(),
+    email: $("#email").val().trim(),
+    contact: $("#contact").val().trim(),
+    address: $("#address").val().trim(),
+    emergencyContact: $("#emergencyContact").val().trim(),
+    relationship: $("#relationship").val().trim()
   };
 
-  console.log("Submitting studentData:", studentData); // check data
+  // Collect missing or invalid fields
+  let missingFields = [];
 
-  //saveStudent(studentData);
+  if (!studentData.name) missingFields.push("Name");
+  if (!studentData.nic) {
+    missingFields.push("NIC");
+  } else if (!isValidNIC(studentData.nic)) {
+    showMessage("error", "NIC format is invalid.");
+    return;
+  }
+  if (!studentData.email) missingFields.push("Email");
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(studentData.email)) {
+    showMessage("error", "Email format is invalid.");
+    return;
+  }
+  if (!studentData.contact) missingFields.push("Contact");
+  if (!studentData.address) missingFields.push("Address");
+  if (!studentData.emergencyContact) missingFields.push("Emergency Contact");
+  if (!studentData.relationship) missingFields.push("Relationship");
 
+  if (missingFields.length > 0) {
+    showMessage("error", "Please fill in " + missingFields.join(", ") + ".");
+    return;
+  }
+
+  // Submit
   if (editingStudentId) {
-    // Update student
     updateStudent(editingStudentId, studentData);
   } else {
-    // Add student
     saveStudent(studentData);
   }
 });
+
+
 
 // Attach click handler to tbody, listen for .edit-student
 $("#student-table-tbody").on("click", ".edit-student", function () {
@@ -271,7 +305,8 @@ function updateStudent(studentId, studentData) {
     contentType: "application/json",
     data: JSON.stringify(studentData),
     success: function (response) {
-      showMessage("success", response.message || "Student updated successfully!");
+      //showMessage("success", response.message || "Student updated successfully!");
+      showMessage("success", "Student updated successfully!");
       $("#studentModal").addClass("hidden");
       $("#studentForm")[0].reset();
       editingStudentId = null;
@@ -321,7 +356,7 @@ function showMessage(type, text, duration = 5000) {
 
   if (type === "success") {
     messageId = "successMessage";
-    textId = null; // success text is static ("Success!")
+    textId = "successText";
   } else if (type === "error") {
     messageId = "errorMessage";
     textId = "errorText";
@@ -332,21 +367,20 @@ function showMessage(type, text, duration = 5000) {
 
   const $msg = $("#" + messageId);
 
-  if (textId) {
-    $("#" + textId).text(text); // update dynamic text
+  if (textId) $("#" + textId).text(text);
+
+  // Clear previous timers
+  if ($msg.data("timer")) {
+    clearTimeout($msg.data("timer"));
   }
 
   $msg.removeClass("hidden");
 
-  // Auto hide after duration
-  setTimeout(() => {
-    $msg.addClass("hidden");
-  }, duration);
+  // Set new auto-hide timer
+  const timer = setTimeout(() => $msg.addClass("hidden"), duration);
+  $msg.data("timer", timer);
 
-  // Re-render Lucide icons in case they didn’t load
-  if (window.lucide?.createIcons) {
-    lucide.createIcons();
-  }
+  if (window.lucide?.createIcons) lucide.createIcons();
 }
 
 

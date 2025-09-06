@@ -71,7 +71,7 @@
 
         </a>
         <a
-                href="inviteTeacher.html"
+                href="manageTeacher.html"
                 data-page="teacher"
                 class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
         >
@@ -95,7 +95,7 @@
           <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
         </a>
         <a
-                href="classroom.html"
+                href="manageClassroom.html"
                 data-page="classroom"
                 class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
         >
@@ -365,9 +365,9 @@
             </div>
           </div>
 
-          <!-- Success & Error Messages (Hidden by default) -->
+          <!--&lt;!&ndash; Success & Error Messages (Hidden by default) &ndash;&gt;
           <div class="relative">
-            <!-- Success Message -->
+            &lt;!&ndash; Success Message &ndash;&gt;
             <div id="inviteMessage" class="hidden absolute top-0 right-0 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md flex items-center gap-2">
               <i data-lucide="check-circle" class="w-5 h-5"></i>
               <span id="inviteMessageText">Invitation Sent</span>
@@ -376,7 +376,7 @@
               </button>
             </div>
 
-            <!-- Error Message -->
+            &lt;!&ndash; Error Message &ndash;&gt;
             <div id="inviteError" class="hidden absolute top-0 right-0 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-md flex items-center gap-2">
               <i data-lucide="alert-circle" class="w-5 h-5"></i>
               <span id="inviteErrorText">Failed to send invitation</span>
@@ -384,7 +384,7 @@
                 <i data-lucide="x" class="w-5 h-5"></i>
               </button>
             </div>
-          </div>
+          </div>-->
 
 
 
@@ -561,6 +561,40 @@
     </div>
 
   </div>
+
+  <!-- Success Message -->
+  <div id="successMessage" class="hidden fixed top-4 right-4 bg-green-100/90 dark:bg-green-900/80 backdrop-blur-xl border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 px-4 py-3 rounded-xl shadow-lg z-50">
+    <div class="flex items-center">
+      <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+      <span id="successText">Invitation sent successfully!</span>
+      <button onclick="$(this).closest('#successMessage').addClass('hidden')" class="ml-4 text-green-500 hover:text-green-700">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div id="errorMessage" class="hidden fixed top-4 right-4 bg-red-100/90 dark:bg-red-900/80 backdrop-blur-xl border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 px-4 py-3 rounded-xl shadow-lg z-50">
+    <div class="flex items-center">
+      <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i>
+      <span id="errorText">Failed to send invitation. Please try again.</span>
+      <button onclick="$(this).closest('#errorMessage').addClass('hidden')" class="ml-4 text-red-500 hover:text-red-700">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Warning Message -->
+  <div id="warningMessage" class="hidden fixed top-4 right-4 bg-orange-100/90 dark:bg-orange-900/80 backdrop-blur-xl border border-orange-400 dark:border-orange-600 text-orange-700 dark:text-orange-200 px-4 py-3 rounded-xl shadow-lg z-50">
+    <div class="flex items-center">
+      <i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i>
+      <span id="warningText">This is a warning. Please check.</span>
+      <button onclick="$(this).closest('#warningMessage').addClass('hidden')" class="ml-4 text-orange-500 hover:text-orange-700">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <script src="Assets/lib/jquery-3.7.1.min.js"></script>

@@ -94,19 +94,19 @@ function renderCards(items) {
   items.forEach((classroom) => {
     // Only show buttons if role is TEACHER
     //const actionButtons = userRole === "TEACHER" ? `
-    const actionButtons = (userRole === "TEACHER" && classroom.creatorId === userId) ? `
+    const actionButtons = (userRole === "STUDENT" && classroom.creatorId === userId) ? `
+      <div class="flex">
+        <button class="classroom-enter flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
+          <i data-lucide="university" class="w-4 h-4"></i>Enter Classroom
+        </button>
+      </div>
+    ` : `
       <div class="flex gap-2">
         <button class="edit-classroom flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
           <i data-lucide="pencil-ruler" class="w-4 h-4"></i>Edit
         </button>
         <button class="delete-classroom flex-1 bg-red-100 dark:bg-red-700/20 hover:bg-red-200 dark:hover:bg-red-700/40 text-red-700 dark:text-red-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
           <i data-lucide="trash-2" class="w-4 h-4"></i>Delete
-        </button>
-      </div>
-    ` : `
-      <div class="flex">
-        <button class="classroom-enter flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
-          <i data-lucide="university" class="w-4 h-4"></i>Enter Classroom
         </button>
       </div>
     `;

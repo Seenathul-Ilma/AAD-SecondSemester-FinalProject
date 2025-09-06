@@ -171,6 +171,7 @@ function loadDataPaginated(page1 = 1, size = state.size) {
       state.totalElements = totalElements ?? 0;
 
       state.currentPageData = content;
+      lucide.createIcons();
 
       renderRows(content);
       renderPaginationFooter();
@@ -311,6 +312,7 @@ const $inviteError = $("#inviteError");
 const $inviteErrorText = $("#inviteErrorText");
 
 // Send Invite Button
+/*
 $sendInviteBtn.on("click", function() {
   const email = $inviteEmailInput.val().trim();
 
@@ -336,7 +338,7 @@ $sendInviteBtn.on("click", function() {
   $sendInviteBtn.prop("disabled", true).html('<i data-lucide="send" class="w-4 h-4 mr-2"></i> Sending...');
 
   // AJAX call
-  $.ajax({
+  /!*$.ajax({
     url: "http://localhost:8080/api/v1/admin/invite-teacher",
     method: "POST",
     contentType: "application/json",
@@ -362,8 +364,95 @@ $sendInviteBtn.on("click", function() {
     complete: function() {
       $sendInviteBtn.prop("disabled", false).html('<i data-lucide="send" class="w-4 h-4 mr-2"></i> Send Invite');
     }
+  });*!/
+
+  $.ajax({
+    url: "http://localhost:8080/api/v1/admin/invite-teacher",
+    method: "POST",
+    contentType: "application/json",
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("accessToken")
+    },
+    data: JSON.stringify({ email }),
+    success: function(response) {
+      // Backend returned success (HTTP 200)
+      if (response.success) {
+        $inviteMessageText.text(response.message || `Invite sent to ${email}!`);
+        $inviteMessage.removeClass("hidden");
+        $inviteEmailInput.val("");
+        setTimeout(() => $inviteMessage.addClass("hidden"), 4000);
+      } else {
+        // Backend returned 200 but success=false (rare)
+        $inviteErrorText.text(response.message || "Failed to send invite.");
+        $inviteError.removeClass("hidden");
+      }
+    },
+    error: function(xhr) {
+      // Handle HTTP errors like 400, 409, 403 etc.
+      let msg = "Something went wrong. Try again.";
+
+      if (xhr.responseJSON && xhr.responseJSON.message) {
+        msg = xhr.responseJSON.message;
+      }
+
+      $inviteErrorText.text(msg);
+      $inviteError.removeClass("hidden");
+    },
+    complete: function() {
+      lucide.createIcons();
+      $sendInviteBtn.prop("disabled", false)
+          .html('<i data-lucide="send" class="w-4 h-4 mr-2"></i> Invitation Sent ');
+    }
+  });
+
+});
+*/
+
+// Send Invite Button
+$sendInviteBtn.on("click", function() {
+  const email = $inviteEmailInput.val().trim();
+
+  // Validate input
+  if (!email) {
+    showMessage("warning", "Please enter an email address.");
+    return;
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    showMessage("warning", "Please enter a valid email address.");
+    return;
+  }
+
+  // Disable button while sending
+  $sendInviteBtn.prop("disabled", true).html('<i data-lucide="send" class="w-4 h-4 mr-2"></i> Sending');
+  lucide.createIcons();
+
+  // AJAX call using ajaxWithToken (handles 401, 403, 400, 500 automatically)
+  ajaxWithToken({
+    url: "http://localhost:8080/api/v1/admin/invite-teacher",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({ email }),
+    success: function(response) {
+      // Backend returned success (HTTP 200)
+      showMessage("success", response.message || `Invite sent to ${email}!`);
+      $inviteEmailInput.val(""); // clear input
+    },
+    error: function(xhr) {
+      // Backend returned error (like 409 Duplicate, 400 Bad Request)
+      const msg = xhr.responseJSON?.message || "Something went wrong. Try again.";
+      showMessage("error", msg);
+      $inviteEmailInput.val(""); // clear input
+    },
+    complete: function() {
+      $sendInviteBtn.prop("disabled", false)
+          .html('<i data-lucide="send" class="w-4 h-4 mr-2"></i> Invite Teacher');
+      lucide.createIcons();
+    }
   });
 });
+
 
 // Close buttons
 $("#closeInviteMessage").on("click", () => $inviteMessage.addClass("hidden"));
@@ -374,6 +463,7 @@ lucide.createIcons();
 
 
 // ===== Show Toast Message for Success, Error, Warn =====
+/*
 function showMessage(type, text, duration = 5000) {
   let messageId, textId;
 
@@ -406,4 +496,33 @@ function showMessage(type, text, duration = 5000) {
     lucide.createIcons();
   }
 }
+*/
 
+function showMessage(type, text, duration = 5000) {
+  let messageId, textId;
+
+  if (type === "success") {
+    messageId = "successMessage";
+    textId = "successText"; // <- dynamic now
+  } else if (type === "error") {
+    messageId = "errorMessage";
+    textId = "errorText";
+  } else if (type === "warning") {
+    messageId = "warningMessage";
+    textId = "warningText";
+  }
+
+  const $msg = $("#" + messageId);
+
+  if (textId && text) {
+    $("#" + textId).text(text); // update dynamic text
+  }
+
+  $msg.removeClass("hidden");
+
+  setTimeout(() => {
+    $msg.addClass("hidden");
+  }, duration);
+
+  if (window.lucide?.createIcons) lucide.createIcons();
+}

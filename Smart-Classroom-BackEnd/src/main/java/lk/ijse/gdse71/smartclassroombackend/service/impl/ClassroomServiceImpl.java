@@ -124,18 +124,23 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     @Transactional
-    public ClassroomDTO updateClassroom(ClassroomDTO classroomDTO, String updatingTeacherId)  {
+    public ClassroomDTO updateClassroom(ClassroomDTO classroomDTO, String updatingUserId)  {
         Classroom existing = classroomRepository.findById(classroomDTO.getClassroomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Classroom not found"));
 
         boolean isCreator =
                 userClassroomRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(
-                        updatingTeacherId,
+                        updatingUserId,
                         classroomDTO.getClassroomId()
                 );
 
-        if (!isCreator) {
-            throw new AccessDeniedException("Access denied: Only the creator can update this classroom.");
+        Role userRole = userRepository.findById(updatingUserId)
+                .map(User::getRole)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+
+        // Only allow deletion if user is creator or an ADMIN
+        if (!isCreator && userRole != Role.ADMIN) {
+            throw new AccessDeniedException("Access denied: Only the creator or an admin can delete this classroom.");
         }
 
         if (classroomDTO.getClassLevel() == null || classroomDTO.getSubject() == null) {
@@ -165,19 +170,24 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     @Transactional
-    public boolean deleteClassroom(String classroomId, String deletingTeacherId) {
+    public boolean deleteClassroom(String classroomId, String deletingUserId) {
         // Check classroom existence first
         Classroom classroomToDelete = classroomRepository.findById(classroomId)
                 .orElseThrow(() -> new ResourceNotFoundException("No classroom found..!"));
 
         // Ensure the deleting user is the creator of this classroom
         boolean isCreator = userClassroomRepository.existsByUser_UserIdAndClassroom_ClassroomIdAndIsCreatorTrue(
-                deletingTeacherId,
+                deletingUserId,
                 classroomId
         );
 
-        if (!isCreator) {
-            throw new AccessDeniedException("Access denied: Only the creator can delete this classroom.");
+        Role userRole = userRepository.findById(deletingUserId)
+                .map(User::getRole)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+
+        // Only allow deletion if user is creator or an ADMIN
+        if (!isCreator && userRole != Role.ADMIN) {
+            throw new AccessDeniedException("Access denied: Only the creator or an admin can delete this classroom.");
         }
 
         // Perform deletion

@@ -1,7 +1,16 @@
-
-
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     lucide.createIcons();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+
+    if (token) {
+        console.log("Invitation token:", token);
+        const tokenInput = document.getElementById("token");
+        if (tokenInput) {
+            tokenInput.value = token;
+        }
+    }
 });
 
     function togglePassword() {
