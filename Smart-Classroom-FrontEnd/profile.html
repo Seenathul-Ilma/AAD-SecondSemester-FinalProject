@@ -127,6 +127,19 @@
           <span class="font-medium">Profile</span>
           <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
         </a>
+
+        <a
+                href="login.html"
+                data-page="login"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+        >
+          <i
+                  data-lucide="user-circle"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Log Out</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+        </a>
       </nav>
 
 
@@ -207,7 +220,7 @@
 
           <!-- Profile Form Card -->
           <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
-            <form id="profileForm" class="p-6 space-y-8">
+            <form id="profileForm" enctype="multipart/form-data" class="p-6 space-y-8">
               <!-- Personal Information Section -->
               <div>
                 <h4 class="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center">
@@ -228,7 +241,8 @@
                               type="text"
                               readonly
                               class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed backdrop-blur-xl"
-                              value="TEA20252222"
+                              placeholder="STU2025XXXX"
+                              value=""
                       >
                     </div>
                   </div>
@@ -320,9 +334,9 @@
                               id="password"
                               name="password"
                               type="password"
-                              required
                               class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200"
                               placeholder="johnDoe@123"
+                              readonly
                       >
                       <button
                               type="button"
@@ -463,7 +477,8 @@
 </div>
 
 <script src="JavaScript/pageNavigate.js"></script>
-
+<script src="JavaScript/handleToken.js"></script>
+<script src="JavaScript/profile.js"></script>
 
 </body>
 </html>
