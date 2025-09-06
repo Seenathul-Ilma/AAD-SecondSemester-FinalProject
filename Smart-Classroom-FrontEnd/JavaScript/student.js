@@ -49,13 +49,19 @@ function ajaxWithToken(options) {
 
   const originalError = options.error;
   options.error = function(xhr, status, error) {
-    if (xhr.status === 401 || xhr.status === 403) {
+    if (xhr.status === 401) {
+      // Unauthorized -> refresh token
       refreshAccessToken().done(function() {
         ajaxWithToken(options);
       }).fail(function() {
         alert("Session expired. Please log in again.");
         window.location.href = "login.html";
       });
+    } else if (xhr.status === 403) {
+      // Forbidden -> show proper message
+      alert(xhr.responseJSON?.message || "Access Denied..!");
+    }else if (xhr.status === 400) {
+      alert(xhr.responseJSON?.message || "Action Failed..");
     } else if (originalError) {
       originalError(xhr, status, error);
     }

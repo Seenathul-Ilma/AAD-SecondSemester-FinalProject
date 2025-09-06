@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduSphere | Smart Classroom</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      .active-link {
+        background-image: linear-gradient(to right, #2563EB, #8B5CF6); /* Direct color values for from-blue-600 and to-purple-600 */
+        color: #fff;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+      }
+
+      .dark .active-link {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-900">
+    <!-- Wrapper -->
+    <div
+      class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500"
+    >
+      <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div
+          class="w-64 min-h-screen transition duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10"
+        >
+          <div
+            class="p-5 border-b border-slate-200/50 dark:border-slate-700/50"
+          >
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
+              >
+                <i
+                  data-lucide="school"
+                  class="w-6 h-6 font-medium text-white"
+                ></i>
+              </div>
+              <div>
+                <h1 class="text-xl font-bold text-slate-800 dark:text-white">
+                  EduSphere
+                </h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  Admin Panel
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation -->
+          <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <a
+                    href="index.html"
+                    data-page="index"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group"
+            >
+              <i
+                      data-lucide="home"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Dashboard</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+
+            </a>
+            <a
+                    href="teacher.html"
+                    data-page="teacher"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="users"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Teachers</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="student.html"
+                    data-page="student"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="users"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Students</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="classroom.html"
+                    data-page="classroom"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="landmark"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Classrooms</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="#"
+                    data-page="materials"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="package"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Materials</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="#"
+                    data-page="messages"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="message-square"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Messages</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <a
+                    href="profile.html"
+                    data-page="profile"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="user-circle"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Profile</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+          </nav>
+
+          <!-- Side Bar Footer -->
+          <div
+            class="p-4 border-t border-slate-200/50 dark:border-slate-700/50"
+          >
+            <!-- Footer Wrapper -->
+            <div
+              class="flex items-center space-x-3 p-3 rounded-xl bg-gray-100 dark:bg-slate-800"
+            >
+              <img
+                src="Assets/images/user-profile-male.avif"
+                alt="user"
+                class="w-10 h-10 rounded-full ring-2 ring-blue-500"
+              />
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-medium text-slate-800 dark:text-white truncate"
+                >
+                  Mirzan Musawwir
+                </p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  Administrator
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content With Header -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <!-- Header Part Only -->
+          <div
+            class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 px-6 py-4"
+          >
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+              <!-- Header Left Section -->
+              <div class="flex items-center space-x-4">
+                <!-- Menu Button -->
+                <button
+                  class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+
+                <!-- Page Detail -->
+                <div class="hidden md:block">
+                  <h1
+                    class="text-xl font-black text-slate-800 dark:text-slate-100"
+                  >
+                    Teachers' Page
+                  </h1>
+                  <p class="text-slate-600 dark:text-slate-300">
+                    Welcome back, Mirzan! Here's what's happening today
+                  </p>
+                </div>
+              </div>
+
+              <!-- Header center content -->
+              <div></div>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div
+            class="flex-1 px-6 py-4 overflow-y-auto bg-white/100 dark:bg-slate-800/100 backdrop-blur-sm"
+          >
+            <div class="space-y-6">
+              <div
+                class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden"
+              >
+                <!-- Header -->
+                <div
+                  class="p-5 border-b border-slate-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3
+                        class="text-xl font-bold text-slate-800 dark:text-white"
+                      >
+                        Teachers
+                      </h3>
+                      <p class="text-sm text-slate-500 dark:text-slate-400">
+                        List of all registered teacher
+                      </p>
+                    </div>
+                    <button
+                      class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <i data-lucide="user-plus"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                  <table class="w-full">
+                    <thead>
+                    <tr>
+                      <th
+                              class="text-left p-4 text-sm uppercase font-semibold text-slate-500 dark:text-slate-400"
+                      >
+                        Profile
+                      </th>
+                      <th
+                              class="text-left p-4 text-sm uppercase font-semibold text-slate-500 dark:text-slate-400"
+                      >
+                        Id
+                      </th>
+                      <th
+                              class="text-left p-4 text-sm uppercase font-semibold text-slate-500 dark:text-slate-400"
+                      >
+                        Name
+                      </th>
+                      <th
+                              class="text-left p-4 text-sm uppercase font-semibold text-slate-500 dark:text-slate-400"
+                      >
+                        NIC
+                      </th>
+                      <th
+                              class="text-left p-4 text-sm uppercase font-semibold text-slate-500 dark:text-slate-400"
+                      >
+                        Contact
+                      </th>
+                      <th
+                              class="text-left p-4 text-sm uppercase font-semibold text-slate-500 dark:text-slate-400"
+                      >
+                        Email
+                      </th>
+                      <th
+                              class="text-left p-4 text-sm uppercase font-semibold text-slate-500 dark:text-slate-400"
+                      >
+                        Actions
+                      </th>
+                    </tr>
+                    </thead>
+                    <tbody id="teacher-table-tbody">
+                      <!-- Example Row -->
+                      <tr
+                        class="border-b border-slate-200/50 dark:border-slate-700/50 dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow transition-colors"
+                      >
+                        <td class="pl-10 py-4">
+                          <img
+                            src="https://i.pravatar.cc/100"
+                            class="w-10 h-10 rounded-full"
+                            alt="Profile"
+                          />
+                        </td>
+                        <td
+                          class="text-center p-4 font-light text-slate-700 dark:text-slate-400"
+                        >
+                          T001
+                        </td>
+                        <td
+                          class="text-center p-4 font-light text-slate-700 dark:text-slate-400"
+                        >
+                          John Doe
+                        </td>
+                        <td
+                          class="text-center p-4 font-light text-slate-700 dark:text-slate-400"
+                        >
+                          123456789V
+                        </td>
+                        <td
+                          class="text-center p-4 font-light text-slate-700 dark:text-slate-400"
+                        >
+                          +94 77 123 4567
+                        </td>
+                        <td
+                          class="text-center p-4 font-light text-slate-700 dark:text-slate-400"
+                        >
+                          johndoe@email.com
+                        </td>
+                        <td class="pl-20 py-4">
+                          <div
+                            class="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg p-1 w-fit"
+                          >
+                            <button
+                              aria-label="Send Message"
+                              class="p-2 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105"
+                            >
+                              <i
+                                data-lucide="message-circle-more"
+                                class="size-5"
+                              ></i>
+                            </button>
+
+                            <div class="w-px h-6 bg-gray-300 mx-1"></div>
+
+                            <button
+                              aria-label="Edit"
+                              class="p-2 text-green-600 hover:bg-green-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105"
+                            >
+                              <i data-lucide="pencil" class="size-5"></i>
+                            </button>
+
+                            <div class="w-px h-6 bg-gray-300 mx-1"></div>
+
+                            <button
+                              aria-label="Delete"
+                              class="p-2 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105"
+                            >
+                              <i data-lucide="trash" class="size-5"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <!-- Pagination footer (JS will render inside) -->
+                  <div id="pagination-container"></div>
+                  <!-- Pagination Finished -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="Assets/lib/jquery-3.7.1.min.js"></script>
+    <script src="JavaScript/pageNavigate.js"></script>
+
+    <script src="JavaScript/teacher.js"></script>
+    <script src="JavaScript/pagination.js"></script>
+
+  </body>
+</html>

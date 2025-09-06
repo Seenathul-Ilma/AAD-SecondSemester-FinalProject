@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduSphere | Smart Classroom</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .active-link {
+      background-image: linear-gradient(to right, #2563EB, #8B5CF6); /* Direct color values for from-blue-600 and to-purple-600 */
+      color: #fff;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+    }
+
+    .dark .active-link {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+    }
+  </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+<div class="flex min-h-screen">
+  <div
+          class="w-64 min-h-screen transition duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10"
+  >
+    <div class="p-5 border-b border-slate-200/50 dark:border-slate-700/50">
+      <div class="flex items-center space-x-3">
+        <div
+                class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
+        >
+          <i
+                  data-lucide="school"
+                  class="w-6 h-6 font-medium text-white"
+          ></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-slate-800 dark:text-white">
+            EduSphere
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Admin Panel
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+      <a
+              href="adminDashboard.html"
+              data-page="index"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group"
+      >
+        <i
+                data-lucide="home"
+                class="w-5 h-5 transition-all duration-200"
+        ></i>
+        <span class="font-medium">Dashboard</span>
+        <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+
+      </a>
+      <a
+              href="inviteTeacher.html"
+              data-page="teacher"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+      >
+        <i
+                data-lucide="users"
+                class="w-5 h-5 transition-all duration-200"
+        ></i>
+        <span class="font-medium">Teachers</span>
+        <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+      </a>
+      <a
+              href="student.html"
+              data-page="student"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+      >
+        <i
+                data-lucide="users"
+                class="w-5 h-5 transition-all duration-200"
+        ></i>
+        <span class="font-medium">Students</span>
+        <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+      </a>
+      <a
+              href="classroom.html"
+              data-page="classroom"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+      >
+        <i
+                data-lucide="landmark"
+                class="w-5 h-5 transition-all duration-200"
+        ></i>
+        <span class="font-medium">Classrooms</span>
+        <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+      </a>
+      <a
+              href="#"
+              data-page="materials"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+      >
+        <i
+                data-lucide="package"
+                class="w-5 h-5 transition-all duration-200"
+        ></i>
+        <span class="font-medium">Materials</span>
+        <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+      </a>
+      <a
+              href="#"
+              data-page="messages"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+      >
+        <i
+                data-lucide="message-square"
+                class="w-5 h-5 transition-all duration-200"
+        ></i>
+        <span class="font-medium">Messages</span>
+        <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+      </a>
+      <a
+              href="profile.html"
+              data-page="profile"
+              class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+      >
+        <i
+                data-lucide="user-circle"
+                class="w-5 h-5 transition-all duration-200"
+        ></i>
+        <span class="font-medium">Profile</span>
+        <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+      </a>
+    </nav>
+
+    <div class="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
+      <div
+              class="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50"
+      >
+        <img
+                src="Assets/images/user-profile-male.avif"
+                alt="user"
+                class="w-10 h-10 rounded-full ring-2 ring-blue-500"
+        />
+        <div class="flex-1 min-w-0">
+          <p
+                  class="text-sm font-medium text-slate-800 dark:text-white truncate"
+          >
+            Mirzan Musawwir
+          </p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+            Administrator
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1 p-6">
+    <h1 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">
+      Dashboard
+    </h1>
+    <p class="text-slate-600 dark:text-slate-400">
+      Welcome to EduSphere! Here is your main content area.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      <div class="p-4 bg-white dark:bg-slate-800 rounded-xl shadow">
+        <h2 class="text-lg font-semibold text-slate-800 dark:text-white">
+          Students
+        </h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-2">120 enrolled</p>
+      </div>
+      <div class="p-4 bg-white dark:bg-slate-800 rounded-xl shadow">
+        <h2 class="text-lg font-semibold text-slate-800 dark:text-white">
+          Teachers
+        </h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-2">15 active</p>
+      </div>
+      <div class="p-4 bg-white dark:bg-slate-800 rounded-xl shadow">
+        <h2 class="text-lg font-semibold text-slate-800 dark:text-white">
+          Classrooms
+        </h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-2">8 available</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="JavaScript/pageNavigate.js"></script>
+</body>
+</html>

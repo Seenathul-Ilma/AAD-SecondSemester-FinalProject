@@ -1,3 +1,4 @@
+/*
 document.addEventListener("DOMContentLoaded", function () {
   lucide.createIcons();
   loadDataPaginated(1, default_page_size);
@@ -7,6 +8,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeBtn = document.getElementById("closeTeacherModal");
   const cancelBtn = document.getElementById("cancelBtn");
 
+  if (openBtn) {
+    openBtn.addEventListener("click", () => {
+      const modal = document.getElementById("teacherModal");
+      if (modal) modal.classList.remove("hidden");
+    });
+  }
+
+
   openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
   closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
   cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
@@ -15,6 +24,32 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.target === modal) modal.classList.add("hidden");
   });
 });
+*/
+
+document.addEventListener("DOMContentLoaded", () => {
+  lucide.createIcons();
+  loadDataPaginated(1, default_page_size);
+
+  const openBtn = document.getElementById("create-new-teacher");
+  const modal = document.getElementById("teacherModal");
+  const closeBtn = document.getElementById("closeTeacherModal");
+  const cancelBtn = document.getElementById("cancelBtn");
+
+  if (!openBtn || !modal || !closeBtn || !cancelBtn) return; // safety check
+
+  // Open modal
+  openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+
+  // Close modal
+  closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+  cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
+
+  // Close modal if clicking outside modal content
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.add("hidden");
+  });
+});
+
 
 const api = "http://localhost:8080/api/v1/edusphere/users/";
 const default_page_size = 5;
@@ -49,13 +84,19 @@ function ajaxWithToken(options) {
 
   const originalError = options.error;
   options.error = function(xhr, status, error) {
-    if (xhr.status === 401 || xhr.status === 403) {
+    if (xhr.status === 401) {
+      // Unauthorized -> refresh token
       refreshAccessToken().done(function() {
         ajaxWithToken(options);
       }).fail(function() {
         alert("Session expired. Please log in again.");
         window.location.href = "login.html";
       });
+    } else if (xhr.status === 403) {
+      // Forbidden -> show proper message
+      alert(xhr.responseJSON?.message || "Access Denied..!");
+    }else if (xhr.status === 400) {
+      alert(xhr.responseJSON?.message || "Action Failed..");
     } else if (originalError) {
       originalError(xhr, status, error);
     }
@@ -82,7 +123,7 @@ function renderRows(items) {
             <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${teacher.email}</td>
             <td class="px-6 py-4">
               <div class="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg p-1 w-fit">
-                <button aria-label="Send Message" class="p-2 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
+                <button aria-label="Send Message" class="start-chat p-2 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
                   <i data-lucide="message-circle-more" class="size-5"></i>
                 </button>
                 <div class="w-px h-6 bg-gray-300 mx-1"></div>

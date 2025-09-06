@@ -41,4 +41,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByRole(Role role);
 
     boolean existsByEmail(@NotBlank(message = "Email is required") @Email(message = "Email must be valid") String email);
+
+    boolean existsByEmailAndUserIdNot(@NotBlank(message = "Email is required") @Email(message = "Email must be valid") String email, String userId);
 }
