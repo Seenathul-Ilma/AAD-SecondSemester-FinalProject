@@ -22,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -246,7 +247,8 @@ public class UserServiceImpl implements UserService {
         File dest = new File(uploadFolder, filename);
         file.transferTo(dest);
 
-        return dest.getAbsolutePath();
+        //return dest.getAbsolutePath();
+        return filename;
     }
 
     @Override
@@ -343,25 +345,23 @@ public class UserServiceImpl implements UserService {
             System.out.println("New hashed password: " + finalPassword);
         }
 
-        String contentType = profileImage.getContentType();
-
-        if (!("image/jpeg".equals(contentType) ||
-                "image/png".equals(contentType) ||
-                "image/webp".equals(contentType))) {
-            throw new IllegalArgumentException("Only JPG, PNG, or WEBP images are allowed.");
-        }
-
-        // Profile image handling
         if (profileImage != null && !profileImage.isEmpty()) {
-            // Delete old profile image
+            String contentType = profileImage.getContentType();
+            if (!("image/jpeg".equals(contentType) ||
+                    "image/png".equals(contentType) ||
+                    "image/webp".equals(contentType))) {
+                throw new IllegalArgumentException("Only JPG, PNG, or WEBP images are allowed.");
+            }
+
+            // delete old image if exists
             if (existingUser.getProfileImg() != null) {
-                File oldFile = new File(existingUser.getProfileImg());
+                File oldFile = new File(uploadDirectory + File.separator + existingUser.getProfileImg());
                 if (oldFile.exists()) oldFile.delete();
             }
 
-            // Save new profile image
-            String savedPath = saveProfileImage(profileImage, userId); // implement this to store file
-            existingUser.setProfileImg(savedPath);
+            // save new profile image
+            String filename = saveProfileImage(profileImage, userId);
+            existingUser.setProfileImg(filename);
         }
 
         existingUser.setName(userDTO.getName());
@@ -380,6 +380,14 @@ public class UserServiceImpl implements UserService {
         existingUser.setPassword(finalPassword);
         //existingUser.setProfileImg(finalProfileImg);
         existingUser.setRole(role);
+
+        if (existingUser.getProfileImg() != null) {
+            String profileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/profiles/")
+                    .path(existingUser.getProfileImg())
+                    .toUriString();
+            userDTO.setProfileImg(profileUrl); // frontend gets http://localhost:8080/profiles/xxx.jpg
+        }
 
         // Save
         userRepository.save(existingUser);
