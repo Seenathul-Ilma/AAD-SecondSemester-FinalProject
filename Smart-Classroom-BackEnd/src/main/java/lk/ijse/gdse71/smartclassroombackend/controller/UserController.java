@@ -12,8 +12,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -158,6 +160,36 @@ public class UserController {
     public ResponseEntity<ApiResponse> updateStudent(@Valid @RequestBody UserDTO userDTO) {
     //public boolean updateStudent(@Valid @RequestBody UserDTO userDTO) {
         boolean isUpdated = userService.updateUser(userDTO, Role.STUDENT);
+        if(!isUpdated){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to update student..!",
+                            isUpdated
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        //return userService.updateUser(userDTO, Role.STUDENT);
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Student updated successfully..!",
+                        isUpdated
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping(
+            value = "/profile/update/{userId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ApiResponse> updateStudent(@PathVariable String userId,
+                                                     @ModelAttribute UserDTO userDTO,
+                                                     @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws IOException {
+        boolean isUpdated = userService.updateProfile(userId, userDTO, profileImage, Role.STUDENT);
         if(!isUpdated){
             return new ResponseEntity<>(
                     new ApiResponse(

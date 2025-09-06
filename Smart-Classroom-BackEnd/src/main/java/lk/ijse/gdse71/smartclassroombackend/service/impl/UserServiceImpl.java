@@ -15,12 +15,15 @@ import lk.ijse.gdse71.smartclassroombackend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
@@ -50,6 +53,9 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final BrevoEmailService brevoEmailService;
     private static final SecureRandom random = new SecureRandom();
+
+    @Value("${profile.upload.dir:uploads/profiles}")
+    private String uploadDirectory; // default folder if not set in application.properties
 
     @Override
     public List<UserDTO> getAllStudents() {
@@ -219,6 +225,30 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    private String saveProfileImage(MultipartFile file, String userId) throws IOException {
+        File uploadFolder = new File(uploadDirectory);
+        if (!uploadFolder.exists()) uploadFolder.mkdirs();
+
+        String extension = "";
+        String originalFilename = file.getOriginalFilename();
+
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+
+        // unique file name → userId_timestamp.ext
+        String filename = String.format("%s_%d%s",
+                userId,
+                System.currentTimeMillis(),
+                extension
+        );
+
+        File dest = new File(uploadFolder, filename);
+        file.transferTo(dest);
+
+        return dest.getAbsolutePath();
+    }
+
     @Override
     public UserDTO getUserByEmail(String email) {
         User existingUser = userRepository.findByEmail(email)
@@ -230,6 +260,69 @@ public class UserServiceImpl implements UserService {
 
         return modelMapper.map(existingUser, UserDTO.class);
     }
+
+    @Override
+    @Transactional
+    public boolean updateProfile(String userId, UserDTO userDTO, MultipartFile profileImage, Role role) throws IOException {
+        // Check if user exists
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+
+        String newPassword = userDTO.getPassword();
+        String finalPassword;
+
+        if (newPassword == null || newPassword.isBlank()) {
+            // No new password provided keep existing hash
+            finalPassword = existingUser.getPassword();
+            System.out.println("Keeping existing password for user: " + userDTO.getUserId());
+        } else if (BCrypt.checkpw(newPassword, existingUser.getPassword())) {
+            // New password matches the existing password keep existing hash
+            finalPassword = existingUser.getPassword();
+            System.out.println("New password same as old, not updating for user: " + userDTO.getUserId());
+        } else {
+            // New password is different hash it
+            finalPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+            System.out.println("Updating password for user: " + userDTO.getUserId());
+            System.out.println("New hashed password: " + finalPassword);
+        }
+
+        String contentType = profileImage.getContentType();
+
+        if (!("image/jpeg".equals(contentType) ||
+                "image/png".equals(contentType) ||
+                "image/webp".equals(contentType))) {
+            throw new IllegalArgumentException("Only JPG, PNG, or WEBP images are allowed.");
+        }
+
+        // Profile image handling
+        if (profileImage != null && !profileImage.isEmpty()) {
+            // Delete old profile image
+            if (existingUser.getProfileImg() != null) {
+                File oldFile = new File(existingUser.getProfileImg());
+                if (oldFile.exists()) oldFile.delete();
+            }
+
+            // Save new profile image
+            String savedPath = saveProfileImage(profileImage, userId); // implement this to store file
+            existingUser.setProfileImg(savedPath);
+        }
+
+        existingUser.setName(userDTO.getName());
+        existingUser.setNic(userDTO.getNic());
+        existingUser.setEmail(userDTO.getEmail());
+        existingUser.setContact(userDTO.getContact());
+        existingUser.setAddress(userDTO.getAddress());
+        existingUser.setEmergencyContact(userDTO.getEmergencyContact());
+        existingUser.setRelationship(userDTO.getRelationship());
+        existingUser.setPassword(finalPassword);
+        //existingUser.setProfileImg(finalProfileImg);
+        existingUser.setRole(role);
+
+        // Save
+        userRepository.save(existingUser);
+        return true;
+    }
+
 
     @Override
     @Transactional
