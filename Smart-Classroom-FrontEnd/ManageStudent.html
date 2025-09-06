@@ -83,7 +83,7 @@
               <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
             </a>
             <a
-                    href="student.html"
+                    href="ManageStudent.html"
                     data-page="student"
                     class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
             >
@@ -495,7 +495,7 @@
                         </div>
                         <select id="relationship" name="relationship" required class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 appearance-none bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200">
                           <option value="">Select relationship</option>
-                          <option value="parent" selected>Parent</option>
+                          <option value="parent">Parent</option>
                           <option value="spouse">Spouse</option>
                           <option value="sibling">Sibling</option>
                           <option value="child">Child</option>
@@ -531,6 +531,41 @@
           </div>
         </div>
       </div>
+
+      <!-- Success & Error Messages -->
+      <!-- Success Message -->
+      <div id="successMessage" class="hidden fixed top-4 right-4 bg-green-100/90 dark:bg-green-900/80 backdrop-blur-xl border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 px-4 py-3 rounded-xl shadow-lg z-50">
+        <div class="flex items-center">
+          <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+          <span>Success!</span>
+          <button onclick="$(this).closest('#successMessage').addClass('hidden')" class="ml-4 text-green-500 hover:text-green-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div id="errorMessage" class="hidden fixed top-4 right-4 bg-red-100/90 dark:bg-red-900/80 backdrop-blur-xl border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 px-4 py-3 rounded-xl shadow-lg z-50">
+        <div class="flex items-center">
+          <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i>
+          <span id="errorText">Something went wrong. Please try again.</span>
+          <button onclick="$(this).closest('#errorMessage').addClass('hidden')" class="ml-4 text-red-500 hover:text-red-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Warning Message -->
+      <div id="warningMessage" class="hidden fixed top-4 right-4 bg-orange-100/90 dark:bg-orange-900/80 backdrop-blur-xl border border-orange-400 dark:border-orange-600 text-orange-700 dark:text-orange-200 px-4 py-3 rounded-xl shadow-lg z-50">
+        <div class="flex items-center">
+          <i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i>
+          <span id="warningText">This is a warning. Please check.</span>
+          <button onclick="$(this).closest('#warningMessage').addClass('hidden')" class="ml-4 text-orange-500 hover:text-orange-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
     </div>
 
 

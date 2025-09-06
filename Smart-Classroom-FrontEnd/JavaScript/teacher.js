@@ -85,18 +85,18 @@ function ajaxWithToken(options) {
   const originalError = options.error;
   options.error = function(xhr, status, error) {
     if (xhr.status === 401) {
-      // Unauthorized -> refresh token
       refreshAccessToken().done(function() {
         ajaxWithToken(options);
       }).fail(function() {
-        alert("Session expired. Please log in again.");
+        showMessage("error", "Session expired. Please log in again.");
         window.location.href = "login.html";
       });
     } else if (xhr.status === 403) {
-      // Forbidden -> show proper message
-      alert(xhr.responseJSON?.message || "Access Denied..!");
-    }else if (xhr.status === 400) {
-      alert(xhr.responseJSON?.message || "Action Failed..");
+      showMessage("warning", xhr.responseJSON?.message || "Access Denied..!");
+    } else if (xhr.status === 400) {
+      showMessage("warning", xhr.responseJSON?.message || "Validation failed..");
+    } else if (xhr.status >= 500) {
+      showMessage("error", "Server error. Please try again later.");
     } else if (originalError) {
       originalError(xhr, status, error);
     }
@@ -253,7 +253,6 @@ $("#teacherForm").on("submit", function(e) {
 
 
 function updateTeacher(teacherId, teacherData) {
-  // Add required userId field directly
   teacherData.userId = teacherId;
 
   ajaxWithToken({
@@ -262,16 +261,15 @@ function updateTeacher(teacherId, teacherData) {
     contentType: "application/json",
     data: JSON.stringify(teacherData),
     success: function (response) {
-      alert(response.message || "Teacher updated successfully!");
+      showMessage("success", response.message || "Teacher updated successfully!");
       $("#teacherModal").addClass("hidden");
       $("#teacherForm")[0].reset();
-      editingTeacherId = null; // reset edit mode
-      loadDataPaginated(state.page, state.size); // reload current page
+      editingTeacherId = null;
+      loadDataPaginated(state.page, state.size);
     },
     error: function (xhr) {
-      const message =
-          xhr.responseJSON?.message || "Failed to update teacher..";
-      alert(message); // simple alert for errors
+      const message = xhr.responseJSON?.message || "Failed to update teacher..";
+      showMessage("error", message);
     }
   });
 }
@@ -283,25 +281,22 @@ $("#teacher-table-tbody").on("click", ".delete-teacher", function () {
   const teacher = state.currentPageData[index];
 
   if (!teacher || !teacher.userId) {
-    alert("Could not identify teacher for deletion.");
+    showMessage("error", "Could not identify teacher for deletion.");
     return;
   }
 
-  // Confirm before delete
-  if (!confirm(`Are you sure you want to delete ${teacher.name}?`)) {
-    return;
-  }
+  if (!confirm(`Are you sure you want to delete ${teacher.name}?`)) return;
 
   ajaxWithToken({
     url: `${api}delete/${teacher.userId}`,
     method: "DELETE",
     success: function () {
-      alert("Teacher deleted successfully!");
-      loadDataPaginated(state.page, state.size); // reload current page
+      showMessage("success", "Teacher deleted successfully!");
+      loadDataPaginated(state.page, state.size);
     },
     error: function (xhr) {
-      console.error("Failed to delete teacher:", xhr.responseJSON || xhr);
-      alert(xhr.responseJSON?.message || "Failed to delete teacher.");
+      const message = xhr.responseJSON?.message || "Failed to delete teacher.";
+      showMessage("error", message);
     }
   });
 });
@@ -376,3 +371,39 @@ $("#closeInviteError").on("click", () => $inviteError.addClass("hidden"));
 
 // Initialize Lucide icons
 lucide.createIcons();
+
+
+// ===== Show Toast Message for Success, Error, Warn =====
+function showMessage(type, text, duration = 5000) {
+  let messageId, textId;
+
+  if (type === "success") {
+    messageId = "successMessage";
+    textId = null; // success text is static ("Success!")
+  } else if (type === "error") {
+    messageId = "errorMessage";
+    textId = "errorText";
+  } else if (type === "warning") {
+    messageId = "warningMessage";
+    textId = "warningText";
+  }
+
+  const $msg = $("#" + messageId);
+
+  if (textId) {
+    $("#" + textId).text(text); // update dynamic text
+  }
+
+  $msg.removeClass("hidden");
+
+  // Auto hide after duration
+  setTimeout(() => {
+    $msg.addClass("hidden");
+  }, duration);
+
+  // Re-render Lucide icons in case they didn’t load
+  if (window.lucide?.createIcons) {
+    lucide.createIcons();
+  }
+}
+

@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
 const api = "http://localhost:8080/api/v1/edusphere/users/";
 const default_page_size = 5;
 const max_visible_pages = 7;
+let editingStudentId = null;
 
 function getAvatar(student) {
   if (student.profileImg) {
@@ -52,20 +53,25 @@ function ajaxWithToken(options) {
     if (xhr.status === 401) {
       // Unauthorized -> refresh token
       refreshAccessToken().done(function() {
-        ajaxWithToken(options);
+        ajaxWithToken(options); // retry original request
       }).fail(function() {
-        alert("Session expired. Please log in again.");
+        showMessage("error", "Session expired. Please log in again.");
         window.location.href = "login.html";
       });
     } else if (xhr.status === 403) {
-      // Forbidden -> show proper message
-      alert(xhr.responseJSON?.message || "Access Denied..!");
-    }else if (xhr.status === 400) {
-      alert(xhr.responseJSON?.message || "Action Failed..");
+      // Forbidden -> show warning
+      showMessage("warning", xhr.responseJSON?.message || "Access Denied..!");
+    } else if (xhr.status === 400) {
+      // Bad request -> show warning
+      showMessage("warning", xhr.responseJSON?.message || "Validation failed.");
+    } else if (xhr.status >= 500) {
+      // Server error
+      showMessage("error", "Server error. Please try again later.");
     } else if (originalError) {
       originalError(xhr, status, error);
     }
   };
+
   return $.ajax(options);
 }
 
@@ -138,7 +144,8 @@ function loadDataPaginated(page1 = 1, size = state.size) {
     error: function(xhr) {
       console.error("Error loading students:", xhr.responseJSON || xhr);
       if(xhr.status === 401) {
-        alert("Session expired or unauthorized. Please log in again.");
+        showMessage("error", "Session expired or unauthorized. Please log in again.");
+        //alert("Session expired or unauthorized. Please log in again.");
         window.location.href = "login.html";
       }
     }
@@ -174,19 +181,35 @@ function saveStudent(studentData) {
     data: JSON.stringify(studentData),
     success: function(response) {
       console.log(response);
-      alert("Student added successfully!");
+      showMessage("success", "Student added successfully!");
       $("#studentModal").addClass("hidden");
       $("#studentForm")[0].reset();
       loadDataPaginated(1, state.size);
     },
     error: function(xhr) {
-      if(xhr.status === 400) {
-        const errors = xhr.responseJSON?.data || {};
-        alert("Validation failed: " + JSON.stringify(errors));
+      const res = xhr.responseJSON || {};
+      const message = res.message || "Something went wrong";
+
+      if (xhr.status === 400) {
+        const errors = res.data || {};
+        if (Object.keys(errors).length > 0) {
+          let msg = "Validation failed:\n";
+          for (const field in errors) {
+            msg += `- ${field}: ${errors[field]}\n`;
+          }
+          showMessage("error", msg);
+        } else {
+          showMessage("error", message);
+        }
+      } else if (xhr.status === 409) {
+        showMessage("error", message);
       } else {
-        console.error("Failed to save student.", xhr.responseJSON || xhr);
+        showMessage("error", message);
+        console.error("Failed to save student:", res);
       }
     }
+
+
   });
 }
 
@@ -221,7 +244,7 @@ $("#studentForm").on("submit", function(e) {
 $("#student-table-tbody").on("click", ".edit-student", function () {
   const index = $(this).closest("tr").index();
   const student = state.currentPageData[index]; // get the correct student
-  editingStudentId = student.userId; // save for update later
+   editingStudentId = student.userId; // save for update later
   console.log("Full student object:", student);
 
   // Fill modal with student details
@@ -248,17 +271,17 @@ function updateStudent(studentId, studentData) {
     contentType: "application/json",
     data: JSON.stringify(studentData),
     success: function (response) {
-      alert(response.message || "Student updated successfully!");
+      showMessage("success", response.message || "Student updated successfully!");
       $("#studentModal").addClass("hidden");
       $("#studentForm")[0].reset();
-      editingStudentId = null; // reset edit mode
-      loadDataPaginated(state.page, state.size); // reload current page
+      editingStudentId = null;
+      loadDataPaginated(state.page, state.size);
     },
     error: function (xhr) {
-      const message =
-          xhr.responseJSON?.message || "Failed to update student.";
-      alert(message); // simple alert for errors
+      const msg = xhr.responseJSON?.message || "Failed to update student.";
+      showMessage("error", msg);
     }
+
   });
 }
 
@@ -268,7 +291,8 @@ $("#student-table-tbody").on("click", ".delete-student", function () {
   const student = state.currentPageData[index];
 
   if (!student || !student.userId) {
-    alert("Could not identify student for deletion.");
+    //alert("Could not identify student for deletion.");
+    showMessage("warning", "Could not identify student for deletion.");
     return;
   }
 
@@ -281,13 +305,49 @@ $("#student-table-tbody").on("click", ".delete-student", function () {
     url: `${api}delete/${student.userId}`,
     method: "DELETE",
     success: function () {
-      alert("Student deleted successfully!");
-      loadDataPaginated(state.page, state.size); // reload current page
+      showMessage("success", "Student deleted successfully!");
+      loadDataPaginated(state.page, state.size);
     },
     error: function (xhr) {
-      console.error("Failed to delete student:", xhr.responseJSON || xhr);
-      alert(xhr.responseJSON?.message || "Failed to delete student.");
+      const msg = xhr.responseJSON?.message || "Failed to delete student.";
+      showMessage("error", msg);
     }
   });
 });
+
+// ===== Show Toast Message for Success, Error, Warn =====
+function showMessage(type, text, duration = 5000) {
+  let messageId, textId;
+
+  if (type === "success") {
+    messageId = "successMessage";
+    textId = null; // success text is static ("Success!")
+  } else if (type === "error") {
+    messageId = "errorMessage";
+    textId = "errorText";
+  } else if (type === "warning") {
+    messageId = "warningMessage";
+    textId = "warningText";
+  }
+
+  const $msg = $("#" + messageId);
+
+  if (textId) {
+    $("#" + textId).text(text); // update dynamic text
+  }
+
+  $msg.removeClass("hidden");
+
+  // Auto hide after duration
+  setTimeout(() => {
+    $msg.addClass("hidden");
+  }, duration);
+
+  // Re-render Lucide icons in case they didn’t load
+  if (window.lucide?.createIcons) {
+    lucide.createIcons();
+  }
+}
+
+
 
