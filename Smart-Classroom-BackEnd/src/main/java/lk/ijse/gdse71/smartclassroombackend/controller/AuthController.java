@@ -67,6 +67,14 @@ public class AuthController {
             );
         }
 
+        // Check if email already exists
+        if (authService.existsByEmail(dto.getEmail())) {   // method in your AuthService
+            return new ResponseEntity<>(
+                    new ApiResponse(409, "Email already registered: " + dto.getEmail(), null),
+                    HttpStatus.CONFLICT
+            );
+        }
+
         authService.register(dto);
 
         return new ResponseEntity<>(

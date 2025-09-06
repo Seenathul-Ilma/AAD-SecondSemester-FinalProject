@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * --------------------------------------------
@@ -41,11 +42,18 @@ public class InvitationServiceImpl implements InvitationService {
 
         LocalDateTime expiryDate = LocalDateTime.now().plusDays(7);
 
+        // Format for user readability
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm a");
+        String formattedDate = expiryDate.format(formatter);
+
         Invitation invitation = Invitation.create(email, role, expiryDate);
         invitationRepository.save(invitation);
 
+        String registrationUrl = "http://localhost:63342/AAD-SecondSemester-FinalProject/Smart-Classroom-FrontEnd/Register.html?token="
+                + invitation.getToken();
+
         // Build invitation email content
-        String htmlContent = "<html>" +
+        /*String htmlContent = "<html>" +
                 "<body style='font-family: Arial, sans-serif; line-height: 1.6;'>" +
                 "<h2>Welcome to Smart Classroom 🎉</h2>" +
                 "<p>Hello <strong>Teacher</strong>,</p>" +
@@ -61,6 +69,18 @@ public class InvitationServiceImpl implements InvitationService {
                 "  </tr>" +
                 "</table>" +
                 "<p><strong>Note:</strong> This invitation will expire on " + invitation.getExpiryDate() + ".</p>" +
+                "<p>Thanks,<br/>Smart Classroom Team</p>" +
+                "</body>" +
+                "</html>";*/
+
+        String htmlContent = "<html>" +
+                "<body style='font-family: Arial, sans-serif; line-height: 1.6;'>" +
+                "<h2>Welcome to Smart Classroom 🎉</h2>" +
+                "<p>Hello <strong>Teacher</strong>,</p>" +
+                "<p>You have been invited to join <strong>EduSphere</strong>. Click the button below to register:</p>" +
+                "<p><a href='" + registrationUrl + "' style='display: inline-block; padding: 8px 15px; " +
+                "color: white; background: linear-gradient(to right, #2563eb, #9333ea); text-decoration: none; border-radius: 5px;'>Register Now</a></p>" +
+                "<p><strong>Note:</strong> This invitation will expire on " + formattedDate + ".</p>" +
                 "<p>Thanks,<br/>Smart Classroom Team</p>" +
                 "</body>" +
                 "</html>";

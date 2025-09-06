@@ -115,5 +115,9 @@ public class AuthService {
         invitation.setUsedAt(LocalDateTime.now());
         invitationRepository.save(invitation);
     }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
 
