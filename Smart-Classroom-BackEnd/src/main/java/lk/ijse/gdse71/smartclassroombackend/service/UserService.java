@@ -42,4 +42,6 @@ public interface UserService {
     UserDTO getUserByEmail(String email);
 
     boolean updateProfile(String userId, UserDTO userDTO, MultipartFile profileImage, Role role) throws IOException;
+
+    UserDTO getUserById(String userId);
 }

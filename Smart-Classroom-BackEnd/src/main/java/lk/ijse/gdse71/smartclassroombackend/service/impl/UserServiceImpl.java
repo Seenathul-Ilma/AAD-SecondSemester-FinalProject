@@ -258,7 +258,64 @@ public class UserServiceImpl implements UserService {
         System.out.println(existingUser.getEmail());
         System.out.println(existingUser.getPassword());
 
-        return modelMapper.map(existingUser, UserDTO.class);
+        // Configure ModelMapper to skip password
+        /*modelMapper.typeMap(User.class, UserDTO.class).addMappings(mapper ->
+                mapper.skip(UserDTO::setPassword)
+        );
+        return modelMapper.map(existingUser, UserDTO.class);*/
+
+        // Map to DTO
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(existingUser.getUserId());
+        userDTO.setName(existingUser.getName());
+        userDTO.setEmail(existingUser.getEmail());
+        userDTO.setNic(existingUser.getNic());
+        userDTO.setContact(existingUser.getContact());
+        userDTO.setAddress(existingUser.getAddress());
+        userDTO.setEmergencyContact(existingUser.getEmergencyContact());
+        userDTO.setRelationship(existingUser.getRelationship());
+        userDTO.setProfileImg(existingUser.getProfileImg());
+        userDTO.setRole(String.valueOf(existingUser.getRole()));
+
+        // Do NOT set password in DTO
+        // If front-end needs to update password, it should provide a new one separately
+
+        return userDTO;
+    }
+
+    @Override
+    public UserDTO getUserById(String userId) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+        System.out.println(userId);
+        System.out.println(existingUser.getUserId());
+        System.out.println(existingUser.getEmail());
+        System.out.println(existingUser.getPassword());
+
+        // Configure ModelMapper to skip password
+        /*modelMapper.typeMap(User.class, UserDTO.class).addMappings(mapper ->
+                mapper.skip(UserDTO::setPassword)
+        );
+
+        return modelMapper.map(existingUser, UserDTO.class);*/
+
+        // Map to DTO
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(existingUser.getUserId());
+        userDTO.setName(existingUser.getName());
+        userDTO.setEmail(existingUser.getEmail());
+        userDTO.setNic(existingUser.getNic());
+        userDTO.setContact(existingUser.getContact());
+        userDTO.setAddress(existingUser.getAddress());
+        userDTO.setEmergencyContact(existingUser.getEmergencyContact());
+        userDTO.setRelationship(existingUser.getRelationship());
+        userDTO.setProfileImg(existingUser.getProfileImg());
+        userDTO.setRole(String.valueOf(existingUser.getRole()));
+
+        // Do NOT set password in DTO
+        // If front-end needs to update password, it should provide a new one separately
+
+        return userDTO;
     }
 
     @Override
@@ -309,6 +366,12 @@ public class UserServiceImpl implements UserService {
 
         existingUser.setName(userDTO.getName());
         existingUser.setNic(userDTO.getNic());
+
+        // Validate email
+        if (userDTO.getEmail() == null || userDTO.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email cannot be null, empty, or blank.");
+        }
+
         existingUser.setEmail(userDTO.getEmail());
         existingUser.setContact(userDTO.getContact());
         existingUser.setAddress(userDTO.getAddress());

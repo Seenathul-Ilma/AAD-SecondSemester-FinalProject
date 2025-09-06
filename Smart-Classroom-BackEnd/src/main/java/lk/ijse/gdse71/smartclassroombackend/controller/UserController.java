@@ -62,9 +62,15 @@ public class UserController {
         );
     }
 
-    @GetMapping("/getById")
-    public ResponseEntity<UserDTO> getProfile(@RequestParam String email) {
+    @GetMapping("/getByEmail/{email}")
+    public ResponseEntity<UserDTO> getProfile(@PathVariable String email) {
         UserDTO user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/get/{userId}")
+    public ResponseEntity<UserDTO> getProfileById(@PathVariable String userId) {
+        UserDTO user = userService.getUserById(userId);
         return ResponseEntity.ok(user);
     }
 
@@ -183,18 +189,19 @@ public class UserController {
     }
 
     @PutMapping(
-            value = "/profile/update/{userId}",
+            value = "/profile/update/{role}/{userId}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<ApiResponse> updateStudent(@PathVariable String userId,
+                                                     @PathVariable Role role,
                                                      @ModelAttribute UserDTO userDTO,
                                                      @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws IOException {
-        boolean isUpdated = userService.updateProfile(userId, userDTO, profileImage, Role.STUDENT);
+        boolean isUpdated = userService.updateProfile(userId, userDTO, profileImage, role);
         if(!isUpdated){
             return new ResponseEntity<>(
                     new ApiResponse(
                             400,
-                            "Failed to update student..!",
+                            "Failed to update user..!",
                             isUpdated
                     ),
                     HttpStatus.BAD_REQUEST
@@ -205,7 +212,7 @@ public class UserController {
         return new ResponseEntity<>(
                 new ApiResponse(
                         200,
-                        "Student updated successfully..!",
+                        "User updated successfully..!",
                         isUpdated
                 ),
                 HttpStatus.OK
