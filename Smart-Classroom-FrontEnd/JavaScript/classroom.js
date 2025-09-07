@@ -1,5 +1,8 @@
+// ===== Global trackers for edit mode =====
+let editingClassroomId = null; // holds the id of the classroom being edited
+let editingTeacherId = null;   // holds the logged-in user id
+
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize Lucide icons after the DOM is loaded
   lucide.createIcons();
   loadDataPaginated(1, default_page_size);
 
@@ -10,12 +13,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Check role
   const userRole = localStorage.getItem("role");
-  if (userRole !== "TEACHER") {
+  if (userRole === "STUDENT") {
     // Hide create-classroom button for students/admins
     if (openBtn) openBtn.style.display = "none";
   } else {
     // Only attach events if teacher
-    openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+    openBtn.addEventListener("click", () => {
+      // Reset edit mode
+      editingClassroomId = null;
+      editingTeacherId = null;
+
+      // Reset the form
+      $("#classroom-form")[0].reset();
+
+      // Set heading & button text
+      document.getElementById("classroom-model-header-text").innerText = "Create New Classroom";
+      document.getElementById("save-classroom-btn-text").innerHTML = `
+    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+    Create Classroom
+  `;
+
+      // Show the modal
+      modal.classList.remove("hidden");
+
+      // Re-render Lucide icons
+      if (window.lucide?.createIcons) lucide.createIcons();
+    });
+
     closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
 
     modal.addEventListener("click", (e) => {
@@ -36,10 +60,6 @@ document.addEventListener("DOMContentLoaded", function () {
 const api = "http://localhost:8080/api/v1/edusphere/classroom/";
 const default_page_size = 8;
 const max_visible_pages = 7;
-
-// ===== Global trackers for edit mode =====
-let editingClassroomId = null; // holds the id of the classroom being edited
-let editingTeacherId = null;   // holds the logged-in teacher id
 
 // ====================== Token Refresh ======================
 function refreshAccessToken() {
@@ -94,7 +114,7 @@ function renderCards(items) {
   items.forEach((classroom) => {
     // Only show buttons if role is TEACHER
     //const actionButtons = userRole === "TEACHER" ? `
-    const actionButtons = (userRole === "STUDENT" && classroom.creatorId === userId) ? `
+    const actionButtons = (userRole === "STUDENT" && classroom.creatorId !== userId) ? `
       <div class="flex">
         <button class="classroom-enter flex-1 bg-blue-100 dark:bg-blue-700/20 hover:bg-blue-200 dark:hover:bg-blue-700/40 text-blue-700 dark:text-blue-200 py-1.5 px-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-1 text-sm">
           <i data-lucide="university" class="w-4 h-4"></i>Enter Classroom
@@ -216,8 +236,8 @@ function loadDataPaginated(page1 = 1, size = state.size) {
 // ====================== Save Classroom ======================
 function saveClassroom(classroomData) {
   const userRole = localStorage.getItem("role");
-  if (userRole !== "TEACHER") {
-    alert("Only teachers can create classrooms!");
+  if (userRole === "STUDENT") {
+    alert("Student don't have access to create classrooms!");
     return;
   }
 
@@ -226,7 +246,7 @@ function saveClassroom(classroomData) {
   console.log("inside classroom: "+ teacherId)
 
   ajaxWithToken({
-    url: `${api}add?creatingTeacherId=${teacherId}`,
+    url: `${api}add?creatingUserId=${teacherId}`,
     method: "POST",
     contentType: "application/json",
     data: JSON.stringify(classroomData),
@@ -286,6 +306,15 @@ $("#classroom-card-container").on("click", ".edit-classroom", function () {
   editingClassroomId = classroom.classroomId; // save classroom id for update
   editingTeacherId = localStorage.getItem("userId");
 
+  // Set heading & button text
+  document.getElementById("classroom-model-header-text").innerText = "Edit Classroom";
+  document.getElementById("save-classroom-btn-text").innerHTML = `
+        <i data-lucide="pencil-ruler" class="w-5 h-5"></i>
+        Update Classroom
+      `;
+
+  lucide.createIcons();
+
   console.log("Editing classroom:", classroom);
 
   $("#classroomModal").removeClass("hidden");
@@ -314,6 +343,9 @@ function updateClassroom(teacherId, classroomId, classroomData) {
       loadDataPaginated(state.page, state.size);
     },
     error: function (xhr) {
+      console.log(xhr.responseText);
+      console.log(xhr.status);
+      console.log(xhr.responseJSON);
       const message = xhr.responseJSON?.message || "Failed to update classroom.";
       alert(message);
     }
@@ -329,7 +361,7 @@ $("#classroom-card-container").on("click", ".delete-classroom", function () {
   if (!confirm(`Are you sure you want to delete classroom ${classroom.classroomCode}?`)) return;
 
   ajaxWithToken({
-    url: `${api}${classroom.classroomId}?deletingTeacherId=${deletingTeacherId}`,
+    url: `${api}delete/${classroom.classroomId}?deletingTeacherId=${deletingTeacherId}`,
     method: "DELETE",
     success: function(response) {
       alert(response.message || "Classroom deleted successfully!");

@@ -25,10 +25,13 @@ document.addEventListener("DOMContentLoaded", function () {
 });*/
 
 
+/*
 document.addEventListener("DOMContentLoaded", function () {
     // Get the current page name from the URL
     const path = window.location.pathname;
     const page = path.split("/").pop().replace('.html', '');
+
+    console.log("check navigationnnnnnn");
 
     const navLinks = document.querySelectorAll("nav a");
 
@@ -53,5 +56,44 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Re-render Lucide icons once
+    lucide.createIcons();
+});*/
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const path = window.location.pathname;
+    const page = path.split("/").pop().split("?")[0].replace('.html', '');
+
+    const navLinks = document.querySelectorAll("nav a");
+
+    navLinks.forEach(link => {
+        const dot = link.querySelector("i[data-lucide='dot']");
+        const pageName = link.getAttribute("data-page");
+
+        console.log("Current page:", page);
+        console.log("Link pageName:", pageName);
+
+        // Highlight link for current page or classroomPage under classroomCollection
+        const isActive = pageName === page
+            || (pageName === "manageClassroom" && page === "classroomPage");
+
+        if (isActive) {
+
+            if (dot) {
+                dot.classList.remove("hidden");
+                console.log("Dot classes after activation:", dot.className);
+            }
+
+            console.log("Active Current page:", page);
+            console.log("Active Link pageName:", pageName);
+
+            link.classList.add("active-link");
+            if (dot) dot.classList.remove("hidden");
+        } else {
+            link.classList.remove("active-link");
+            if (dot) dot.classList.add("hidden");
+        }
+    });
+
     lucide.createIcons();
 });

@@ -25,6 +25,18 @@
             transform: translateY(-2px);
         }
 
+        .active-link {
+            background-image: linear-gradient(to right, #2563EB, #8B5CF6); /* Direct color values for from-blue-600 and to-purple-600 */
+            color: #fff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+        }
+
+        .dark .active-link {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+        }
+
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
@@ -86,7 +98,7 @@
                     <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
                 </a>
                 <a
-                        href="ManageStudent.html"
+                        href="manageStudent.html"
                         data-page="student"
                         class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
                 >
@@ -98,8 +110,8 @@
                     <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
                 </a>
                 <a
-                        href="classroom.html"
-                        data-page="classroom"
+                        href="manageClassroom.html"
+                        data-page="manageClassroom"
                         class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
                 >
                     <i
