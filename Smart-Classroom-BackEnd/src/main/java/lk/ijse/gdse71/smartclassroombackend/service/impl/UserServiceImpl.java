@@ -327,6 +327,10 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
 
+        if (userRepository.existsByEmailAndUserIdNot(userDTO.getEmail(), userDTO.getUserId())) {
+            throw new ResourceDuplicateException("Email already exists..!");
+        }
+
         String newPassword = userDTO.getPassword();
         String finalPassword;
 

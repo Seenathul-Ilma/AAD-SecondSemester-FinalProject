@@ -94,7 +94,9 @@ public class ClassroomServiceImpl implements ClassroomService {
         Classroom savedClassroom = classroomRepository.save(classroom);
 
         //User creatingTeacher = userRepository.findById(creatingTeacherId).orElseThrow(() -> new ResourceNotFoundException("Teacher not found..!"));
-        User creatingTeacher = userRepository.findUserByUserIdAndRole(creatingTeacherId, Role.TEACHER).orElseThrow(() -> new AccessDeniedException("Only a verified teacher can create a classroom"));
+        //User creatingTeacher = userRepository.findUserByUserIdAndRole(creatingTeacherId, Role.TEACHER).orElseThrow(() -> new AccessDeniedException("Only a verified teacher can create a classroom"));
+        User creatingTeacher = userRepository.findUserByUserIdAndRoleIn(creatingTeacherId, List.of(Role.TEACHER, Role.ADMIN))
+                .orElseThrow(() -> new AccessDeniedException("You don't have access to create classroom."));
 
         UserClassroom joinClassroom = new UserClassroom();
         String newUserClassroomId = generateNextClassroomId("REG");
@@ -238,7 +240,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                         return dto;
                     });
         } else {
-            // Students and Teachers → only their joined classrooms
+            // Students and Teachers only their joined classrooms
             Page<UserClassroom> userClassrooms =
                     userClassroomRepository.findByUser_UserId(userId, PageRequest.of(page, size));
 

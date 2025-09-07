@@ -130,8 +130,8 @@ public class ClassroomController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> saveClassroom(@Valid @RequestBody ClassroomDTO classroomDTO, @RequestParam String creatingTeacherId) {
-        ClassroomDTO savedClassroom = classroomService.saveClassroom(classroomDTO, creatingTeacherId);
+    public ResponseEntity<ApiResponse> saveClassroom(@Valid @RequestBody ClassroomDTO classroomDTO, @RequestParam String creatingUserId) {
+        ClassroomDTO savedClassroom = classroomService.saveClassroom(classroomDTO, creatingUserId);
 
         if (savedClassroom == null) {
             return new ResponseEntity<>(
