@@ -86,17 +86,17 @@ public class CommentServiceImpl implements CommentService {
         User updatingUser = userRepository.findById(updatingUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
 
-        // ✅ Allow only the original author OR an admin
+        // Allow only the original author OR an admin
         if (!comment.getUser().getUserId().equals(updatingUserId) && updatingUser.getRole() != Role.ADMIN) {
             throw new AccessDeniedException("Access denied: Only the commenter or an admin can edit this comment.");
         }
 
-        // ✅ Update content
+        // Update content
         comment.setContent(dto.getContent());
         //comment.setUpdatedAt(LocalDateTime.now()); // add updatedAt field in entity
         Comment updated = commentRepository.save(comment);
 
-        // ✅ Response should always keep original commenter info
+        // Response should always keep original commenter info
         return new CommentDTO(
                 updated.getCommentId(),
                 updated.getAnnouncement().getAnnouncementId(),
@@ -106,5 +106,25 @@ public class CommentServiceImpl implements CommentService {
                 updated.getCreatedAt()
         );
     }
+
+    @Override
+    @Transactional
+    public boolean deleteComment(String commentId, String deletingUserId) {
+        Comment comment = commentRepository.findById(Long.valueOf(commentId))
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+
+        Role userRole = userRepository.findById(deletingUserId)
+                .map(User::getRole)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+
+        // Only author OR admin can delete
+        if (!comment.getUser().getUserId().equals(deletingUserId) && !userRole.equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Access denied: Only the commenter or an admin can delete this comment.");
+        }
+
+        commentRepository.delete(comment);
+        return true;
+    }
+
 
 }

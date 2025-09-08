@@ -22,4 +22,6 @@ public interface CommentService {
     List<CommentDTO> getCommentsByAnnouncement(String announcementId);
 
     CommentDTO updateComment(String commentId, CommentDTO dto, String userId);
+
+    boolean deleteComment(String commentId, String deletingUserId);
 }

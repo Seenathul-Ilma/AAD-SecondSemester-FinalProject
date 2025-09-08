@@ -60,4 +60,29 @@ public class CommentController {
                 .ok(new ApiResponse(200, "Comment updated successfully..!", updatedComment));
     }
 
+    @DeleteMapping("/delete/{commentId}")
+    public ResponseEntity<ApiResponse> deleteComment(@PathVariable String commentId, @RequestParam String userId) {
+
+        boolean isDeleted = commentService.deleteComment(commentId, userId);
+        if(!isDeleted){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to delete comment..!",
+                            isDeleted
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Deletion successful..!",
+                        isDeleted
+                ),
+                HttpStatus.OK
+        );
+    }
+
 }
