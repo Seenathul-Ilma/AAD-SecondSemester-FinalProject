@@ -2,6 +2,8 @@ package lk.ijse.gdse71.smartclassroombackend.service;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.CommentDTO;
 
+import java.util.List;
+
 /**
  * --------------------------------------------
  * Author: Zeenathul Ilma
@@ -16,4 +18,8 @@ import lk.ijse.gdse71.smartclassroombackend.dto.CommentDTO;
 public interface CommentService {
 
     CommentDTO addComment(String announcementId, String userId, CommentDTO commentDTO);
+
+    List<CommentDTO> getCommentsByAnnouncement(String announcementId);
+
+    CommentDTO updateComment(String commentId, CommentDTO dto, String userId);
 }
