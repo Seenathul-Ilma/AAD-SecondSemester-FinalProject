@@ -37,6 +37,8 @@ public class AnnouncementDTO {
 
     private List<String> fileTypes;  // helps frontend decide (image / pdf / video)
 
+    private List<CommentDTO> comments;
+
     private String classroomId;
 
     private String announcedUserId; // teacher/admin

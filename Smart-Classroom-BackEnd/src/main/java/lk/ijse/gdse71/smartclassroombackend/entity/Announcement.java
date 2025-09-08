@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,6 +52,9 @@ public class Announcement {
     private String fileTypes;   // img/png, video/mp4, application/pdf
     //private List<String> fileTypes;   // img/png, video/mp4, application/pdf
     //private String fileType;
+
+    @OneToMany(mappedBy = "announcement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
