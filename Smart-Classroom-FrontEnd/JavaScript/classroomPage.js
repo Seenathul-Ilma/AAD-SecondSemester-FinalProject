@@ -268,10 +268,10 @@
                     <i data-lucide="more-horizontal" class="w-5 h-5"></i>
                 </button>
                 <div class="dropdown-menu hidden absolute right-0 mt-2 w-32 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
-                    <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="edit" data-id="${announcement.id}">
+                    <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="edit" data-id="${announcement.announcementId}">
                         <i data-lucide="edit-3" class="w-4 h-4 inline-block mr-1"></i>Edit
                     </div>
-                    <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="delete" data-id="${announcement.id}">
+                    <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="delete" data-id="${announcement.announcementId}">
                         <i data-lucide="trash-2" class="w-4 h-4 inline-block mr-1"></i>Delete
                     </div>
                 </div>
@@ -292,12 +292,12 @@
                         </p>
                     </div>
                 </div>
-                <div class="text-gray-700 dark:text-gray-300 mb-4">
+                <div class="text-gray-700 dark:text-gray-300 mb-4 announcement-content">
                     <h4 class="font-medium text-lg mb-2">${announcement.title}</h4>
                     <div>${announcement.content}</div>
                 </div>
                 <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  <button class="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 show-comments" data-id="${announcement.id}">
+                  <button class="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 show-comments" data-id="${announcement.announcementId}">
                     <i data-lucide="message-circle" class="w-4 h-4"></i>
                     <span>${announcement.comments?.length || 0} comments</span>
                   </button>
@@ -308,9 +308,10 @@
                 <div class="flex items-center gap-2 mt-2">
                     <input type="text" placeholder="Write a comment..." 
                         class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" 
-                        data-announcement-id="${announcement.id}" />
-                    <button class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors comment-submit-btn" data-announcement-id="${announcement.id}">
-                        Comment
+                        data-announcement-id="${announcement.announcementId}" />
+                    <button class="comment-submit-btn px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center" data-announcement-id="${announcement.announcementId}">
+                      <i data-lucide="send" class="w-4 h-4 mr-2"></i>
+                      Comment
                     </button>
                 </div>
             </div>
@@ -389,7 +390,7 @@
      const days    = Math.floor(hours / 24);
 
      if (seconds < 60) {
-         return "just now";
+         return "Just now";
      } else if (minutes < 60) {
          return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
      } else if (hours < 24) {
@@ -413,8 +414,9 @@
  });
 
  function loadComments(announcementId) {
+     console.log("announcementId:", announcementId);
      ajaxWithToken({
-         url: "//localhost:8080/api/v1/edusphere/classrooms/announcements/comments/announcement/ANN20250001",
+         url: `${api}announcements/comments/announcement/${announcementId}`,
          method: "GET",
          success: function (response) {
              const comments = response;  // because backend returns a raw array
@@ -433,20 +435,41 @@
      const $list = $("#commentsList");
      $list.empty();
 
-     if (comments.length === 0) {
+     if (!comments || comments.length === 0) {
          $list.html(`<p class="text-gray-500 dark:text-gray-400">No comments yet.</p>`);
          return;
      }
 
+     const userId = localStorage.getItem("userId"); // logged-in user
+
      comments.forEach(c => {
+         // Show edit/delete only if logged-in user is the commenter
+         const actionDropdown = (c.commenterId === userId) ? `
+            <div class="absolute top-2 right-2 dropdown">
+                <button class="action-btn p-1 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                    <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                </button>
+                <div class="dropdown-menu hidden absolute right-0 mt-1 w-24 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
+                    <div class="menu-item flex items-center px-3 py-1 text-gray-700 dark:text-gray-200 cursor-pointer comment-delete-btn" data-id="${c.commentId}">
+                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
+                        Delete
+                    </div>
+                </div>
+            </div>
+        ` : "";
+
          $list.append(`
-            <div class="p-3 border rounded-lg dark:border-gray-600">
-                <p class="font-semibold text-gray-800 dark:text-white">${c.commenterName}</p>
-                <p class="text-gray-700 dark:text-gray-300">${c.content}</p>
+            <div class="relative p-3 border rounded-lg dark:border-gray-600 mb-2">
+                <p class="font-semibold text-gray-800 dark:text-white">${c.commenterName || "Unknown"}</p>
+                <p class="text-gray-700 dark:text-gray-300 comment-content">${c.content}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">${formatRelativeTime(c.createdAt)}</p>
+                ${actionDropdown}
             </div>
         `);
      });
+
+     // Refresh Lucide icons after rendering
+     if (window.lucide?.createIcons) lucide.createIcons();
  }
 
  $("#closeCommentModal").on("click", function () {
@@ -459,8 +482,86 @@
      }
  });
 
+ // Listen for comment submissions
+ $("#announcement-cards-container").on("click", ".comment-submit-btn", function() {
+     const announcementId = $(this).data("announcement-id");
+     const inputField = $(`input[data-announcement-id='${announcementId}']`);
+     const content = inputField.val().trim();
+     const userId = localStorage.getItem("userId");
+
+     if (!content) {
+         alert("Please write something before commenting.");
+         return;
+     }
+
+     // Prepare payload
+     const payload = {
+         content: content
+     };
+
+     // Make AJAX request to create comment
+     ajaxWithToken({
+         url: `${api}announcements/comments/announcement/${announcementId}/user/${userId}/add`,
+         method: "POST",
+         contentType: "application/json",
+         data: JSON.stringify(payload),
+         success: function(response) {
+             alert("Comment added successfully!");
+             inputField.val(""); // Clear input
+             loadDataPaginated(state.page, state.size); // Reload announcements to refresh comments
+         },
+         error: function(xhr) {
+             console.error("Failed to create comment", xhr.responseJSON || xhr);
+             alert("Failed to create comment.");
+         }
+     });
+ });
 
 
+
+
+ // After renderComments
+ $(document).on("click", ".action-btn", function(e) {
+     e.stopPropagation(); // prevent closing parent dropdowns
+     const $menu = $(this).siblings(".dropdown-menu");
+     $(".dropdown-menu").not($menu).addClass("hidden"); // hide others
+     $menu.toggleClass("hidden"); // toggle this one
+ });
+
+ // Optional: click outside to close
+ $(document).on("click", function() {
+     $(".dropdown-menu").addClass("hidden");
+ });
+
+ // Delete comment using AJAX with token
+ $(document).on("click", ".comment-delete-btn", function() {
+     const commentId = $(this).data("id");
+     const userId = localStorage.getItem("userId");
+
+     console.log("Deleting commentId:", commentId, "userId:", userId);
+
+     if (!commentId) return;
+
+     if (!confirm("Are you sure you want to delete this comment?")) return;
+
+     ajaxWithToken({
+         url: `http://localhost:8080/api/v1/edusphere/classrooms/announcements/comments/delete/${commentId}?userId=${userId}`,
+         method: "DELETE",
+         success: function(response) {
+             if (response.status === 200 && response.data === true) {
+                 // Remove the entire comment block
+                 $(`.comment-delete-btn[data-id="${commentId}"]`).closest(".relative").remove();
+                 alert(response.message || "Comment deleted successfully!");
+             } else {
+                 alert("Failed to delete comment: " + (response.message || "Unknown error"));
+             }
+         },
+         error: function(xhr) {
+             console.error("Delete comment error:", xhr.responseJSON || xhr.responseText || xhr);
+             alert("An error occurred while deleting the comment.");
+         }
+     });
+ });
 
 
 
