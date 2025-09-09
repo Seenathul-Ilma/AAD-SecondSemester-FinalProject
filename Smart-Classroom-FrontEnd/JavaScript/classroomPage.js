@@ -247,74 +247,81 @@
      return $.ajax(options);
  }
 
-    function renderAnnouncements(items) {
-        const $div = $("#announcement-cards-container");
-        $div.empty();
+ function renderAnnouncements(items) {
+     const $div = $("#announcement-cards-container");
+     $div.empty();
 
-         if (!items || items.length === 0) {
-            $div.html(`
-                <p class="text-center text-gray-500 dark:text-gray-400">No announcements yet.</p>
-            `);
-             return;
-         }
+     if (!items || items.length === 0) {
+         $div.html(`
+            <p class="text-center text-gray-500 dark:text-gray-400">No announcements yet.</p>
+        `);
+         return;
+     }
 
-        const userId = localStorage.getItem("userId");
+     const userId = localStorage.getItem("userId");
 
-        items.forEach((announcement) => {
+     items.forEach((announcement) => {
 
-             const actionButtons = (announcement.announcedUserId === userId) ? `
-                 <div class="absolute top-4 right-4 dropdown">
-            <button class="action-btn p-1.5 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                <i data-lucide="more-horizontal" class="w-5 h-5"></i>
-            </button>
-            <div class="dropdown-menu hidden absolute right-0 mt-2 w-32 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
-                <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="edit" data-id="${announcement.id}">
-                    <i data-lucide="edit-3" class="w-4 h-4 inline-block mr-1"></i>Edit
-                </div>
-                <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="delete" data-id="${announcement.id}">
-                    <i data-lucide="trash-2" class="w-4 h-4 inline-block mr-1"></i>Delete
+         const actionButtons = (announcement.announcedUserId === userId) ? `
+            <div class="absolute top-4 right-4 dropdown">
+                <button class="action-btn p-1.5 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                    <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                </button>
+                <div class="dropdown-menu hidden absolute right-0 mt-2 w-32 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
+                    <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="edit" data-id="${announcement.id}">
+                        <i data-lucide="edit-3" class="w-4 h-4 inline-block mr-1"></i>Edit
+                    </div>
+                    <div class="menu-item px-3 py-2 text-gray-700 dark:text-gray-200 cursor-pointer" data-action="delete" data-id="${announcement.id}">
+                        <i data-lucide="trash-2" class="w-4 h-4 inline-block mr-1"></i>Delete
+                    </div>
                 </div>
             </div>
-        </div>
-             `: "";
+        ` : "";
 
-             const card = `
-                  <div class="bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 p-5 shadow-sm relative">
-                     ${actionButtons}
+         const card = `
+            <div class="bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 p-5 shadow-sm relative">
+                ${actionButtons}
                 <div class="flex items-start gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-                    ${getUserInitials(announcement.announcedUserName || announcement.creator?.name)}
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-800 dark:text-white">${announcement.announcedUserName}</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                      ${formatRelativeTime(announcement.createdAt)}
-                    </p>
-                  </div>
+                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                        ${getUserInitials(announcement.announcedUserName || announcement.creator?.name)}
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 dark:text-white">${announcement.announcedUserName}</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            ${formatRelativeTime(announcement.createdAt)}
+                        </p>
+                    </div>
                 </div>
                 <div class="text-gray-700 dark:text-gray-300 mb-4">
-                  <h4 class="font-medium text-lg mb-2">${announcement.title}</h4>
-                  <div>${announcement.content}</div>
+                    <h4 class="font-medium text-lg mb-2">${announcement.title}</h4>
+                    <div>${announcement.content}</div>
                 </div>
-                <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                  <button class="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400">
+                <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  <button class="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 show-comments" data-id="${announcement.id}">
                     <i data-lucide="message-circle" class="w-4 h-4"></i>
-                    <span>${announcement.commentCount || 0} comments</span>
-                  </button>
-                  <button class="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400">
-                    <i data-lucide="share" class="w-4 h-4"></i>
-                    <span>Share</span>
+                    <span>${announcement.comments?.length || 0} comments</span>
                   </button>
                 </div>
-              </div>
-            `;
 
-             $div.append(card);
-         });
 
-         // Refresh icons after dynamic render
-         if (window.lucide?.createIcons) lucide.createIcons();
-    }
+                <!-- Comment Input Field -->
+                <div class="flex items-center gap-2 mt-2">
+                    <input type="text" placeholder="Write a comment..." 
+                        class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" 
+                        data-announcement-id="${announcement.id}" />
+                    <button class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors comment-submit-btn" data-announcement-id="${announcement.id}">
+                        Comment
+                    </button>
+                </div>
+            </div>
+        `;
+
+         $div.append(card);
+     });
+
+     // Refresh icons after dynamic render
+     if (window.lucide?.createIcons) lucide.createIcons();
+ }
 
      // Toggle dropdown visibility
      $("#announcement-cards-container").on('click', '.action-btn', function (e) {
@@ -398,6 +405,62 @@
          });
      }
  }
+
+ // Open comments modal when clicking the comment icon
+ $("#announcement-cards-container").on("click", ".show-comments", function () {
+     const announcementId = $(this).data("id");
+     loadComments(announcementId);
+ });
+
+ function loadComments(announcementId) {
+     ajaxWithToken({
+         url: "//localhost:8080/api/v1/edusphere/classrooms/announcements/comments/announcement/ANN20250001",
+         method: "GET",
+         success: function (response) {
+             const comments = response;  // because backend returns a raw array
+
+             renderComments(comments);
+             $("#commentModal").removeClass("hidden").addClass("flex");
+         },
+         error: function (xhr) {
+             console.error("Failed to load comments", xhr.responseJSON || xhr);
+             alert("Failed to load comments.");
+         }
+     });
+ }
+
+ function renderComments(comments) {
+     const $list = $("#commentsList");
+     $list.empty();
+
+     if (comments.length === 0) {
+         $list.html(`<p class="text-gray-500 dark:text-gray-400">No comments yet.</p>`);
+         return;
+     }
+
+     comments.forEach(c => {
+         $list.append(`
+            <div class="p-3 border rounded-lg dark:border-gray-600">
+                <p class="font-semibold text-gray-800 dark:text-white">${c.commenterName}</p>
+                <p class="text-gray-700 dark:text-gray-300">${c.content}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">${formatRelativeTime(c.createdAt)}</p>
+            </div>
+        `);
+     });
+ }
+
+ $("#closeCommentModal").on("click", function () {
+     $("#commentModal").addClass("hidden").removeClass("flex");
+ });
+
+ $(document).on("click", function (e) {
+     if ($(e.target).is("#commentModal")) {
+         $("#commentModal").addClass("hidden").removeClass("flex");
+     }
+ });
+
+
+
 
 
 

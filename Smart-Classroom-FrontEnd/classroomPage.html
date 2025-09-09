@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
     <style>
 
         .ql-container {
@@ -371,9 +372,29 @@
         </div>
     </div>
 
+    <!-- Comment Modal -->
+    <div id="commentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+            <!-- Close button -->
+            <button id="closeCommentModal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                ✖
+            </button>
+
+            <!-- Modal title -->
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Comments</h2>
+
+            <!-- Comments list -->
+            <div id="commentsList" class="space-y-4 max-h-80 overflow-y-auto"></div>
+        </div>
+    </div>
+
+
 <!-- Quill CDN -->
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script src="Assets/lib/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
 <script src="JavaScript/pageNavigate.js"></script>
 <script src="JavaScript/classroomPage.js"></script>
 <script src="JavaScript/pagination.js"></script>

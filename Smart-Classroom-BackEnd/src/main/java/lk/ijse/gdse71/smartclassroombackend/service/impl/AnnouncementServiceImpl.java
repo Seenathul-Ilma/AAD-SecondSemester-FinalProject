@@ -1,6 +1,7 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.CommentDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Announcement;
 import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
@@ -89,6 +90,19 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             dto.setAnnouncedUserId(announcement.getUser().getUserId());
             dto.setClassroomName(announcement.getClassroom().getClassLevel()+" | "+announcement.getClassroom().getSubject());
             dto.setAnnouncedUserName(announcement.getUser().getName());
+
+            List<CommentDTO> commentDTOs = announcement.getComments()
+                    .stream()
+                    .map(c -> new CommentDTO(
+                            c.getCommentId(),
+                            announcement.getAnnouncementId(),
+                            c.getUser() != null ? c.getUser().getUserId() : null,  // commenterId
+                            c.getUser() != null ? c.getUser().getName() : null,    // commenterName
+                            c.getContent(),
+                            c.getCreatedAt()
+                    ))
+                    .toList();
+            dto.setComments(commentDTOs);
 
             return dto;
         });

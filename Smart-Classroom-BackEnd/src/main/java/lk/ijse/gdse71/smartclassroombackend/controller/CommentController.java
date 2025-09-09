@@ -23,7 +23,7 @@ import java.util.List;
 
 @CrossOrigin // to allow frontend
 @RestController
-@RequestMapping("/api/v1/edusphere/comments")
+@RequestMapping("/api/v1/edusphere/classrooms/announcements/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
