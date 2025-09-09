@@ -34,6 +34,8 @@ public class Announcement {
 
     private String title;
 
+    @Lob
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
     private LocalDateTime createdAt;
