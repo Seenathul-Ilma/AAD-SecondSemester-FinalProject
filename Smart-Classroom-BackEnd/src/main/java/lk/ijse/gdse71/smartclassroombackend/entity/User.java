@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -58,12 +59,26 @@ public class User {
 
     // Relationships
 
-    // Uni-directional
-    //@OneToMany(mappedBy = "sender")
-    //private List<Chat> sentMessages;   // ok
+    // Bidirectional
+    // Conversations where this user is the sender
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Conversation> sentConversations;     // ok
 
-    //@OneToMany(mappedBy = "receiver")
-    //private List<Chat> receivedMessages;   // ok
+    // Conversations where this user is the receiver
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Conversation> receivedConversations;    // ok
+
+    // Messages sent by this user
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> sentMessages;       // ok
+
+    // Messages received by this user
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> receivedMessages;    // ok
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Assignment> assignments;   // ok
