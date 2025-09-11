@@ -44,4 +44,7 @@ public interface UserService {
     boolean updateProfile(String userId, UserDTO userDTO, MultipartFile profileImage, Role role) throws IOException;
 
     UserDTO getUserById(String userId);
+
+    List<UserDTO> getUsersWithoutAuthenticated(UserDTO userDTO);
+
 }

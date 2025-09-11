@@ -62,15 +62,15 @@ public class User {
     // Bidirectional
     // Conversations where this user is the sender
     @JsonIgnore
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Conversation> sentConversations;     // ok
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Conversation> conversationsAsAuthor;     // ok
 
     // Conversations where this user is the receiver
     @JsonIgnore
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Conversation> receivedConversations;    // ok
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Conversation> conversationsAsRecipient;    // ok
 
-    // Messages sent by this user
+    /*// Messages sent by this user
     @JsonIgnore
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> sentMessages;       // ok
@@ -78,7 +78,7 @@ public class User {
     // Messages received by this user
     @JsonIgnore
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Message> receivedMessages;    // ok
+    private List<Message> receivedMessages; */   // ok
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Assignment> assignments;   // ok

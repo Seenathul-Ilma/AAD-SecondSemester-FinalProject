@@ -37,19 +37,19 @@ public class Message {
     //@Column(name = "message_id")
     //private String messageId;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id",  nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "sender_id")
     private User sender;                // ok
     //private String senderId;
 
-    @ManyToOne
-    @JoinColumn(name = "receiver_id",  nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "receiver_id")
     private User receiver;              // ok
     //private String receiverId;
 
+    //@JoinColumn(name = "conversation_id", nullable = false)  // explicit FK column
     @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "conversation_id", nullable = false)  // explicit FK column
+    @ManyToOne(optional = false)
     private Conversation conversation;
 
     private String content;
@@ -57,9 +57,17 @@ public class Message {
     private Boolean isRead = false;
 
     //private String message;
+    //@Column(name = "sentAt")
     @CreationTimestamp
-    @Column(name = "sentAt")
-    private LocalDateTime sentAt;
+    private LocalDateTime createdAt;
+
+    public Message(User sender, User receiver, Conversation conversation, String content) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.conversation = conversation;
+        this.content = content;
+        this.isRead = false;
+    }
 
     //private List<Message> messages = new ArrayList<>();
 }

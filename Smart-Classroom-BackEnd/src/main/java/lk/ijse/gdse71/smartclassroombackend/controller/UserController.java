@@ -271,4 +271,21 @@ public class UserController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<ApiResponse> getUserWithoutAuthenticated(@RequestBody UserDTO userDTO) {
+        List<UserDTO> userDTOS = userService.getUsersWithoutAuthenticated(userDTO);
+
+        if (userDTOS.isEmpty()){
+
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse(
+                        200,
+                        "Users fetched successfully..!",
+                        userDTOS
+                )
+        );
+    }
 }

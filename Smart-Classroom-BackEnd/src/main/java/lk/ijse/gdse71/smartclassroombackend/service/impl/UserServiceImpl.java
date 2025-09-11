@@ -321,6 +321,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDTO> getUsersWithoutAuthenticated(UserDTO userDTO) {
+        List<User> users = userRepository.findAllByUserIdNot(userDTO.getUserId());
+        return modelMapper.map(users, new TypeToken<List<UserDTO>>(){}.getType());
+    }
+
+    @Override
     @Transactional
     public boolean updateProfile(String userId, UserDTO userDTO, MultipartFile profileImage, Role role) throws IOException {
         // Check if user exists

@@ -2,7 +2,6 @@ package lk.ijse.gdse71.smartclassroombackend.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -23,8 +22,10 @@ public class ConversationDTO {
     private Long id;
     //private LocalDateTime createdAt;
 
-    private UserDTO sender;
-    private UserDTO receiver;
+    //private UserDTO sender;
+    private String senderId;
+    //private UserDTO receiver;
+    private String receiverId;
 
     private List<MessageDTO> messages;
 }

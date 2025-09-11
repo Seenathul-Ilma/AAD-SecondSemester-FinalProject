@@ -40,19 +40,24 @@ public class Conversation {
     //private LocalDateTime createdAt = LocalDateTime.now();
 
     // One user starts the conversation (sender)
-    @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
-    private User sender;                // ok
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "author")
+    private User author;                // ok
     //private String senderId;
 
     // Another user receives the conversation
-    @ManyToOne
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private User receiver;              // ok
+    //@ManyToOne(optional = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "recipient")
+    private User recipient;              // ok
     //private String receiverId;
 
     // One conversation contains many messages
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
 
+    public Conversation(User author, User recipient) {
+        this.author = author;
+        this.recipient = recipient;
+    }
 }
