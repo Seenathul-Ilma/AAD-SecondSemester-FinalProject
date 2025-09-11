@@ -9,6 +9,7 @@ import lk.ijse.gdse71.smartclassroombackend.entity.User;
 import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceDuplicateException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
+import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
 import lk.ijse.gdse71.smartclassroombackend.repository.ConversationRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.MessageRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.MessageService;
@@ -19,6 +20,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -111,11 +113,82 @@ public class MessageServiceImpl implements MessageService {
         conversationDTO.setReceiverId(receiver.getUserId());
 
         List<MessageDTO> messageDTOs = conversation.getMessages().stream()
-                .map(msg -> new MessageDTO(msg.getReceiver().getUserId(), msg.getContent()))
+                .map(msg -> new MessageDTO(msg.getReceiver().getUserId(), msg.getContent(), msg.getSender().getUserId()))
                 .toList();
 
         conversationDTO.setMessages(messageDTOs);
 
         return conversationDTO;
+    }
+
+    /*@Override
+    public MessageDTO addMessageToConversation(User sender, Long conversationId, MessageDTO messageDTO) {
+        return null;
+    }*/
+
+    @Override
+    @Transactional
+    public MessageDTO addMessageToConversation(Long conversationId, User sender, String receiverId, String content) {
+        // Fetch the receiver User entity
+        User receiver = modelMapper.map(userService.getUserById(receiverId), User.class);
+
+        // Fetch the conversation
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
+
+        // Check if sender is part of the conversation
+        if (!conversation.getAuthor().getUserId().equals(sender.getUserId())
+                && !conversation.getRecipient().getUserId().equals(sender.getUserId())) {
+            throw new AccessDeniedException("User not authorized to send message to this conversation");
+        }
+
+        // Check if receiver is part of the conversation
+        if (!conversation.getAuthor().getUserId().equals(receiver.getUserId())
+                && !conversation.getRecipient().getUserId().equals(receiver.getUserId())) {
+            throw new IllegalArgumentException("Receiver is not part of this conversation");
+        }
+
+        Message message = new Message(sender, receiver, conversation, content);
+        messageRepository.save(message);
+
+        conversation.getMessages().add(message);
+
+        // notificationService.sendMessageToConversation(conversation.getId(), message);
+
+        MessageDTO messageDTO = new MessageDTO();
+        messageDTO.setReceiverId(receiver.getUserId());
+        messageDTO.setContent(message.getContent());
+        messageDTO.setSenderId(sender.getUserId()); // optional, good for frontend
+
+        return messageDTO;
+    }
+
+
+    public MessageDTO markMessageAsRead(Long messageId, User reader) {
+        /*Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new IllegalArgumentException("Message not found"));
+
+        if (!message.getReceiver().getUserId().equals(user.getUserId())) {
+            throw new IllegalArgumentException("User not authorized to mark message as read");
+        }
+
+        if (!message.getIsRead()) {
+            message.setIsRead(true);
+            messageRepository.save(message);
+            //notificationService.sendMessageToConversation(message.getConversation().getId(), message);
+        }*/
+
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new IllegalArgumentException("Message not found"));
+
+        // Only the recipient can mark it as read
+        if (!message.getReceiver().getUserId().equals(reader.getUserId())) {
+            throw new IllegalArgumentException("User not authorized to mark this message as read");
+        }
+
+        message.setIsRead(true);
+        messageRepository.save(message);
+
+        return modelMapper.map(message, MessageDTO.class);
     }
 }

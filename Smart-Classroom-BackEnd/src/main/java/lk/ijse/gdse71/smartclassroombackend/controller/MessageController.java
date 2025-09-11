@@ -79,4 +79,38 @@ public class MessageController {
         return ResponseEntity.ok(new ApiResponse(201, "Conversation created successfully", conversation));
     }
 
+    @PostMapping("/conversations/{conversationId}/messages")
+    public ResponseEntity<ApiResponse> addMessageToConversation(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
+            @PathVariable Long conversationId,
+            @RequestBody MessageDTO messageDTO) {
+
+        // Get authenticated sender
+        UserDTO senderDTO = userService.getUserByEmail(principal.getUsername());
+        User sender = modelMapper.map(senderDTO, User.class);
+
+        // Add message to conversation
+        MessageDTO message = messageService.addMessageToConversation(
+                conversationId,
+                sender,
+                messageDTO.getReceiverId(),
+                messageDTO.getContent()
+        );
+
+        return ResponseEntity.ok(new ApiResponse(201, "Message sent successfully", message));
+    }
+
+    @PatchMapping("/messages/{messageId}/read")
+    public ResponseEntity<ApiResponse> markMessageAsRead(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
+            @PathVariable Long messageId) {
+
+        UserDTO userDTO = userService.getUserByEmail(principal.getUsername());
+        User user = modelMapper.map(userDTO, User.class);
+
+        MessageDTO updatedMessage = messageService.markMessageAsRead(messageId, user);
+
+        return ResponseEntity.ok(new ApiResponse(200, "Message marked as read", updatedMessage));
+    }
+
 }

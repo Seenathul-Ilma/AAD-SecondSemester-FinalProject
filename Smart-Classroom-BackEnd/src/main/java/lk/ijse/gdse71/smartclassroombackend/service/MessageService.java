@@ -1,6 +1,7 @@
 package lk.ijse.gdse71.smartclassroombackend.service;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.ConversationDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.MessageDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Conversation;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
 
@@ -11,4 +12,8 @@ public interface MessageService {
     ConversationDTO getConversation(User user, Long conversationId);
 
     ConversationDTO createConversationAndAddMessage(User sender, String receiverId, String content);
+
+    MessageDTO addMessageToConversation(Long conversationId, User sender, String receiverId, String content);
+
+    MessageDTO markMessageAsRead(Long messageId, User user);
 }
