@@ -79,9 +79,9 @@ $("#loginForm").submit(function (e) {
                 if (role === "ADMIN") {
                     window.location.href = "adminDashboard.html";
                 } else if (role === "TEACHER") {
-                    window.location.href = "index.html";
+                    window.location.href = "teacherDashboard.html";
                 } else {
-                    window.location.href = "index.html"; // default
+                    window.location.href = "studentDashboard.html"; // default
                 }
             }, 1000);
         },
