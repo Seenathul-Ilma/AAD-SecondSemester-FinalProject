@@ -30,24 +30,27 @@ document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons();
   loadDataPaginated(1, default_page_size);
 
-  const openBtn = document.getElementById("create-new-teacher");
-  const modal = document.getElementById("teacherModal");
+  //const openBtn = document.getElementById("create-new-teacher");
   const closeBtn = document.getElementById("closeTeacherModal");
   const cancelBtn = document.getElementById("cancelBtn");
+  const modal = document.getElementById("teacherModal");
+  let editingTeacherId = null;
 
-  if (!openBtn || !modal || !closeBtn || !cancelBtn) return; // safety check
+  //if (!openBtn || !modal || !closeBtn || !cancelBtn) return; // safety check
+  if (!modal || !closeBtn || !cancelBtn) return; // safety check
 
-  // Open modal
-  openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+  function closeModal(modal) {
+    modal.classList.add("hidden");
+    $("#teacherForm")[0].reset();
+    editingTeacherId = null;
+  }
 
-  // Close modal
-  closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
-  cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
-
-  // Close modal if clicking outside modal content
+  closeBtn.addEventListener("click", () => closeModal(modal));
+  cancelBtn.addEventListener("click", () => closeModal(modal));
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.classList.add("hidden");
+    if (e.target === modal) closeModal(modal);
   });
+
 });
 
 
@@ -64,7 +67,7 @@ function getAvatar(teacher) {
   }
 }
 
-// ====================== Token Refresh ======================
+/*// ====================== Token Refresh ======================
 function refreshAccessToken() {
   return $.ajax({
     url: "http://localhost:8080/api/v1/auth/refresh",
@@ -102,7 +105,7 @@ function ajaxWithToken(options) {
     }
   };
   return $.ajax(options);
-}
+}*/
 
 // ===== Rendering =====
 function renderRows(items) {

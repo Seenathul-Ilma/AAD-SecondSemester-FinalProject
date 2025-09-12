@@ -30,6 +30,7 @@ function getAvatar(student) {
   }
 }
 
+/*
 // ====================== Token Refresh ======================
 function refreshAccessToken() {
   return $.ajax({
@@ -75,6 +76,7 @@ function ajaxWithToken(options) {
 
   return $.ajax(options);
 }
+*/
 
 // ====================== Render Rows ======================
 function renderRows(items) {

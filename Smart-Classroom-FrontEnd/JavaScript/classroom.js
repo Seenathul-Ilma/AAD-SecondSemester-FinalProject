@@ -1,6 +1,6 @@
 // ===== Global trackers for edit mode =====
 let editingClassroomId = null; // holds the id of the classroom being edited
-let editingTeacherId = null;   // holds the logged-in user id
+let editingUserId = null;   // holds the logged-in user id
 
 document.addEventListener("DOMContentLoaded", function () {
   lucide.createIcons();
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     openBtn.addEventListener("click", () => {
       // Reset edit mode
       editingClassroomId = null;
-      editingTeacherId = null;
+      editingUserId = null;
 
       // Reset the form
       $("#classroom-form")[0].reset();
@@ -62,7 +62,7 @@ const default_page_size = 8;
 const max_visible_pages = 7;
 
 // ====================== Token Refresh ======================
-function refreshAccessToken() {
+/*function refreshAccessToken() {
   return $.ajax({
     url: "http://localhost:8080/api/v1/auth/refresh",
     method: "POST",
@@ -71,9 +71,10 @@ function refreshAccessToken() {
   }).done(function(response) {
     localStorage.setItem("accessToken", response.accessToken);
   });
-}
+}*/
 
 // ====================== AJAX with Token ======================
+/*
 function ajaxWithToken(options) {
   const accessToken = localStorage.getItem("accessToken");
   options.headers = options.headers || {};
@@ -86,12 +87,12 @@ function ajaxWithToken(options) {
       refreshAccessToken().done(function() {
         ajaxWithToken(options);
       }).fail(function() {
-        alert("Session expired. Please log in again.");
+        showMessage("error", "Session expired. Please log in again.!");
         window.location.href = "login.html";
       });
     } else if (xhr.status === 403) {
       // Forbidden -> show proper message
-      alert(xhr.responseJSON?.message || "Only creator can edit classrooms. You're not the creator of this classroom.");
+      showMessage("error", xhr.responseJSON?.message || "Only creator can edit classrooms. You're not the creator of this classroom.");
     }else if (xhr.status === 400) {
       alert(xhr.responseJSON?.message || "Failed to update the classroom..");
     } else if (originalError) {
@@ -100,6 +101,7 @@ function ajaxWithToken(options) {
   };
   return $.ajax(options);
 }
+*/
 
 
 // ===== Rendering =====
@@ -152,7 +154,7 @@ function renderCards(items) {
           <div class="flex items-center space-x-2 mb-2 text-slate-600 dark:text-slate-400">
             <i data-lucide="swatch-book" class="w-4 h-4"></i>
             <span>${classroom.subject}</span>
-            <span class="text-xs">${classroom.classLevel}</span>
+            <!-- span class="text-xs">${classroom.classLevel}</span -->
           </div>
 
           <!-- Conditional Action Buttons -->
@@ -175,6 +177,18 @@ $("#classroom-card-container").on("click", ".classroom-enter", function () {
   // Redirect to classroom.html with classroomId as query param
   window.location.href = `classroomPage.html?classroomId=${classroomId}`;
 });
+
+// Navigate to classroomPage.html when clicking the entire card
+$("#classroom-card-container").on("click", ".classroom-card", function (e) {
+  // prevent accidental clicks on edit/delete buttons from triggering navigation
+  if ($(e.target).closest(".edit-classroom, .delete-classroom").length) return;
+
+  const classroomId = $(this).data("id");
+  if (!classroomId) return;
+
+  window.location.href = `classroomPage.html?classroomId=${classroomId}`;
+});
+
 
 
 // ===== Data fetching =====
@@ -223,9 +237,10 @@ function loadDataPaginated(page1 = 1, size = state.size) {
       renderPaginationFooter();
     },
     error: function(xhr) {
-      console.error("Error loading students:", xhr.responseJSON || xhr);
+      //console.error("Error loading students:", xhr.responseJSON || xhr);
+      showMessage("error", "Error loading students: " + (xhr.responseJSON?.message || xhr.statusText || "Unknown error"));
       if(xhr.status === 401) {
-        alert("Session expired or unauthorized. Please log in again.");
+        showMessage("error", "Session expired or unauthorized. Please log in again.");
         window.location.href = "login.html";
       }
     }
@@ -237,7 +252,8 @@ function loadDataPaginated(page1 = 1, size = state.size) {
 function saveClassroom(classroomData) {
   const userRole = localStorage.getItem("role");
   if (userRole === "STUDENT") {
-    alert("Student don't have access to create classrooms!");
+    //alert("Student don't have access to create classrooms!");
+    showMessage("warning", "Student don't have access to create classrooms!");
     return;
   }
 
@@ -252,7 +268,7 @@ function saveClassroom(classroomData) {
     data: JSON.stringify(classroomData),
     success: function(response) {
       console.log(response);
-      alert("Classroom created successfully..!");
+      showMessage("success", "Classroom created successfully!");
       $("#classroomModal").addClass("hidden");
       $("#classroom-form")[0].reset();
       loadDataPaginated(state.page, state.size);
@@ -260,10 +276,9 @@ function saveClassroom(classroomData) {
     error: function(xhr) {
       if (xhr.status === 400) {
         const errors = xhr.responseJSON?.data || {};
-        alert("Validation failed: "+ errors);
+        showMessage("error", "Validation failed: "+ errors);
       } else {
-        console.error("Failed to save classroom.", xhr.responseJSON || xhr);
-        alert("Failed to save classroom..!")
+        showMessage("error", xhr.responseJSON?.message || "Failed to create classroom.");
       }
     }
   });
@@ -276,20 +291,36 @@ function saveClassroom(classroomData) {
 $("#classroom-form").on("submit", function(e) {
   e.preventDefault();
 
+  const option = $("#classLevelOption").val();
+  const levelText = $("#classLevelText").val().trim();
+  const subject =  $("#subject").val().trim();
+
+  // Validation check
+  if (!option) {
+    showMessage("warning", "Please select a type (Grade / Batch / Year).");
+    return;
+  }
+  if (!levelText) {
+    showMessage("warning", "Please enter a class level (Eg: 10, 2025, First Year).");
+    return;
+  }
+  if (!subject) {
+    showMessage("warning", "Please enter the subject. (Eg: History, Maths).");
+    return;
+  }
+
+// Build classroom data only if valid
   const classroomData = {
-    classLevel: `${$("#classLevelOption").val()} ${$("#classLevelText").val()}`,
-    //level: $("#classLevelText").val(),
-    subject: $("#subject").val(),
-    description: $("#description").val(),
+    classLevel: `${option} ${levelText}`,
+    subject: `${subject}`,
+    description: $("#description").val().trim(),
   };
 
   console.log("Submitting classroomData:", classroomData);
 
-  /*saveClassroom(classroomData);*/
-
-  if (editingTeacherId) {
+  if (editingUserId) {
     // Update
-    updateClassroom(editingTeacherId, editingClassroomId, classroomData);
+    updateClassroom(editingUserId, editingClassroomId, classroomData);
   } else {
     // Add
     saveClassroom(classroomData);
@@ -298,13 +329,17 @@ $("#classroom-form").on("submit", function(e) {
 });
 
 
-// Attach click handler to tbody, listen for .edit-student
 $("#classroom-card-container").on("click", ".edit-classroom", function () {
-  const index = $(this).closest(".classroom-card").index(); // safer selector
-  const classroom = state.currentPageData[index];
+  //const index = $(this).closest(".classroom-card").index(); // safer selector
+  //const classroom = state.currentPageData[index];
+
+  const classroomId = $(this).closest(".classroom-card").data("id");
+  const classroom = state.currentPageData.find(c => c.classroomId === classroomId);
+
+  console.log("classroomId: "+ classroomId +"- classroom: "+ classroom)
 
   editingClassroomId = classroom.classroomId; // save classroom id for update
-  editingTeacherId = localStorage.getItem("userId");
+  editingUserId = localStorage.getItem("userId");
 
   // Set heading & button text
   document.getElementById("classroom-model-header-text").innerText = "Edit Classroom";
@@ -335,27 +370,29 @@ function updateClassroom(teacherId, classroomId, classroomData) {
     contentType: "application/json",
     data: JSON.stringify(classroomData),
     success: function (response) {
-      alert(response.message || "Classroom updated successfully!");
+      showMessage("success", response.message || "Classroom updated successfully!");
       $("#classroomModal").addClass("hidden");
       $("#classroom-form")[0].reset();
       editingClassroomId = null; // reset edit mode
-      editingTeacherId = null;
+      editingUserId = null;
       loadDataPaginated(state.page, state.size);
     },
     error: function (xhr) {
       console.log(xhr.responseText);
       console.log(xhr.status);
       console.log(xhr.responseJSON);
-      const message = xhr.responseJSON?.message || "Failed to update classroom.";
-      alert(message);
+      showMessage("error", xhr.responseJSON?.message || "Failed to update classroom.");
     }
   });
 }
 
 
 $("#classroom-card-container").on("click", ".delete-classroom", function () {
-  const index = $(this).closest(".classroom-card").index();
-  const classroom = state.currentPageData[index];
+  //const index = $(this).closest(".classroom-card").index();
+  //const classroom = state.currentPageData[index];
+  const classroomId = $(this).closest(".classroom-card").data("id");
+  const classroom = state.currentPageData.find(c => c.classroomId === classroomId);
+
   const deletingTeacherId = localStorage.getItem("userId");
 
   if (!confirm(`Are you sure you want to delete classroom ${classroom.classroomCode}?`)) return;
@@ -364,22 +401,52 @@ $("#classroom-card-container").on("click", ".delete-classroom", function () {
     url: `${api}delete/${classroom.classroomId}?deletingTeacherId=${deletingTeacherId}`,
     method: "DELETE",
     success: function(response) {
-      alert(response.message || "Classroom deleted successfully!");
+      showMessage("success", response.message || "Classroom deleted successfully!");
       loadDataPaginated(state.page, state.size);
     },
     error: function(xhr) {
       if (xhr.status === 403) {
-        alert(xhr.responseJSON?.message || "You are not authorized to delete this classroom.");
+        showMessage("error", xhr.responseJSON?.message || "You are not authorized to delete this classroom.");
       } else if (xhr.status === 404) {
-        alert(xhr.responseJSON?.message || "Classroom not found.");
+        showMessage("error", xhr.responseJSON?.message || "Classroom not found.");
       } else {
         console.error("Failed to delete classroom.", xhr.responseJSON || xhr);
-        alert("Failed to delete classroom.");
+        showMessage("error", "Failed to delete classroom." || xhr.responseJSON?.message);
       }
     }
   });
 });
 
+
+
+function showMessage(type, text, duration = 5000) {
+  let messageId, textId;
+
+  if (type === "success") {
+    messageId = "successMessage";
+    textId = "successText"; // <- dynamic now
+  } else if (type === "error") {
+    messageId = "errorMessage";
+    textId = "errorText";
+  } else if (type === "warning") {
+    messageId = "warningMessage";
+    textId = "warningText";
+  }
+
+  const $msg = $("#" + messageId);
+
+  if (textId && text) {
+    $("#" + textId).text(text); // update dynamic text
+  }
+
+  $msg.removeClass("hidden");
+
+  setTimeout(() => {
+    $msg.addClass("hidden");
+  }, duration);
+
+  if (window.lucide?.createIcons) lucide.createIcons();
+}
 
 // ====================== Form Submit ======================
 /*
