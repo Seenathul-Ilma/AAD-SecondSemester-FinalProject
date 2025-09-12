@@ -10,41 +10,204 @@
 
     <style>
 
-        .ql-container {
+        /* Enhanced Quill Editor Styling */
+        .ql-editor {
+            min-height: 200px;
             font-size: 16px;
+            line-height: 1.6;
+            color: #f9f9f9;
+            padding: 16px;
+        }
+
+        .dark .ql-editor {
+            color: #f9fafb;
+            background-color: #374151;
+        }
+
+        .ql-container {
+            font-family: inherit;
             border-bottom-left-radius: 8px;
             border-bottom-right-radius: 8px;
+            border: 1px solid #d1d5db;
         }
+
+        .dark .ql-container {
+            border-color: #4b5563;
+            background-color: #374151;
+        }
+
         .ql-toolbar {
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
+            border: 1px solid #d1d5db;
+            border-bottom: none;
+            background-color: #f9fafb;
+            padding: 12px;
         }
+
+        .dark .ql-toolbar {
+            background-color: #4b5563;
+            border-color: #4b5563;
+        }
+
+        .dark .ql-toolbar .ql-stroke {
+            stroke: #f9fafb;
+        }
+
+        .dark .ql-toolbar .ql-fill {
+            fill: #f9fafb;
+        }
+
+        .dark .ql-toolbar .ql-picker-label {
+            color: #f9fafb;
+        }
+
+        .ql-toolbar .ql-formats {
+            margin-right: 15px;
+        }
+
+        .ql-toolbar button:hover,
+        .ql-toolbar button.ql-active {
+            color: #3b82f6;
+        }
+
+        .dark .ql-toolbar button:hover,
+        .dark .ql-toolbar button.ql-active {
+            color: #60a5fa;
+        }
+
+        .ql-editor.ql-blank::before {
+            color: #9CA3AF;
+            font-style: italic;
+        }
+
+        /* File preview enhancements */
         .file-preview {
             transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            background-color: #f9fafb;
         }
+
+        .dark .file-preview {
+            background-color: #374151;
+            border-color: #4b5563;
+        }
+
         .file-preview:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .active-link {
-            background-image: linear-gradient(to right, #2563EB, #8B5CF6); /* Direct color values for from-blue-600 and to-purple-600 */
+            background-image: linear-gradient(to right, #2563EB, #8B5CF6);
             color: #fff;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+            transition: all 0.3s ease-in-out;
         }
 
         .dark .active-link {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease-in-out; /* Add transition for smoothness */
         }
 
-        /* For announcements content */
         .announcement-content,
         .comment-content {
-            white-space: normal;       /* allow text to wrap */
-            word-break: break-word;    /* break long words to prevent overflow */
+            white-space: normal;
+            word-break: break-word;
         }
 
+        /* Custom scrollbar for editor */
+        .ql-editor::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .ql-editor::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .ql-editor::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .ql-editor::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Enhanced modal animations */
+        .modal-enter {
+            animation: modalEnter 0.3s ease-out;
+        }
+
+        @keyframes modalEnter {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Announcement card animations */
+        .announcement-card {
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced tab styling */
+        .tab-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Character counter styling */
+        .char-counter {
+            font-size: 12px;
+            color: #6b7280;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .char-counter.warning {
+            color: #f59e0b;
+        }
+
+        .char-counter.danger {
+            color: #ef4444;
+        }
+
+        /* Enhanced file type icons */
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .file-icon.pdf { background-color: #ef4444; }
+        .file-icon.doc { background-color: #2563eb; }
+        .file-icon.image { background-color: #10b981; }
+        .file-icon.default { background-color: #6b7280; }
 
     </style>
 </head>
@@ -239,7 +402,6 @@
                             <div class="tab-btn flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300 bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 font-medium shadow-sm" data-tab="broadcast">
                                 <i data-lucide="megaphone" class="w-4 h-4"></i>
                                 <span>Broadcasts</span>
-                                <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">3</span>
                             </div>
                             <div class="tab-btn flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-200 dark:hover:bg-gray-600" data-tab="activity">
                                 <i data-lucide="goal" class="w-4 h-4"></i>
@@ -248,10 +410,6 @@
                             <div class="tab-btn flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-200 dark:hover:bg-gray-600" data-tab="connection">
                                 <i data-lucide="users" class="w-4 h-4"></i>
                                 <span>Connections</span>
-                            </div>
-                            <div class="tab-btn flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-200 dark:hover:bg-gray-600" data-tab="resource">
-                                <i data-lucide="folder-open" class="w-4 h-4"></i>
-                                <span>Resources</span>
                             </div>
                         </div>
 
@@ -318,6 +476,40 @@
             </div>
         </div>
     </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden fixed top-4 right-4 bg-green-100/90 dark:bg-green-900/80 backdrop-blur-xl border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 px-4 py-3 rounded-xl shadow-lg z-50">
+        <div class="flex items-center">
+            <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+            <span id="successText">Invitation sent successfully!</span>
+            <button onclick="$(this).closest('#successMessage').addClass('hidden')" class="ml-4 text-green-500 hover:text-green-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden fixed top-4 right-4 bg-red-100/90 dark:bg-red-900/80 backdrop-blur-xl border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 px-4 py-3 rounded-xl shadow-lg z-50">
+        <div class="flex items-center">
+            <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i>
+            <span id="errorText">Failed to send invitation. Please try again.</span>
+            <button onclick="$(this).closest('#errorMessage').addClass('hidden')" class="ml-4 text-red-500 hover:text-red-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Warning Message -->
+    <div id="warningMessage" class="hidden fixed top-4 right-4 bg-orange-100/90 dark:bg-orange-900/80 backdrop-blur-xl border border-orange-400 dark:border-orange-600 text-orange-700 dark:text-orange-200 px-4 py-3 rounded-xl shadow-lg z-50">
+        <div class="flex items-center">
+            <i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i>
+            <span id="warningText">This is a warning. Please check.</span>
+            <button onclick="$(this).closest('#warningMessage').addClass('hidden')" class="ml-4 text-orange-500 hover:text-orange-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
 </div>
 
     <!-- Announcement Modal with Quill Editor, Title and File Input -->
@@ -404,6 +596,7 @@
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
 <script src="JavaScript/pageNavigate.js"></script>
+<script src="JavaScript/handleToken.js"></script>
 <script src="JavaScript/classroomPage.js"></script>
 <script src="JavaScript/pagination.js"></script>
 

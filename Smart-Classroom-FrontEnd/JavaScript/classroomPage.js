@@ -85,13 +85,15 @@
          const title = titleInput.value.trim();
 
          if (!title) {
-             alert('Please add a title to your announcement.');
+             //alert('Please add a title to your announcement.');
+             showMessage("warning", "Please add a title to your announcement.")
              titleInput.focus();
              return;
          }
 
          if (!content || content === '<p><br></p>') {
-             alert('Please write something before posting.');
+             //alert('Please write something before posting.');
+             showMessage("warning", "Please write something before posting.");
              return;
          }
 
@@ -114,11 +116,13 @@
              contentType: false,  // important for FormData
              success: function (data) {
                  if (data.status === 201) {
-                     alert("Announcement created successfully!");
+                     //alert("Announcement created successfully!");
+                     showMessage("success", "Announcement created successfully!");
                      closeModal();
                      loadDataPaginated(state.page, state.size);
                  } else {
-                     alert(data.message || "Failed to create announcement.");
+                     //alert(data.message || "Failed to create announcement.");
+                     showMessage("error", data.message || "Failed to create announcement.");
                  }
              }
          });
@@ -205,7 +209,7 @@
     }
 
 
-     // Token refresh function (if needed)
+    /* // Token refresh function (if needed)
     // ====================== Token Refresh ======================
     function refreshAccessToken() {
         return $.ajax({
@@ -216,10 +220,11 @@
         }).done(function(response) {
             localStorage.setItem("accessToken", response.accessToken);
         });
-    }
+    }*/
 
 
     // ====================== AJAX with Token ======================
+/*
     function ajaxWithToken(options) {
      const accessToken = localStorage.getItem("accessToken");
      options.headers = options.headers || {};
@@ -246,6 +251,7 @@
      };
      return $.ajax(options);
  }
+*/
 
  function renderAnnouncements(items) {
      const $div = $("#announcement-cards-container");
@@ -370,7 +376,8 @@
              error: function (xhr) {
                  console.error("Error loading announcements:", xhr.responseJSON || xhr);
                  if (xhr.status === 401) {
-                     alert("Session expired. Please log in again.");
+                     //alert("Session expired. Please log in again.");
+                     showMessage("error", "Session expired. Please log in again.");
                      window.location.href = "login.html";
                  }
              }
@@ -426,7 +433,8 @@
          },
          error: function (xhr) {
              console.error("Failed to load comments", xhr.responseJSON || xhr);
-             alert("Failed to load comments.");
+             //alert("Failed to load comments.");
+             showMessage("error", "Failed to load comments.");
          }
      });
  }
@@ -490,7 +498,8 @@
      const userId = localStorage.getItem("userId");
 
      if (!content) {
-         alert("Please write something before commenting.");
+         //alert("Please write something before commenting.");
+         showMessage("waring", "Please write something before commenting.");
          return;
      }
 
@@ -506,13 +515,15 @@
          contentType: "application/json",
          data: JSON.stringify(payload),
          success: function(response) {
-             alert("Comment added successfully!");
+             //alert("Comment added successfully!");
+             showMessage("success","Comment added successfully!");
              inputField.val(""); // Clear input
              loadDataPaginated(state.page, state.size); // Reload announcements to refresh comments
          },
          error: function(xhr) {
              console.error("Failed to create comment", xhr.responseJSON || xhr);
-             alert("Failed to create comment.");
+             //alert("Failed to create comment.");
+             showMessage("error","Failed to create comment.");
          }
      });
  });
@@ -551,18 +562,48 @@
              if (response.status === 200 && response.data === true) {
                  // Remove the entire comment block
                  $(`.comment-delete-btn[data-id="${commentId}"]`).closest(".relative").remove();
-                 alert(response.message || "Comment deleted successfully!");
+                 //alert(response.message || "Comment deleted successfully!");
+                 showMessage("success", response.message || "Comment deleted successfully!");
              } else {
-                 alert("Failed to delete comment: " + (response.message || "Unknown error"));
+                 //alert("Failed to delete comment: " + (response.message || "Unknown error"));
+                 showMessage("error", "Failed to delete comment: " + (response.message || "Unknown error"));
              }
          },
          error: function(xhr) {
              console.error("Delete comment error:", xhr.responseJSON || xhr.responseText || xhr);
-             alert("An error occurred while deleting the comment.");
+             //alert("An error occurred while deleting the comment.");
+             showMessage("error","An error occurred while deleting the comment.");
          }
      });
  });
 
+ function showMessage(type, text, duration = 5000) {
+     let messageId, textId;
 
+     if (type === "success") {
+         messageId = "successMessage";
+         textId = "successText"; // <- dynamic now
+     } else if (type === "error") {
+         messageId = "errorMessage";
+         textId = "errorText";
+     } else if (type === "warning") {
+         messageId = "warningMessage";
+         textId = "warningText";
+     }
+
+     const $msg = $("#" + messageId);
+
+     if (textId && text) {
+         $("#" + textId).text(text); // update dynamic text
+     }
+
+     $msg.removeClass("hidden");
+
+     setTimeout(() => {
+         $msg.addClass("hidden");
+     }, duration);
+
+     if (window.lucide?.createIcons) lucide.createIcons();
+ }
 
 
