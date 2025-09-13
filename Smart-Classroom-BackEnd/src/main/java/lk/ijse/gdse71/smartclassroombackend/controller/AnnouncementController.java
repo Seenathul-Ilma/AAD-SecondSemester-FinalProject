@@ -52,6 +52,31 @@ public class AnnouncementController {
         );
     }
 
+    @GetMapping("/announcements/{announcementId}")
+    public ResponseEntity<ApiResponse> getAnnouncementById(@PathVariable String announcementId){
+        AnnouncementDTO foundAnnouncement = announcementService.getAnnouncementById(announcementId);
+
+        if (foundAnnouncement == null) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to find announcement..!",
+                            null
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        201,
+                        "Announcement found..!",
+                        foundAnnouncement
+                ),
+                HttpStatus.CREATED
+        );
+    }
+
     @PostMapping(
             value = "/{classroomId}/announcements/{userId}/create",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE

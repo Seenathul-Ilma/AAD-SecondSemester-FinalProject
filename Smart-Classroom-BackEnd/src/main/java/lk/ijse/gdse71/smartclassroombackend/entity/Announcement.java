@@ -44,7 +44,7 @@ public class Announcement {
 
     // Optional file attachment (store path or URL, not the actual file!)
     @Lob
-    @Column(name = "file_urls")
+    @Column(name = "file_urls", columnDefinition = "TEXT")
     private String fileUrls;    // CLS2025001_TEA20250001_15_1
     //private List<String> fileUrls;    // CLS2025001_TEA20250001_15_1
     //private String fileUrl;

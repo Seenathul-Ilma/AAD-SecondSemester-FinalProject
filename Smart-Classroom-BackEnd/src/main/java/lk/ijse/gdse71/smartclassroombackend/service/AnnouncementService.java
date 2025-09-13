@@ -15,4 +15,6 @@ public interface AnnouncementService {
     AnnouncementDTO updateAnnouncementByAnnouncementId(String userId, String announcementId, String title, String content, List<MultipartFile> files) throws IOException;
 
     boolean deleteAnnouncement(String announcementId, String deletingUserId);
+
+    AnnouncementDTO getAnnouncementById(String announcementId);
 }

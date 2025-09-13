@@ -33,6 +33,8 @@ public class AnnouncementDTO {
 
     private LocalDateTime updatedAt;
 
+    private String fileName;
+
     private List<String> fileUrls;   // frontend can fetch file
 
     private List<String> fileTypes;  // helps frontend decide (image / pdf / video)
