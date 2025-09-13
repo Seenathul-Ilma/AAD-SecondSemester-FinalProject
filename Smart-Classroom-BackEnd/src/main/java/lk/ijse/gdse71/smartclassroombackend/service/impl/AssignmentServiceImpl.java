@@ -171,10 +171,14 @@ public class AssignmentServiceImpl implements AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
 
-        userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User updatingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+        //userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (!assignment.getUser().getUserId().equals(userId)) {
-            throw new AccessDeniedException("Access denied: Only the creator can modify this assignment.");
+        Role userRole = updatingUser.getRole();
+
+        if (!assignment.getUser().getUserId().equals(userId) && !userRole.equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Access denied: Only the creator or admin can modify this assignment.");
         }
 
         if (file.isEmpty() || file == null) {
@@ -225,10 +229,15 @@ public class AssignmentServiceImpl implements AssignmentService {
         Assignment assignmentToDelete = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
 
-        userRepository.findById(deletingUserId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (!assignmentToDelete.getUser().getUserId().equals(deletingUserId)) {
-            throw new AccessDeniedException("Access denied: Only the uploader can delete this assignment.");
+        User deletingUser = userRepository.findById(deletingUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+        //userRepository.findById(deletingUserId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Role userRole = deletingUser.getRole();
+
+        if (!assignmentToDelete.getUser().getUserId().equals(deletingUserId) && !userRole.equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Access denied: Only the uploader or admin can delete this assignment.");
         }
 
         String existingFilePath = assignmentToDelete.getFilePath();

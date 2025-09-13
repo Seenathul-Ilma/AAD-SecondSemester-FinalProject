@@ -1,8 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.controller;
 
-import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.AssignmentDTO;
-import lk.ijse.gdse71.smartclassroombackend.dto.ResourceDTO;
 import lk.ijse.gdse71.smartclassroombackend.service.AssignmentService;
 import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * --------------------------------------------

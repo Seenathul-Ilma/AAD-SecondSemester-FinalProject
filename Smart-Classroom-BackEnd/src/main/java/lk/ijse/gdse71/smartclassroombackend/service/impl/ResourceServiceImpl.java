@@ -3,10 +3,7 @@ package lk.ijse.gdse71.smartclassroombackend.service.impl;
 import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.ClassroomDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.ResourceDTO;
-import lk.ijse.gdse71.smartclassroombackend.entity.Announcement;
-import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
-import lk.ijse.gdse71.smartclassroombackend.entity.Resources;
-import lk.ijse.gdse71.smartclassroombackend.entity.User;
+import lk.ijse.gdse71.smartclassroombackend.entity.*;
 import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
@@ -176,10 +173,14 @@ public class ResourceServiceImpl implements ResourceService {
         Resources resources = resourceRepository.findById(materialId)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found"));
 
-        userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User updatingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
+        //userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (!resources.getUser().getUserId().equals(userId)) {
-            throw new AccessDeniedException("Access denied: Only the uploader can modify this material.");
+        Role userRole = updatingUser.getRole();
+
+        if (!resources.getUser().getUserId().equals(userId) && !userRole.equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Access denied: Only the uploader or admin can modify this material.");
         }
 
         if (material == null || material.isEmpty()) {
@@ -216,10 +217,15 @@ public class ResourceServiceImpl implements ResourceService {
         Resources resourcesToDelete = resourceRepository.findById(materialId)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found"));
 
-        userRepository.findById(deletingUserId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User deletingUser = userRepository.findById(deletingUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found..!"));
 
-        if (!resourcesToDelete.getUser().getUserId().equals(deletingUserId)) {
-            throw new AccessDeniedException("Access denied: Only the uploader can delete this material.");
+        //userRepository.findById(deletingUserId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Role userRole = deletingUser.getRole();
+
+        if (!resourcesToDelete.getUser().getUserId().equals(deletingUserId) && !userRole.equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Access denied: Only the uploader or admin can delete this material.");
         }
 
         String existingFilePath = resourcesToDelete.getFilePath();

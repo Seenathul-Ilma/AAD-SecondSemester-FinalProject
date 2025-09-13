@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +36,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/edusphere/users")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN','TEACHER', 'STUDENT')")  // Overrides class-level
 public class UserController {
 
     private final UserService userService;
@@ -246,6 +248,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // Only users with ROLE_ADMIN can call this
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable String id){
     //public boolean deleteUser(@PathVariable String id){
 
