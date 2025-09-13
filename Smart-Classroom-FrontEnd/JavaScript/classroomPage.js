@@ -321,6 +321,7 @@ function getUserInitials(name) {
  }
 */
 
+/*
 function renderAnnouncements(items) {
   const $div = $("#announcement-cards-container");
   $div.empty();
@@ -409,6 +410,301 @@ function renderAnnouncements(items) {
 
   // Refresh icons after dynamic render
   if (window.lucide?.createIcons) lucide.createIcons();
+}
+*/
+
+
+function renderAnnouncements(items) {
+  const $div = $("#announcement-cards-container");
+  $div.empty();
+
+  if (!items || items.length === 0) {
+    $div.html(`
+      <div class="text-center py-12">
+        <i data-lucide="megaphone" class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4"></i>
+        <p class="text-gray-500 dark:text-gray-400 text-lg">No announcements yet.</p>
+        <p class="text-gray-400 dark:text-gray-500 text-sm">Create your first announcement to get started!</p>
+      </div>
+    `);
+    return;
+  }
+
+  const userId = localStorage.getItem("userId");
+
+  items.forEach((announcement) => {
+    const actionButtons =
+        announcement.announcedUserId === userId
+            ? `
+          <div class="absolute top-4 right-4 dropdown">
+            <button class="action-btn p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200">
+              <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+            </button>
+            <div class="dropdown-menu hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-10">
+              <div class="menu-item px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer transition-colors duration-200 rounded-t-lg" data-action="edit" data-id="${announcement.announcementId}">
+                <i data-lucide="edit-3" class="w-4 h-4 inline-block mr-2"></i>Edit
+              </div>
+              <div class="menu-item px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors duration-200 rounded-b-lg" data-action="delete" data-id="${announcement.announcementId}">
+                <i data-lucide="trash-2" class="w-4 h-4 inline-block mr-2"></i>Delete
+              </div>
+            </div>
+          </div>`
+            : "";
+
+    // Render file cards only if files exist
+    let fileSection = "";
+    if (announcement.fileUrls && announcement.fileUrls.length > 0) {
+      const validFiles = announcement.fileUrls
+          .map((url, idx) => {
+            const name = announcement.fileNames ? announcement.fileNames[idx] : url.split("/").pop();
+            const info = getFileInfo(name);
+            return info ? { url, name, info } : null;
+          })
+          .filter(f => f !== null); // Remove nulls (invalid files)
+
+      if (validFiles.length > 0) {
+        fileSection = `
+          <div class="mt-4 mb-2 border-t border-gray-100 dark:border-gray-600 pt-4">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="paperclip" class="w-4 h-4 text-gray-500"></i>
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                ${validFiles.length} Attachment${validFiles.length > 1 ? 's' : ''}
+              </span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        `;
+
+        validFiles.forEach(file => {
+          const originalName = file.name.split("\\").pop().split("_").slice(5).join("_");
+          fileSection += `
+            <div class="file-card group relative bg-gradient-to-br ${file.info.gradient} rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden">
+              <a href="${file.url}" target="_blank" class="block p-4">
+                <div class="flex items-start gap-3">
+                  <div class="file-icon-wrapper flex-shrink-0 w-12 h-12 ${file.info.bgColor} rounded-lg flex items-center justify-center shadow-sm">
+                    <i data-lucide="${file.info.icon}" class="w-6 h-6 ${file.info.iconColor}"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-medium text-gray-800 dark:text-white text-sm truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      ${originalName}
+                    </h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase font-semibold">
+                      ${file.info.type}
+                    </p>
+                  </div>
+                </div>
+                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <div class="w-6 h-6 bg-white/80 dark:bg-gray-800/80 rounded-full flex items-center justify-center shadow-sm">
+                    <i data-lucide="external-link" class="w-3 h-3 text-gray-600 dark:text-gray-400"></i>
+                  </div>
+                </div>
+                <div class="absolute bottom-2 left-2">
+                  <span class="inline-block px-2 py-1 bg-white/90 dark:bg-gray-800/90 text-xs font-medium ${file.info.textColor} rounded-full shadow-sm">
+                    ${file.info.extension.toUpperCase()}
+                  </span>
+                </div>
+              </a>
+            </div>
+          `;
+        });
+
+        fileSection += `</div></div>`;
+      }
+    }
+
+    const card = `
+      <div class="announcement-card bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden relative">
+        ${actionButtons}
+        <div class="p-5 pb-0">
+          <div class="flex items-start gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg">
+              ${getUserInitials(announcement.announcedUserName || announcement.creator?.name)}
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-semibold text-gray-800 dark:text-white">${announcement.announcedUserName}</h3>
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                <i data-lucide="clock" class="w-3 h-3"></i>
+                ${formatRelativeTime(announcement.createdAt)}
+              </p>
+            </div>
+          </div>
+          <div class="text-gray-700 dark:text-gray-300 announcement-content">
+            <h4 class="font-semibold text-lg mb-3 text-gray-800 dark:text-white leading-tight">${announcement.title}</h4>
+            <div class="prose prose-sm mb-2 dark:prose-invert max-w-none">
+              ${announcement.content}
+            </div>
+          </div>
+          ${fileSection}
+        </div>
+        <div class="px-5 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-600">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+              <button class="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 show-comments" data-id="${announcement.announcementId}">
+                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                <span>${announcement.comments?.length || 0} comments</span>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+              <i data-lucide="user" class="w-4 h-4 text-gray-500"></i>
+            </div>
+            <div class="flex-1 relative">
+              <input type="text" placeholder="Write a comment..." 
+                class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-200 text-sm" 
+                data-announcement-id="${announcement.announcementId}" />
+            </div>
+            <button class="comment-submit-btn px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md transform hover:scale-105" data-announcement-id="${announcement.announcementId}">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Comment</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    $div.append(card);
+  });
+
+  // Refresh icons after dynamic render
+  if (window.lucide?.createIcons) lucide.createIcons();
+}
+
+// Enhanced file info function with better styling
+// Enhanced file info function – safe for optional files
+function getFileInfo(fileName) {
+  if (!fileName) return null; // return null if file doesn't exist
+
+  const ext = fileName.split('.').pop().toLowerCase();
+  const fileInfo = { extension: ext };
+
+  // Image files
+  if (["png", "jpg", "jpeg", "gif", "bmp", "svg", "webp"].includes(ext)) {
+    return {
+      ...fileInfo,
+      icon: "image",
+      type: "Image",
+      bgColor: "bg-green-100 dark:bg-green-900/30",
+      iconColor: "text-green-600 dark:text-green-400",
+      textColor: "text-green-600",
+      gradient: "from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20"
+    };
+  }
+
+  // PDF files
+  if (["pdf"].includes(ext)) {
+    return {
+      ...fileInfo,
+      icon: "file-text",
+      type: "PDF Document",
+      bgColor: "bg-red-100 dark:bg-red-900/30",
+      iconColor: "text-red-600 dark:text-red-400",
+      textColor: "text-red-600",
+      gradient: "from-red-50 to-rose-100 dark:from-red-900/20 dark:to-rose-900/20"
+    };
+  }
+
+  // Document files
+  if (["doc", "docx", "txt", "rtf"].includes(ext)) {
+    return {
+      ...fileInfo,
+      icon: "file-text",
+      type: "Document",
+      bgColor: "bg-blue-100 dark:bg-blue-900/30",
+      iconColor: "text-blue-600 dark:text-blue-400",
+      textColor: "text-blue-600",
+      gradient: "from-blue-50 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20"
+    };
+  }
+
+  // Spreadsheet files
+  if (["xls", "xlsx", "csv"].includes(ext)) {
+    return {
+      ...fileInfo,
+      icon: "table",
+      type: "Spreadsheet",
+      bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
+      iconColor: "text-emerald-600 dark:text-emerald-400",
+      textColor: "text-emerald-600",
+      gradient: "from-emerald-50 to-teal-100 dark:from-emerald-900/20 dark:to-teal-900/20"
+    };
+  }
+
+  // Presentation files
+  if (["ppt", "pptx"].includes(ext)) {
+    return {
+      ...fileInfo,
+      icon: "presentation",
+      type: "Presentation",
+      bgColor: "bg-orange-100 dark:bg-orange-900/30",
+      iconColor: "text-orange-600 dark:text-orange-400",
+      textColor: "text-orange-600",
+      gradient: "from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20"
+    };
+  }
+
+  // Archive files
+  if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) {
+    return {
+      ...fileInfo,
+      icon: "archive",
+      type: "Archive",
+      bgColor: "bg-purple-100 dark:bg-purple-900/30",
+      iconColor: "text-purple-600 dark:text-purple-400",
+      textColor: "text-purple-600",
+      gradient: "from-purple-50 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20"
+    };
+  }
+
+  // Video files
+  if (["mp4", "avi", "mov", "wmv", "flv", "webm"].includes(ext)) {
+    return {
+      ...fileInfo,
+      icon: "video",
+      type: "Video",
+      bgColor: "bg-pink-100 dark:bg-pink-900/30",
+      iconColor: "text-pink-600 dark:text-pink-400",
+      textColor: "text-pink-600",
+      gradient: "from-pink-50 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20"
+    };
+  }
+
+  // Audio files
+  if (["mp3", "wav", "flac", "aac", "ogg"].includes(ext)) {
+    return {
+      ...fileInfo,
+      icon: "music",
+      type: "Audio",
+      bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
+      iconColor: "text-indigo-600 dark:text-indigo-400",
+      textColor: "text-indigo-600",
+      gradient: "from-indigo-50 to-blue-100 dark:from-indigo-900/20 dark:to-blue-900/20"
+    };
+  }
+
+  // Code files
+  if (["js", "html", "css", "py", "java", "cpp", "c", "php", "rb"].includes(ext)) {
+    return {
+      ...fileInfo,
+      icon: "code",
+      type: "Code",
+      bgColor: "bg-cyan-100 dark:bg-cyan-900/30",
+      iconColor: "text-cyan-600 dark:text-cyan-400",
+      textColor: "text-cyan-600",
+      gradient: "from-cyan-50 to-blue-100 dark:from-cyan-900/20 dark:to-blue-900/20"
+    };
+  }
+
+  // Default fallback
+  return {
+    ...fileInfo,
+    icon: "file",
+    type: "File",
+    bgColor: "bg-gray-100 dark:bg-gray-600",
+    iconColor: "text-gray-600 dark:text-gray-400",
+    textColor: "text-gray-600",
+    gradient: "from-gray-50 to-slate-100 dark:from-gray-700 dark:to-slate-600"
+  };
 }
 
 // Toggle dropdown visibility

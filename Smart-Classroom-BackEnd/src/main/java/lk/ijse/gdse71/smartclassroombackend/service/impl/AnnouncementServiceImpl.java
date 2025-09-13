@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,9 +76,22 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             AnnouncementDTO dto = modelMapper.map(announcement, AnnouncementDTO.class);
 
             // Convert comma-separated strings to List<String>
-            dto.setFileUrls(announcement.getFileUrls() != null
+            /*dto.setFileUrls(announcement.getFileUrls() != null
                     ? Arrays.asList(announcement.getFileUrls().split(","))
-                    : new ArrayList<>());
+                    : new ArrayList<>());*/
+            // Convert internal file paths to frontend-accessible URLs
+            List<String> fileUrlsForFrontend = announcement.getFileUrls() != null
+                    ? Arrays.stream(announcement.getFileUrls().split(","))
+                    .map(path -> {
+                        File file = new File(path);
+                        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                                .path("/announcements/")
+                                .path(file.getName())
+                                .toUriString();
+                    })
+                    .toList()
+                    : new ArrayList<>();
+            dto.setFileUrls(fileUrlsForFrontend);
 
             dto.setFileTypes(announcement.getFileTypes() != null
                     ? Arrays.asList(announcement.getFileTypes().split(","))
@@ -106,7 +120,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         });
     }
 
-/*
+
     private List<String> saveFiles(List<MultipartFile> files, String classroomId, String userId, String announcementId) throws IOException {
         List<String> filePaths = new ArrayList<>();
 
@@ -162,9 +176,10 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
         return filePaths;
     }
-*/
 
 
+
+/*
     private List<String> saveFiles(List<MultipartFile> files, String classroomId, String userId, String announcementId, List<String> fileNames) throws IOException {
         List<String> filePaths = new ArrayList<>();
         if (files == null || files.isEmpty()) return filePaths;
@@ -213,6 +228,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
         return filePaths;
     }
+*/
 
     @Override
     @Transactional
@@ -232,8 +248,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
         if (files == null) files = new ArrayList<>();
 
-        List<String> fileNames = new ArrayList<>();
-        List<String> fileUrls = saveFiles(files, classroomId, userId, announcementId, fileNames);
+        //List<String> fileNames = new ArrayList<>();
+        List<String> fileUrls = saveFiles(files, classroomId, userId, announcementId);
         List<String> fileTypes = files != null ? files.stream().map(MultipartFile::getContentType).toList() : new ArrayList<>();
 
         announcement.setFileUrls(String.join(",", fileUrls));
@@ -246,7 +262,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         dto.setAnnouncedUserId(userId);
         dto.setFileUrls(fileUrls);
         dto.setFileTypes(fileTypes);
-        dto.setFileName(fileNames.isEmpty() ? null : String.join(",", fileNames)); // <-- set here
+        //dto.setFileName(fileNames.isEmpty() ? null : String.join(",", fileNames)); // <-- set here
         dto.setAnnouncedUserName(user.getName());
         dto.setClassroomName(classroom.getClassLevel()+" | "+classroom.getSubject());
 
@@ -317,8 +333,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             List<String> newFileUrls = saveFiles(files,
                     announcement.getClassroom().getClassroomId(),
                     announcement.getUser().getUserId(),
-                    announcementId,
-                    fileNames);
+                    announcementId
+                    //fileNames
+            );
             existingFileUrls.addAll(newFileUrls);
             existingFileTypes.addAll(files.stream().map(MultipartFile::getContentType).toList());
         }
@@ -333,7 +350,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         dto.setAnnouncedUserId(savedAnnouncement.getUser().getUserId());
         dto.setFileUrls(existingFileUrls);
         dto.setFileTypes(existingFileTypes);
-        dto.setFileName(fileNames.isEmpty() ? null : String.join(",", fileNames)); // frontend display
+        //dto.setFileName(fileNames.isEmpty() ? null : String.join(",", fileNames)); // frontend display
         dto.setAnnouncedUserName(savedAnnouncement.getUser().getName());
         dto.setClassroomName(savedAnnouncement.getClassroom().getClassLevel()+" | "+savedAnnouncement.getClassroom().getSubject());
 
@@ -438,9 +455,21 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         AnnouncementDTO dto = modelMapper.map(foundAnnouncement, AnnouncementDTO.class);
 
         // Handle fileUrls
-        dto.setFileUrls(foundAnnouncement.getFileUrls() != null
+        /*dto.setFileUrls(foundAnnouncement.getFileUrls() != null
                 ? Arrays.asList(foundAnnouncement.getFileUrls().split(","))
-                : new ArrayList<>());
+                : new ArrayList<>());*/
+        List<String> fileUrlsForFrontend = foundAnnouncement.getFileUrls() != null
+                ? Arrays.stream(foundAnnouncement.getFileUrls().split(","))
+                .map(path -> {
+                    File file = new File(path);
+                    return ServletUriComponentsBuilder.fromCurrentContextPath()
+                            .path("/announcements/")
+                            .path(file.getName())
+                            .toUriString();
+                })
+                .toList()
+                : new ArrayList<>();
+        dto.setFileUrls(fileUrlsForFrontend);
 
         // Handle fileTypes
         dto.setFileTypes(foundAnnouncement.getFileTypes() != null
