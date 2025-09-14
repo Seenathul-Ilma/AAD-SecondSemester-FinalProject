@@ -2,6 +2,7 @@ package lk.ijse.gdse71.smartclassroombackend.service;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -12,7 +13,17 @@ public interface AnnouncementService {
 
     AnnouncementDTO createAnnouncementByClassroomId(String classroomId, String userId, String title, String content, List<MultipartFile> files) throws IOException;;
 
-    AnnouncementDTO updateAnnouncementByAnnouncementId(String userId, String announcementId, String title, String content, List<MultipartFile> files) throws IOException;
+    //AnnouncementDTO updateAnnouncementByAnnouncementId(String userId, String announcementId, String title, String content, List<MultipartFile> files) throws IOException;
+
+    @Transactional
+    AnnouncementDTO updateAnnouncementByAnnouncementId(
+            String userId,
+            String announcementId,
+            String title,
+            String content,
+            List<MultipartFile> newFiles,
+            List<String> existingFilesFromFrontend // URLs to keep
+    ) throws IOException;
 
     boolean deleteAnnouncement(String announcementId, String deletingUserId);
 

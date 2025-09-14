@@ -1,7 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
-import lk.ijse.gdse71.smartclassroombackend.dto.ClassroomDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.CommentDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.*;
 import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
@@ -22,11 +21,15 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * --------------------------------------------
@@ -288,9 +291,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         return dto;*/
     }
 
-    @Override
+    //@Override
     @Transactional
-    public AnnouncementDTO updateAnnouncementByAnnouncementId(String userId, String announcementId, String title, String content, List<MultipartFile> files) throws IOException {
+    public AnnouncementDTO updateAnnouncementsByAnnouncementId(String userId, String announcementId, String title, String content, List<MultipartFile> files) throws IOException {
         Announcement announcement = announcementRepository.findById(announcementId)
                 .orElseThrow(() -> new ResourceNotFoundException("Announcement not found"));
 
@@ -400,6 +403,104 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         dto.setClassroomName(announcement.getClassroom().getClassLevel()+" | "+announcement.getClassroom().getSubject());
 
         return dto;*/
+    }
+
+    @Override
+    @Transactional
+    public AnnouncementDTO updateAnnouncementByAnnouncementId(
+            String userId,
+            String announcementId,
+            String title,
+            String content,
+            List<MultipartFile> newFiles,
+            List<String> existingFilesFromFrontend // URLs to keep
+    ) throws IOException {
+
+        if (existingFilesFromFrontend == null) {
+            existingFilesFromFrontend = new ArrayList<>(); // <-- add this
+        }
+
+        Announcement announcement = announcementRepository.findById(announcementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Announcement not found"));
+
+        announcement.setTitle(title);
+        announcement.setContent(content);
+        announcement.setUpdatedAt(LocalDateTime.now());
+
+        // Current files in DB
+        List<String> currentFileUrls = announcement.getFileUrls() != null
+                ? new ArrayList<>(Arrays.asList(announcement.getFileUrls().split(",")))
+                : new ArrayList<>();
+
+        List<String> currentFileTypes = announcement.getFileTypes() != null
+                ? new ArrayList<>(Arrays.asList(announcement.getFileTypes().split(",")))
+                : new ArrayList<>();
+
+        // Normalize frontend URLs to actual internal paths
+        List<String> normalizedExistingFiles = existingFilesFromFrontend.stream()
+                .map(url -> {
+                    try {
+                        // extract the file name from URL
+                        String fileName = Paths.get(new URI(url).getPath()).getFileName().toString();
+                        // find the internal path in currentFileUrls
+                        return currentFileUrls.stream()
+                                .filter(path -> path.endsWith(fileName))
+                                .findFirst()
+                                .orElse(null);
+                    } catch (URISyntaxException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+        // Delete removed files (those in DB but not in existingFilesFromFrontend)
+        List<String> filesToDelete = new ArrayList<>();
+        for (String url : currentFileUrls) {
+            if (!normalizedExistingFiles.contains(url)) {
+                filesToDelete.add(url);
+            }
+        }
+
+        for (String path : filesToDelete) {
+            File file = new File(path);
+            if (file.exists()) file.delete();
+        }
+
+        // Keep only files that user wants to keep
+        List<String> updatedFileUrls = new ArrayList<>(normalizedExistingFiles);
+        List<String> updatedFileTypes = new ArrayList<>();
+        for (String url : normalizedExistingFiles) {
+            int idx = currentFileUrls.indexOf(url);
+            if (idx >= 0) updatedFileTypes.add(currentFileTypes.get(idx));
+            else updatedFileTypes.add("application/octet-stream"); // fallback for safety
+        }
+
+        // Save newly uploaded files
+        if (newFiles != null && !newFiles.isEmpty()) {
+            List<String> newFileUrls = saveFiles(newFiles,
+                    announcement.getClassroom().getClassroomId(),
+                    announcement.getUser().getUserId(),
+                    announcementId);
+            updatedFileUrls.addAll(newFileUrls);
+            updatedFileTypes.addAll(newFiles.stream().map(MultipartFile::getContentType).toList());
+        }
+
+        announcement.setFileUrls(String.join(",", updatedFileUrls));
+        announcement.setFileTypes(String.join(",", updatedFileTypes));
+
+        Announcement savedAnnouncement = announcementRepository.save(announcement);
+
+        // Map to DTO
+        AnnouncementDTO dto = modelMapper.map(savedAnnouncement, AnnouncementDTO.class);
+        dto.setClassroomId(savedAnnouncement.getClassroom().getClassroomId());
+        dto.setAnnouncedUserId(savedAnnouncement.getUser().getUserId());
+        dto.setFileUrls(updatedFileUrls);
+        dto.setFileTypes(updatedFileTypes);
+        dto.setAnnouncedUserName(savedAnnouncement.getUser().getName());
+        dto.setClassroomName(savedAnnouncement.getClassroom().getClassLevel()+" | "+savedAnnouncement.getClassroom().getSubject());
+
+        return dto;
     }
 
     @Override

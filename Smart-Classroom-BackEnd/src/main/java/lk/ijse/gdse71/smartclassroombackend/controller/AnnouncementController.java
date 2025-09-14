@@ -121,11 +121,12 @@ public class AnnouncementController {
             @PathVariable String announcementId,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam("content") String content,
-            @RequestParam(value = "files", required = false) List<MultipartFile> files
+            @RequestParam(value = "files", required = false) List<MultipartFile> files,
+            @RequestParam(value = "existingFiles", required = false) List<String> existingFiles // URLs of files to keep
     ) {
 
         try {
-            AnnouncementDTO savedAnnouncement = announcementService.updateAnnouncementByAnnouncementId(userId, announcementId, title, content, files);
+            AnnouncementDTO savedAnnouncement = announcementService.updateAnnouncementByAnnouncementId(userId, announcementId, title, content, files, existingFiles);
 
             return new ResponseEntity<>(
                     new ApiResponse(
