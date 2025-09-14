@@ -2,6 +2,36 @@
 document.addEventListener("DOMContentLoaded", function () {
   lucide.createIcons(); // Initialize icons
 
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  const tabContents = document.querySelectorAll(".tab-content");
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetTab = btn.dataset.tab;
+
+      // Remove active styles from all buttons
+      tabButtons.forEach(b => {
+        b.classList.remove("bg-white", "dark:bg-gray-600", "text-blue-600", "dark:text-blue-400", "shadow-sm");
+        b.classList.add("text-gray-600", "dark:text-gray-300");
+      });
+
+      // Add active styles to clicked button
+      btn.classList.add("bg-white", "dark:bg-gray-600", "text-blue-600", "dark:text-blue-400", "shadow-sm");
+      btn.classList.remove("text-gray-600", "dark:text-gray-300");
+
+      // Show target tab content, hide others
+      tabContents.forEach(content => {
+        if (content.id === `${targetTab}-tab`) {
+          content.classList.remove("hidden");
+          content.classList.add("block");
+        } else {
+          content.classList.add("hidden");
+          content.classList.remove("block");
+        }
+      });
+    });
+  });
+
 });
 
 // API configuration

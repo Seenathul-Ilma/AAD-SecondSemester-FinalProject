@@ -136,7 +136,7 @@ $("#announcement-cards-container").on("click", ".menu-item", function(e) {
     const announcementId = $(this).data("id");
 
     if (action === "edit") {
-        const announcement = state.currentPageData.content.find(a => a.announcementId === announcementId);
+        const announcement = announcementState.currentPageData.content.find(a => a.announcementId === announcementId);
         if (announcement) {
             // Reset file-related variables for a clean edit session
             selectedFiles = []; // Clear any files from a previous session
@@ -199,9 +199,42 @@ $("#announcement-cards-container").on("click", ".menu-item", function(e) {
             modal.classList.add("flex");
         }
     } else if (action === "delete") {
+        if (!confirm("Are you sure you want to delete this announcement?")) return;
+
         deleteAnnouncement(announcementId);
     }
 });
+
+function deleteAnnouncement(announcementId) {
+    ajaxWithToken({
+        url: `${api}delete/${announcementId}?deletingUserId=${userId}`,
+        method: "DELETE",
+        success: function (response) {
+            if (response.status === 200 && response.data === true) {
+                showMessage(
+                    "success",
+                    response.message || "Announcement deleted successfully!"
+                );
+                loadDataPaginated(announcementState.page, announcementState.size);
+            } else {
+                //alert("Failed to delete comment: " + (response.message || "Unknown error"));
+                showMessage(
+                    "error",
+                    "Failed to delete announcement: " + (response.message || "Unknown error")
+                );
+            }
+        },
+        error: function (xhr) {
+            console.error(
+                "Delete announcement error:",
+                xhr.responseJSON || xhr.responseText || xhr
+            );
+            //alert("An error occurred while deleting the comment.");
+            showMessage("error", "An error occurred while deleting the announcement.");
+        },
+
+    })
+}
 
 function updateAnnouncement(announcementId, announcementData) {
     ajaxWithToken({
@@ -215,7 +248,7 @@ function updateAnnouncement(announcementId, announcementData) {
             if (xhr.status === 201 || response.status === 201 || response.data === true) {
                 showMessage("success", "Announcement updated successfully!");
                 closeModal();
-                loadDataPaginated(state.page, state.size);
+                loadDataPaginated(announcementState.page, announcementState.size);
                 editingAnnouncementId = null;
             } else {
                 showMessage("error", response.message || "Failed to update announcement.");
@@ -239,7 +272,7 @@ function createAnnouncement(announcementData){
                 //alert("Announcement created successfully!");
                 showMessage("success", "Announcement created successfully!");
                 closeModal();
-                loadDataPaginated(state.page, state.size);
+                loadDataPaginated(announcementState.page, announcementState.size);
             } else {
                 //alert(data.message || "Failed to create announcement.");
                 showMessage("error", data.message || "Failed to create announcement.");
@@ -368,10 +401,11 @@ function renderAnnouncements(items) {
     }
 
     const userId = localStorage.getItem("userId");
+    const userRole = localStorage.getItem("role");
 
     items.forEach((announcement) => {
         const actionButtons =
-            announcement.announcedUserId === userId
+            announcement.announcedUserId === userId || userRole === "ADMIN"
                 ? `
           <div class="absolute top-4 right-4 dropdown">
             <button class="announcement-action-btn p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200">
@@ -522,7 +556,7 @@ $(document).on("click", () => {
     $(".dropdown-menu").addClass("hidden");
 });
 
-function loadDataPaginated(page1 = 1, size = state.size) {
+function loadDataPaginated(page1 = 1, size = announcementState.size) {
     const zeroBasedPage = Math.max(0, page1 - 1);
 
     ajaxWithToken({
@@ -540,16 +574,18 @@ function loadDataPaginated(page1 = 1, size = state.size) {
                 totalElements = 0,
             } = data; // destructure from data
 
-            state.page = (number ?? 0) + 1; // convert 0-based -> 1-based
-            state.size = respSize ?? size;
-            state.totalPages = totalPages ?? 1;
-            state.totalElements = totalElements ?? 0;
+            announcementState.page = (number ?? 0) + 1; // convert 0-based -> 1-based
+            announcementState.size = respSize ?? size;
+            announcementState.totalPages = totalPages ?? 1;
+            announcementState.totalElements = totalElements ?? 0;
 
-            state.currentPageData = data;
+            announcementState.currentPageData = data;
 
             // Correct
             renderAnnouncements(data.content);
-            renderPaginationFooter();
+            //renderPaginationFooter();
+            //renderPaginationFooters();
+            renderPaginationFooters("#broadcast-tab .pagination-container", announcementState);
         },
         error: function (xhr) {
             console.error("Error loading announcements:", xhr.responseJSON || xhr);
@@ -680,7 +716,7 @@ $("#announcement-cards-container").on(
                 //alert("Comment added successfully!");
                 showMessage("success", "Comment added successfully!");
                 inputField.val(""); // Clear input
-                loadDataPaginated(state.page, state.size); // Reload announcements to refresh comments
+                loadDataPaginated(announcementState.page, announcementState.size); // Reload announcements to refresh comments
             },
             error: function (xhr) {
                 console.error("Failed to create comment", xhr.responseJSON || xhr);
@@ -729,7 +765,7 @@ $(document).on("click", ".comment-delete-btn", function () {
                     "success",
                     response.message || "Comment deleted successfully!"
                 );
-                loadDataPaginated(state.page, state.size);
+                loadDataPaginated(announcementState.page, announcementState.size);
             } else {
                 //alert("Failed to delete comment: " + (response.message || "Unknown error"));
                 showMessage(
