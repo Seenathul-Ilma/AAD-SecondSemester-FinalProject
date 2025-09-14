@@ -63,6 +63,9 @@ const fileCount = document.getElementById("fileCount");
 const filePreviews = document.getElementById("filePreviews");
 let selectedFiles = [];
 
+let existingFiles = []; // New array to store files already attached to the announcement
+let removedFileIds = []; // New array to store IDs of files to be removed
+
 // Open modal
 createBtn.addEventListener("click", () => {
   modal.classList.remove("hidden");
@@ -90,6 +93,7 @@ fileInput.addEventListener("change", (e) => {
 });
 
 // Post announcement
+// ===== MODIFIED POST LOGIC TO HANDLE FILE REMOVAL =====
 postBtn.addEventListener("click", () => {
   const content = quill.root.innerHTML.trim();
   const title = titleInput.value.trim();
@@ -108,7 +112,43 @@ postBtn.addEventListener("click", () => {
   const announcementData = new FormData();
   announcementData.append("title", title);
   announcementData.append("content", content);
-  selectedFiles.forEach(file => announcementData.append("files", file));
+
+  // Handle file logic based on edit mode
+  if (editingAnnouncementId) {
+    // EDIT MODE: Handle file updates
+
+    // Keep remaining existing files (those not removed by user)
+    const remainingExistingFiles = existingFiles.filter(f => !removedFileIds.includes(f.fileId));
+
+    // Append remaining existing files (send their identifiers to backend)
+    remainingExistingFiles.forEach(file => {
+      announcementData.append("existingFiles", file.fileId); // send URLs or IDs
+    });
+
+    // Append newly selected files
+    selectedFiles.forEach(file => announcementData.append("files", file));
+
+    console.log("=== EDIT MODE: File update ===");
+    console.log("Removed files:", removedFileIds);
+    console.log("Remaining existing files:", remainingExistingFiles);
+    console.log("New files to upload:", selectedFiles.length);
+  } else {
+    // CREATE MODE: Just add the selected files
+    selectedFiles.forEach(file => announcementData.append("files", file));
+  }
+
+
+  // Debug logging
+  console.log("=== DEBUG UPDATE REQUEST ===");
+  console.log("editingAnnouncementId:", editingAnnouncementId);
+  console.log("selectedFiles:", selectedFiles);
+  console.log("removedFileIds:", removedFileIds);
+  console.log("existingFiles:", existingFiles);
+
+  // Log FormData contents
+  for (let [key, value] of announcementData.entries()) {
+    console.log(key, value);
+  }
 
   if (editingAnnouncementId) {
     updateAnnouncement(editingAnnouncementId, announcementData);
@@ -123,18 +163,63 @@ $("#announcement-cards-container").on("click", ".menu-item", function(e) {
   const announcementId = $(this).data("id");
 
   if (action === "edit") {
-    // 1. Load announcement data into modal
     const announcement = state.currentPageData.content.find(a => a.announcementId === announcementId);
     if (announcement) {
+      // Reset file-related variables for a clean edit session
+      selectedFiles = []; // Clear any files from a previous session
+      removedFileIds = []; // Clear removed files list
+      editingAnnouncementId = announcementId;
+
+      // ===== FIXED: Properly reconstruct existingFiles from announcement data =====
+      existingFiles = [];
+
+      console.log("Announcement object:", announcement);
+      console.log("File URLs:", announcement.fileUrls);
+
+      if (announcement.fileUrls && announcement.fileUrls.length > 0) {
+        announcement.fileUrls.forEach((url, index) => {
+          // Extract original filename from the URL path
+          const fullFileName = url.split("/").pop(); // Get the last part of URL
+
+          // Parse the structured filename: classroomId_userId_announcementId_timestamp_counter_originalName.ext
+          const parts = fullFileName.split("_");
+          let displayName = fullFileName; // fallback
+
+          if (parts.length >= 6) {
+            // Extract original name from parts[5] onwards and reconstruct
+            const originalNameParts = parts.slice(5); // Everything after counter
+            displayName = originalNameParts.join("_");
+
+            // Clean up the display name - remove underscores and make readable
+            displayName = displayName.replace(/_/g, " ");
+
+            // Capitalize first letter of each word
+            displayName = displayName.replace(/\b\w/g, l => l.toUpperCase());
+          }
+
+          // Use the URL as the unique identifier since backend doesn't provide separate IDs
+          const fileId = url;
+
+          existingFiles.push({
+            fileId: fileId,
+            fileName: displayName,
+            fileSize: "", // We don't have size info from backend
+            fileUrl: url
+          });
+        });
+      }
+      // ===== END FIX =====
+
+      // Populate title and content
       titleInput.value = announcement.title;
       quill.root.innerHTML = announcement.content;
-
-      // Keep track of which announcement is being edited
-      editingAnnouncementId = announcementId;
 
       // Update modal UI
       document.getElementById("announcementModalTitle").textContent = "Edit Announcement";
       postBtn.textContent = "Update Announcement";
+
+      // Update the file previews to show existing files
+      updateFilePreviews();
 
       // Open modal
       modal.classList.remove("hidden");
@@ -204,60 +289,85 @@ function closeModal() {
   quill.setText("");
   titleInput.value = "";
   selectedFiles = [];
-  updateFilePreviews();
+  existingFiles = []; // Reset existing files
+  removedFileIds = []; // Reset removed file IDs
+  editingAnnouncementId = null; // Reset the editing state
+
+  updateFilePreviews(); // This will now clear the previews completely
 
   document.getElementById("announcementModalTitle").textContent = "Create New Announcement";
   postBtn.textContent = "Post Announcement";
 }
 
+// ===== FIXED FILE PREVIEW REMOVAL LOGIC =====
 function updateFilePreviews() {
   // Clear previous previews
   filePreviews.innerHTML = "";
 
-  if (selectedFiles.length > 0) {
-    fileCount.textContent = `${selectedFiles.length} file(s) selected`;
+  // Combine existing and newly selected files for display
+  const filesToDisplay = [...existingFiles, ...selectedFiles];
+
+  if (filesToDisplay.length > 0) {
+    fileCount.textContent = `${filesToDisplay.length} file(s) selected`;
     fileCount.classList.remove("hidden");
     filePreviews.classList.remove("hidden");
 
-    selectedFiles.forEach((file, index) => {
+    filesToDisplay.forEach((file, displayIndex) => {
+      const isExistingFile = file.hasOwnProperty('fileId'); // Existing files have fileId
+      const fileName = isExistingFile ? file.fileName : file.name;
+      const fileSize = isExistingFile ? file.fileSize : file.size;
+
+      // Determine file icon
+      let icon = "file";
+      if (fileName.includes(".pdf")) icon = "file-text";
+      else if (fileName.match(/\.(jpg|jpeg|png|gif)$/i)) icon = "image";
+      else if (fileName.match(/\.(zip|rar|7z)$/i)) icon = "archive";
+
+      // Create preview element
       const preview = document.createElement("div");
       preview.className =
-        "file-preview flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg";
-
-      // File icon based on type
-      let icon = "file";
-      if (file.type.includes("image")) icon = "image";
-      if (file.type.includes("pdf")) icon = "file-text";
-      if (file.type.includes("zip")) icon = "archive";
+          "file-preview flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg";
 
       preview.innerHTML = `
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="${icon}" class="w-4 h-4 text-gray-500"></i>
-                                <span class="text-sm text-gray-700 dark:text-gray-300 truncate max-w-xs">${
-                                  file.name
-                                }</span>
-                                <span class="text-xs text-gray-500">(${formatFileSize(
-                                  file.size
-                                )})</span>
-                            </div>
-                            <button type="button" class="text-red-500 hover:text-red-700" data-index="${index}">
-                                <i data-lucide="x" class="w-4 h-4"></i>
-                            </button>
-                        `;
+        <div class="flex items-center gap-2">
+            <i data-lucide="${icon}" class="w-4 h-4 text-gray-500"></i>
+            <span class="text-sm text-gray-700 dark:text-gray-300 truncate max-w-xs">${fileName}</span>
+            <span class="text-xs text-gray-500">  
+            ${fileSize ? "(" + (formatFileSize(fileSize)) +")" : " "}
+</span>
+
+        </div>
+        <button type="button" class="text-red-500 hover:text-red-700 remove-file-btn" data-index="${displayIndex}" data-is-existing="${isExistingFile}">
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      `;
 
       filePreviews.appendChild(preview);
     });
 
-    // Add event listeners to remove buttons
-    document.querySelectorAll("#filePreviews button").forEach((btn) => {
+    // Remove button logic
+    document.querySelectorAll("#filePreviews .remove-file-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
-        const index = parseInt(e.currentTarget.getAttribute("data-index"));
-        selectedFiles.splice(index, 1);
-        updateFilePreviews();
+        const displayIndex = parseInt(e.currentTarget.getAttribute("data-index"));
+        const isExisting = e.currentTarget.getAttribute("data-is-existing") === "true";
+        const file = filesToDisplay[displayIndex];
+
+        if (isExisting) {
+          // Track removal
+          removedFileIds.push(file.fileId);
+
+          // Remove from existingFiles array
+          existingFiles = existingFiles.filter(f => f.fileId !== file.fileId);
+        } else {
+          // Remove from selectedFiles array
+          selectedFiles = selectedFiles.filter(f => f !== file);
+        }
+
+        updateFilePreviews(); // Re-render previews
       });
     });
 
-    // Update icons for new elements
+    // Update icons
     lucide.createIcons();
   } else {
     fileCount.classList.add("hidden");
@@ -436,15 +546,15 @@ function renderAnnouncements(items) {
         announcement.announcedUserId === userId
             ? `
           <div class="absolute top-4 right-4 dropdown">
-            <button class="action-btn p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200">
+            <button class="announcement-action-btn p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200">
               <i data-lucide="more-horizontal" class="w-5 h-5"></i>
             </button>
             <div class="dropdown-menu hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-10">
-              <div class="menu-item px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer transition-colors duration-200 rounded-t-lg" data-action="edit" data-id="${announcement.announcementId}">
-                <i data-lucide="edit-3" class="w-4 h-4 inline-block mr-2"></i>Edit
+              <div class="menu-item flex items-center px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer transition-colors duration-200 rounded-t-lg" data-action="edit" data-id="${announcement.announcementId}">
+                <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i>Edit
               </div>
-              <div class="menu-item px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors duration-200 rounded-b-lg" data-action="delete" data-id="${announcement.announcementId}">
-                <i data-lucide="trash-2" class="w-4 h-4 inline-block mr-2"></i>Delete
+              <div class="menu-item flex items-center px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors duration-200 rounded-b-lg" data-action="delete" data-id="${announcement.announcementId}">
+                <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>Delete
               </div>
             </div>
           </div>`
@@ -492,8 +602,9 @@ function renderAnnouncements(items) {
                   </div>
                 </div>
                 <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <div class="w-6 h-6 bg-white/80 dark:bg-gray-800/80 rounded-full flex items-center justify-center shadow-sm">
-                    <i data-lucide="external-link" class="w-3 h-3 text-gray-600 dark:text-gray-400"></i>
+                  <div class="p-[6px] rounded-full text-slate-100 dark:hover:text-slate-800 hover:bg-slate-100 bg-slate-100 hover:text-slate-800 hover:text-slate-200 dark:bg-slate-800 transition-colors"
+                  >
+                    <i data-lucide="square-arrow-out-up-right" class="w-4 h-4 hover:scale-120 dark:hover:scale-none"></i>
                   </div>
                 </div>
                 <div class="absolute bottom-2 left-2">
@@ -570,7 +681,6 @@ function renderAnnouncements(items) {
   if (window.lucide?.createIcons) lucide.createIcons();
 }
 
-// Enhanced file info function with better styling
 // Enhanced file info function – safe for optional files
 function getFileInfo(fileName) {
   if (!fileName) return null; // return null if file doesn't exist
@@ -708,7 +818,7 @@ function getFileInfo(fileName) {
 }
 
 // Toggle dropdown visibility
-$("#announcement-cards-container").on("click", ".action-btn", function (e) {
+$("#announcement-cards-container").on("click", ".announcement-action-btn", function (e) {
   e.stopPropagation(); // prevent click from bubbling up
   const $menu = $(this).siblings(".dropdown-menu");
   $(".dropdown-menu").not($menu).addClass("hidden");
@@ -834,12 +944,12 @@ function renderComments(comments) {
       c.commenterId === userId
         ? `
             <div class="absolute top-2 right-2 dropdown">
-                <button class="action-btn p-1 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                    <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                <button class="comment-action-btn p-1 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                    <i data-lucide="more-horizontal" class="w-4 h-4 mr-1"></i>
                 </button>
                 <div class="dropdown-menu hidden absolute right-0 mt-1 w-24 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
-                    <div class="menu-item flex items-center px-3 py-1 text-gray-700 dark:text-gray-200 cursor-pointer comment-delete-btn" data-id="${c.commentId}">
-                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
+                    <div class="menu-item flex items-center px-3 py-1 cursor-pointer bg-red-100/90 dark:bg-red-900/80 backdrop-blur-xl border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 comment-delete-btn" data-id="${c.commentId}">
+                        <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
                         Delete
                     </div>
                 </div>
@@ -920,7 +1030,7 @@ $("#announcement-cards-container").on(
 );
 
 // After renderComments
-$(document).on("click", ".action-btn", function (e) {
+$(document).on("click", ".comment-action-btn", function (e) {
   e.stopPropagation(); // prevent closing parent dropdowns
   const $menu = $(this).siblings(".dropdown-menu");
   $(".dropdown-menu").not($menu).addClass("hidden"); // hide others
@@ -957,6 +1067,7 @@ $(document).on("click", ".comment-delete-btn", function () {
           "success",
           response.message || "Comment deleted successfully!"
         );
+        loadDataPaginated(state.page, state.size);
       } else {
         //alert("Failed to delete comment: " + (response.message || "Unknown error"));
         showMessage(
