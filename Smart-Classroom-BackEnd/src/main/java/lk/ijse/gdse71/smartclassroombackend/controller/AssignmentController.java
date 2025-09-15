@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * --------------------------------------------
@@ -77,11 +78,11 @@ public class AssignmentController {
             @RequestParam(value = "title", required = false) String title,
             @RequestParam("content") String content,
             @RequestParam("dueDate") LocalDateTime dueDate,
-            @RequestParam(value = "file", required = false) MultipartFile file
+            @RequestParam(value = "file", required = false) List<MultipartFile> files
     ) {
 
         try {
-            AssignmentDTO savedAssignment = assignmentService.createAssignmentByClassroomId(classroomId, userId, title, content, file, dueDate);
+            AssignmentDTO savedAssignment = assignmentService.createAssignmentByClassroomId(classroomId, userId, content, files, dueDate);
 
             return new ResponseEntity<>(
                     new ApiResponse(
@@ -114,11 +115,12 @@ public class AssignmentController {
             @RequestParam(value = "title", required = false) String title,
             @RequestParam("content") String content,
             @RequestParam("dueDate") LocalDateTime dueDate,
-            @RequestParam(value = "file", required = false) MultipartFile file
+            @RequestParam(value = "file", required = false) List<MultipartFile> files
     ) {
 
         try {
-            AssignmentDTO savedAssignment = assignmentService.updateAssignmentByAssignmentId(assignmentId, userId, title, content, file, dueDate);
+            //AssignmentDTO savedAssignment = assignmentService.updateAssignmentByAssignmentId(assignmentId, userId, title, content, file, dueDate);
+            AssignmentDTO savedAssignment = assignmentService.createAssignmentByClassroomId(assignmentId, userId, content, files, dueDate);
 
             return new ResponseEntity<>(
                     new ApiResponse(

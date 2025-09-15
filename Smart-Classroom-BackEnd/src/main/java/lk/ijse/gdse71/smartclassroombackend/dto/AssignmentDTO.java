@@ -38,13 +38,13 @@ public class AssignmentDTO {
             regexp = "^(?:[a-zA-Z0-9_\\-/\\\\:.]+)?$",
             message = "Invalid file path format"
     )
-    private String filePath;
+    private List<String> fileUrls;
 
     @Pattern(
             regexp = "^(pdf|docx?|pptx?|xlsx?|txt|csv|rtf|odt|md|jpg|jpeg|png|gif|mp3|mp4|zip|rar|7z|tar|gz)$",
             message = "Invalid file type. Allowed: pdf, doc, docx, ppt, pptx, xls, xlsx, txt, csv, rtf, odt, md, jpg, jpeg, png, gif, mp3, mp4, zip, rar, 7z, tar, gz"
     )
-    private String fileType;
+    private List<String> fileTypes;
 
     @PastOrPresent(message = "Upload date cannot be in the future")
     private LocalDateTime assignedDate;
@@ -60,5 +60,11 @@ public class AssignmentDTO {
 
     @NotBlank(message = "Target classroom ID is required")
     private String assignedTo;   // classroomId
+
+    private List<CommentDTO> comments;
+
+    // extra for response
+    private String classroomName;
+    private String assignedUserName;
 
 }

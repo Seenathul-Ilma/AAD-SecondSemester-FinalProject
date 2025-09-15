@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,12 +44,15 @@ public class Assignment {
     private LocalDateTime dueDate;
 
     @Lob
-    @Column(name = "file_path")
-    private String filePath;     // file url
+    @Column(name = "file_urls")
+    private String fileUrls;     // file url
 
     @Lob
-    @Column(name = "file_type")
-    private String fileType;
+    @Column(name = "file_types")
+    private String fileTypes;
+
+    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AssignmentComment> comments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_by")
