@@ -2,6 +2,8 @@ package lk.ijse.gdse71.smartclassroombackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,6 +53,9 @@ public class Conversation {
     @JoinColumn(name = "recipient")
     private User recipient;              // ok
     //private String receiverId;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     // One conversation contains many messages
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true)

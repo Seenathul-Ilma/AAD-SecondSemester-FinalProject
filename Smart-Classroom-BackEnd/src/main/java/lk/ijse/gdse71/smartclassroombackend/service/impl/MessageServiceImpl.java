@@ -49,6 +49,7 @@ public class MessageServiceImpl implements MessageService {
         return conversations.stream().map(c -> {
             ConversationDTO dto = modelMapper.map(c, ConversationDTO.class);
             dto.setSenderId(c.getAuthor().getUserId());
+            dto.setCreatedAt(c.getCreatedAt());
             dto.setReceiverId(c.getRecipient().getUserId());
             return dto;
         }).toList();
@@ -66,11 +67,56 @@ public class MessageServiceImpl implements MessageService {
 
         ConversationDTO dto = modelMapper.map(conversation, ConversationDTO.class);
         dto.setSenderId(conversation.getAuthor().getUserId());
+        dto.setCreatedAt(conversation.getCreatedAt());
         dto.setReceiverId(conversation.getRecipient().getUserId());
         return dto;
     }
 
+
     @Override
+    @Transactional
+    public ConversationDTO createConversationAndAddMessage(User sender, String receiverId, String content) {
+        User receiver = modelMapper.map(userService.getUserById(receiverId), User.class);
+
+        // Try to find existing conversation in both directions
+        Conversation conversation = conversationRepository
+                .findByAuthorAndRecipient(sender, receiver)
+                .orElseGet(() -> conversationRepository
+                        .findByAuthorAndRecipient(receiver, sender)
+                        .orElse(null));
+
+        if (conversation == null) {
+            // Create new conversation if none exists
+            conversation = new Conversation(sender, receiver);
+            conversationRepository.save(conversation);
+        }
+
+        LocalDateTime createdAt = LocalDateTime.now();
+
+        // Add new message
+        Message message = new Message(sender, receiver, conversation, content, createdAt);
+        messageRepository.save(message);
+        conversation.getMessages().add(message);
+
+        //notificationService.sendMessageToConversation(conversation.getId(), message);
+
+        // Build DTO
+        ConversationDTO conversationDTO = new ConversationDTO();
+        conversationDTO.setId(conversation.getId());
+        conversationDTO.setCreatedAt(conversation.getCreatedAt());
+        conversationDTO.setSenderId(conversation.getAuthor().getUserId());
+        conversationDTO.setReceiverId(conversation.getRecipient().getUserId());
+
+        List<MessageDTO> messageDTOs = conversation.getMessages().stream()
+                .map(msg -> new MessageDTO(msg.getReceiver().getUserId(), msg.getContent(), msg.getCreatedAt(), msg.getSender().getUserId()))
+                .toList();
+
+        conversationDTO.setMessages(messageDTOs);
+
+        return conversationDTO;
+    }
+
+    /*@Override
     @Transactional
     public ConversationDTO createConversationAndAddMessage(User sender, String receiverId, String content) {
         User receiver = modelMapper.map(userService.getUserById(receiverId), User.class);
@@ -79,23 +125,23 @@ public class MessageServiceImpl implements MessageService {
             throw new ResourceDuplicateException("Conversation already exists, use the correct conversation id to send message.");
         });
 
-        /*conversationRepository.findByAuthorAndRecipient(sender, receiver).ifPresentOrElse(
-                conversation -> {
-                    throw new ResourceDuplicateException("Conversation already exists, use the correct conversation id to send message.");
-                },
-                () -> {}
-        );  */
+        //conversationRepository.findByAuthorAndRecipient(sender, receiver).ifPresentOrElse(
+                //conversation -> {
+        //  throw new ResourceDuplicateException("Conversation already exists, use the correct conversation id to send message.");
+                //},
+                //() -> {}
+        //);
 
         conversationRepository.findByAuthorAndRecipient(receiver, sender).ifPresent(conversation -> {
             throw new ResourceDuplicateException("Conversation already exists, use the correct conversation id to send message.");
         });
 
-        /*conversationRepository.findByAuthorAndRecipient(receiver, sender).ifPresentOrElse(
-                conversation -> {
-                    throw new ResourceDuplicateException("Conversation already exists, use the correct conversation id to send message.");
-                },
-                () -> {}
-        );*/
+        //conversationRepository.findByAuthorAndRecipient(receiver, sender).ifPresentOrElse(
+                //conversation -> {
+                //    throw new ResourceDuplicateException("Conversation already exists, use the correct conversation id to send message.");
+                //},
+                //() -> {}
+        //);
 
         Conversation conversation = new Conversation(sender, receiver);
         conversationRepository.save(conversation);
@@ -120,6 +166,8 @@ public class MessageServiceImpl implements MessageService {
 
         return conversationDTO;
     }
+*/
+
 
     /*@Override
     public MessageDTO addMessageToConversation(User sender, Long conversationId, MessageDTO messageDTO) {
@@ -148,7 +196,9 @@ public class MessageServiceImpl implements MessageService {
             throw new IllegalArgumentException("Receiver is not part of this conversation");
         }
 
-        Message message = new Message(sender, receiver, conversation, content);
+        LocalDateTime createdAt = LocalDateTime.now();
+
+        Message message = new Message(sender, receiver, conversation, content, createdAt);
         messageRepository.save(message);
 
         conversation.getMessages().add(message);
@@ -157,6 +207,7 @@ public class MessageServiceImpl implements MessageService {
 
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setReceiverId(receiver.getUserId());
+        messageDTO.setCreatedAt(message.getCreatedAt());
         messageDTO.setContent(message.getContent());
         messageDTO.setSenderId(sender.getUserId()); // optional, good for frontend
 

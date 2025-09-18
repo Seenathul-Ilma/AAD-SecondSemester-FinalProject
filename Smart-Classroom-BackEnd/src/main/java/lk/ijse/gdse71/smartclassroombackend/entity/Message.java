@@ -63,11 +63,12 @@ public class Message {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public Message(User sender, User receiver, Conversation conversation, String content) {
+    public Message(User sender, User receiver, Conversation conversation, String content, LocalDateTime createdAt) {
         this.sender = sender;
         this.receiver = receiver;
         this.conversation = conversation;
         this.content = content;
+        this.createdAt = createdAt;
         this.isRead = false;
     }
 

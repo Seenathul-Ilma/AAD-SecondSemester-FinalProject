@@ -2,6 +2,7 @@ package lk.ijse.gdse71.smartclassroombackend.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ConversationDTO {
     private Long id;
-    //private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     //private UserDTO sender;
     private String senderId;

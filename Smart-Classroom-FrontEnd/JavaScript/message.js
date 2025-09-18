@@ -9,15 +9,35 @@ let reconnectTimeout = null;
 // ====================== Helper Functions ======================
 function appendMessageToChat(message) {
     const messagesContainer = document.getElementById("messagesContainer");
-    if (!messagesContainer) return;
+    //if (!messagesContainer) return;
+    const scrollableContainer = messagesContainer.parentElement; // This has overflow-y-auto
+    if (!messagesContainer || !scrollableContainer) {
+        console.log("❌ Container not found");
+        return;
+    }
+
+// Check if user was at bottom BEFORE adding the message
+    // Check scroll position on the CORRECT container
+    const scrollHeight = scrollableContainer.scrollHeight;
+    const scrollTop = scrollableContainer.scrollTop;
+    const clientHeight = scrollableContainer.clientHeight;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    const wasAtBottom = distanceFromBottom <= 50;
+
+    console.log("📊 Scroll stats BEFORE adding message:");
+    console.log("  - scrollHeight:", scrollHeight);
+    console.log("  - scrollTop:", scrollTop);
+    console.log("  - clientHeight:", clientHeight);
+    console.log("  - distanceFromBottom:", distanceFromBottom);
+    console.log("  - wasAtBottom:", wasAtBottom);
 
     const messageDiv = document.createElement("div");
     const currentUserId = localStorage.getItem("userId");
     const isUser = message.senderId === currentUserId;
 
     // Fallback timestamp if not provided
-    const timestamp = message.timestamp
-        ? new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    const timestamp = message.createdAt
+        ? new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
         : new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
     messageDiv.className = `flex items-start space-x-3 message-enter ${isUser ? "justify-end" : ""}`;
@@ -57,16 +77,75 @@ function appendMessageToChat(message) {
     messagesContainer.appendChild(messageDiv);
     //messagesContainer.scrollTop = messagesContainer.scrollHeight; // auto scroll
     lucide.createIcons();
-    window.requestAnimationFrame(() => {
-        console.log("request animation frame");
-        messagesContainer.scrollTo({
-            top: messagesContainer.scrollHeight,
-            behavior: 'smooth'
+
+    const shouldScroll = wasAtBottom || isUser;
+    console.log("🎯 Scroll decision: shouldScroll =", shouldScroll);
+
+    if (shouldScroll) {
+        console.log("🚀 Initiating scroll to bottom...");
+        requestAnimationFrame(() => {
+            console.log("🎬 requestAnimationFrame executing scroll");
+            const beforeScrollTop = scrollableContainer.scrollTop;
+
+            // Scroll the CORRECT container
+            scrollableContainer.scrollTo({
+                top: scrollableContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+
+            console.log("📜 Scroll command sent:");
+            console.log("  - target scrollTop:", scrollableContainer.scrollHeight);
+            console.log("  - current scrollTop:", beforeScrollTop);
+
+            setTimeout(() => {
+                const finalScrollTop = scrollableContainer.scrollTop;
+                const finalDistanceFromBottom = scrollableContainer.scrollHeight - finalScrollTop - scrollableContainer.clientHeight;
+                console.log("🏁 Final scroll position:");
+                console.log("  - finalScrollTop:", finalScrollTop);
+                console.log("  - finalDistanceFromBottom:", finalDistanceFromBottom);
+                console.log("  - scroll successful:", finalDistanceFromBottom <= 5);
+            }, 300);
         });
-        console.log("requested animation frame");
-    });
+    } else {
+        console.log("❌ Scroll skipped - user scrolled up manually");
+    }
 }
 
+function addConversationHeader(conversationData) {
+    const messagesContainer = document.getElementById("messagesContainer");
+    if (!messagesContainer) return;
+
+    // Remove existing header if present
+    const existingHeader = messagesContainer.querySelector('.conversation-header');
+    if (existingHeader) {
+        existingHeader.remove();
+    }
+
+    // Format date
+    const createdAt = new Date(conversationData.createdAt);
+    const formattedDate = createdAt.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+
+    // Create compact header
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'conversation-header flex items-center justify-center py-3 mb-4';
+
+    headerDiv.innerHTML = `
+        <!-- div class="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
+            <span class="text-xs text-gray-600 dark:text-gray-400">Conversation started ${formattedDate}</span>
+        </div -->
+        <div class="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full flex items-center space-x-2">
+            <i data-lucide="calendar-days" class="w-4 h-4 text-gray-400 dark:text-gray-500"></i>
+            <span class="text-xs text-gray-600 dark:text-gray-400">${formattedDate}</span>
+        </div>
+    `;
+
+    messagesContainer.insertBefore(headerDiv, messagesContainer.firstChild);
+    lucide.createIcons();
+}
 // Simple XSS protection
 function escapeHtml(text) {
     return text.replace(/[&<>"']/g, (match) => {
@@ -143,12 +222,21 @@ function connectWebSocket() {
             if (reconnectTimeout) clearTimeout(reconnectTimeout);
 
             // Subscribe to messages
-            stompClient.subscribe("/user/queue/messages", (msg) => {
+            /*stompClient.subscribe("/user/queue/messages", (msg) => {
                 try {
                     const message = JSON.parse(msg.body);
                     if (message.conversationId == currentConversationId) {
                         appendMessageToChat(message);
                     }
+                } catch (err) {
+                    console.error("Error parsing WebSocket message:", err);
+                }
+            });*/
+
+            stompClient.subscribe(`/topic/conversations/${currentConversationId}`, (msg) => {
+                try {
+                    const message = JSON.parse(msg.body);
+                    appendMessageToChat(message);
                 } catch (err) {
                     console.error("Error parsing WebSocket message:", err);
                 }
@@ -199,15 +287,22 @@ function sendMessage() {
         conversationId: currentConversationId,
         senderId: localStorage.getItem("userId"),
         receiverId: receiverId,
-        content
+        content,
+        createdAt: new Date().toISOString()
     };
 
     // WebSocket
-    if (stompClient && stompClient.connected) {
+    /*if (stompClient && stompClient.connected) {
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(message));
+    }*/
+    if (stompClient && stompClient.connected) {
+        stompClient.send(`/app/chat/${currentConversationId}`, {}, JSON.stringify(message));
+        //appendMessageToChat(message); // show instantly
     }
 
+
     // REST fallback
+/*
     ajaxWithToken({
         url: `http://localhost:8080/api/v1/edusphere/message/conversations/${currentConversationId}/messages`,
         method: "POST",
@@ -222,6 +317,7 @@ function sendMessage() {
             showMessage("error", "Failed to send message.");
         }
     });
+*/
 
     inputEl.value = "";
 }
@@ -235,12 +331,35 @@ function sendTyping(isTyping) {
 
 // ====================== Load Messages ======================
 function loadExistingMessages() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const conversationId = urlParams.get("conversationId");
+    console.log("ConversationId: "+ conversationId)
+    if (conversationId) {
+        //loadConversationMessages(conversationId);
+        currentConversationId = conversationId;
+        console.log("conversationId: "+conversationId)
+    }
+
     ajaxWithToken({
         url: `http://localhost:8080/api/v1/edusphere/message/conversations/${currentConversationId}`,
         method: "GET",
         success: (data) => {
-            if (data.messages && Array.isArray(data.messages)) {
+            /*if (data.messages && Array.isArray(data.messages)) {
                 data.messages.forEach((msg) => appendMessageToChat(msg));
+            }*/
+            /*if (data.data && data.data.messages && Array.isArray(data.data.messages)) {
+                data.data.messages.forEach(msg => appendMessageToChat(msg));
+            }*/
+            console.log("Loading conversation data:", data);
+
+            if (data.data) {
+                // Add conversation header with start date
+                addConversationHeader(data.data);
+
+                // Load existing messages
+                if (data.data.messages && Array.isArray(data.data.messages)) {
+                    data.data.messages.forEach(msg => appendMessageToChat(msg));
+                }
             }
         },
         error: (xhr) => {
@@ -270,6 +389,7 @@ setInterval(updateConnectionStatus, 5000);
 // ====================== Page Initialization ======================
 document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
+    loadConversations();
 
     const params = new URLSearchParams(window.location.search);
     currentConversationId = params.get("conversationId");
@@ -308,6 +428,112 @@ window.addEventListener("beforeunload", () => {
     if (stompClient && stompClient.connected) stompClient.disconnect();
     if (reconnectTimeout) clearTimeout(reconnectTimeout);
 });
+
+function loadConversations() {
+    ajaxWithToken({
+        url: "http://localhost:8080/api/v1/edusphere/message/conversations",
+        method: "GET",
+        success: (data) => {
+            console.log("Raw data from API:", data); // log full response
+
+            const conversationsList = document.getElementById("conversationsList");
+            if (!conversationsList) return;
+
+            conversationsList.innerHTML = ""; // clear existing
+
+            if (!data.data || data.data.length === 0) {
+                conversationsList.innerHTML = `<p class="text-gray-500 dark:text-gray-400">No conversations yet.</p>`;
+                return;
+            }
+
+            const currentUserId = localStorage.getItem("userId");
+            console.log("Current user ID:", currentUserId);
+
+            data.data.forEach((conv) => {
+                const currentUserId = localStorage.getItem("userId");
+
+                // Determine the other participant
+                const isCurrentUserSender = conv.senderId === currentUserId;
+                const otherParticipantId = isCurrentUserSender ? conv.receiverId : conv.senderId;
+                const otherParticipantName = isCurrentUserSender ? conv.receiverName || otherParticipantId : conv.senderName || otherParticipantId;
+
+                const lastMsg = conv.messages[conv.messages.length - 1] || {};
+
+                const convDiv = document.createElement("div");
+                convDiv.className = "conversation-item p-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center space-x-3";
+
+                convDiv.innerHTML = `
+        <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white">
+            ${otherParticipantName?.charAt(0) || "U"}
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">${otherParticipantName || "User"}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${lastMsg.content || ""}</p>
+        </div>
+    `;
+
+                convDiv.addEventListener("click", () => {
+                    if (conv.id && otherParticipantId) {
+                        window.location.href = `testSize.html?conversationId=${conv.id}&receiverId=${otherParticipantId}`;
+                    }
+                });
+
+                conversationsList.appendChild(convDiv);
+            });
+        },
+        error: (xhr) => {
+            console.error("Failed to load conversations:", xhr.responseText || xhr);
+        }
+    });
+}
+
+
+/*
+function loadConversationMessages(conversationId) {
+    const currentUserId = localStorage.getItem("userId");
+    const messagesContainer = document.getElementById("messagesContainer");
+    if (!messagesContainer) return;
+
+    messagesContainer.innerHTML = "";
+
+    ajaxWithToken({
+        url: `http://localhost:8080/api/v1/edusphere/message/conversations/${conversationId}`,
+        method: "GET",
+        success: (response) => {
+            const messages = response.data.messages || [];
+
+            messages.forEach((msg) => {
+                const isSent = msg.senderId === currentUserId;
+                const msgDiv = document.createElement("div");
+
+                msgDiv.className = `
+                    max-w-[70%] px-4 py-2 my-1 rounded-lg break-words 
+                    ${isSent ? "ml-auto bg-blue-500 text-white" : "mr-auto bg-gray-200 text-gray-900"}
+                `;
+
+                msgDiv.textContent = msg.content;
+                messagesContainer.appendChild(msgDiv);
+            });
+
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        },
+        error: (xhr) => {
+            console.error("Failed to load messages:", xhr.responseText || xhr);
+        }
+    });
+}
+*/
+
+// Usage example: if you have URL like chat.html?conversationId=3
+const urlParams = new URLSearchParams(window.location.search);
+const conversationId = urlParams.get("conversationId");
+if (conversationId) {
+    //loadConversationMessages(conversationId);
+    loadExistingMessages();
+    console.log("conversationId: "+conversationId)
+}
+
 
 
 /*

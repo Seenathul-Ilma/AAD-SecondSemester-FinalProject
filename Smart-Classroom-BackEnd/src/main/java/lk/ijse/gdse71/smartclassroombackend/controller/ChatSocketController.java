@@ -1,8 +1,15 @@
 package lk.ijse.gdse71.smartclassroombackend.controller;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.MessageDTO;
+import lk.ijse.gdse71.smartclassroombackend.entity.Conversation;
+import lk.ijse.gdse71.smartclassroombackend.entity.Message;
+import lk.ijse.gdse71.smartclassroombackend.entity.User;
+import lk.ijse.gdse71.smartclassroombackend.repository.ConversationRepository;
+import lk.ijse.gdse71.smartclassroombackend.repository.MessageRepository;
+import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -11,6 +18,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
@@ -127,8 +135,11 @@ public class ChatSocketController {
 public class ChatSocketController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final ConversationRepository conversationRepository;
+    private final UserRepository userRepository;
+    private final MessageRepository messageRepository;
 
-    @MessageMapping("/chat.sendMessage")
+    /*@MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload Map<String, Object> message,
                             StompHeaderAccessor headerAccessor,
                             Principal directPrincipal) {
@@ -181,6 +192,51 @@ public class ChatSocketController {
             log.error("❌ Failed to send message: {}", e.getMessage(), e);
             System.out.println("❌ Failed to send message: " + e.getMessage());
         }
+    }*/
+
+    // Send message per conversation topic
+    @MessageMapping("/chat/{conversationId}")
+    public void sendMessage(
+            @DestinationVariable Long conversationId,
+            @Payload MessageDTO messageDTO,
+            Principal principal) {
+
+        log.info("✅ Message received for conversation {}: {}", conversationId, messageDTO.getContent());
+
+        // Fetch conversation & users
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+
+        User sender = userRepository.findById(messageDTO.getSenderId())
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
+
+        User receiver = userRepository.findById(messageDTO.getReceiverId())
+                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+
+        LocalDateTime createdAt = LocalDateTime.now();
+
+        // Save message
+        Message message = new Message(sender, receiver, conversation, messageDTO.getContent(), createdAt);
+        message = messageRepository.save(message);
+
+        // Build response DTO with DB timestamp
+        MessageDTO response = new MessageDTO();
+        response.setSenderId(sender.getUserId());
+        response.setReceiverId(receiver.getUserId());
+        response.setContent(message.getContent());
+        response.setCreatedAt(message.getCreatedAt());
+
+        // Broadcast to conversation topic
+        simpMessagingTemplate.convertAndSend(
+                "/topic/conversations/" + conversationId,
+                response
+        );
+        /*simpMessagingTemplate.convertAndSendToUser(
+                receiver.getUserId(),
+                "/queue/messages",
+                response
+        );*/
+
     }
 
     @MessageMapping("/chat.typing")
