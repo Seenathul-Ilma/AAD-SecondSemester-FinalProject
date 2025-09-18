@@ -52,6 +52,8 @@ public class Message {
     @ManyToOne(optional = false)
     private Conversation conversation;
 
+    @Lob
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
     private Boolean isRead = false;
