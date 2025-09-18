@@ -91,6 +91,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/**",
+                                "/ws/**",               // allows SockJS to call /ws/info without JWT, while you still validate the token for STOMP messages in WebSocketConfig.
                                 "/profiles/**",         // allow profile images
                                 "/announcements/**",    // optional: allow public announcements
                                 "/materials/**",

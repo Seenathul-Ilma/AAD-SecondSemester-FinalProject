@@ -41,7 +41,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!--Adding lombok, jpa, mysql, model mapper, validation, mail, sendgrid dependencies-->
+        <!--Adding lombok, jpa, mysql, model mapper, validation, mail, sendgrid, web socket (STOMP) dependencies-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -102,6 +102,11 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.11.5</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
     </dependencies>
