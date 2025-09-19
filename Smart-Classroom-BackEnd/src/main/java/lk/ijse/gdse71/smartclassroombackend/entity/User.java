@@ -92,8 +92,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserClassroom> userClassrooms;   // ok
 
-    //@OneToMany(mappedBy = "user")
-    //private List<Submission> submissions;       // ok
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Submission> submissions;       // ok
 
     //@OneToMany(mappedBy = "user")
     //private List<Payment> payments;             // ok

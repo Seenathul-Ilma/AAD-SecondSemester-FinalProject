@@ -22,6 +22,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${announcement.upload.dir}")
     private String announcementDir;
 
+    @Value("${submission.upload.dir}")
+    private String submissionDir;
+
     @Value("${materials.upload.dir}")
     private String materialsDir;
 
@@ -44,6 +47,9 @@ public class WebConfig implements WebMvcConfigurer {
         // Assignments
         registry.addResourceHandler("/assignments/**")
                 .addResourceLocations("file:" + assignmentsDir + "/");
+
+        registry.addResourceHandler("/submissions/**")
+                .addResourceLocations("file:" + submissionDir + "/");
 
         // Profiles
         registry.addResourceHandler("/profiles/**")

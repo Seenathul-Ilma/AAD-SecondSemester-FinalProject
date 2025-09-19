@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * --------------------------------------------
@@ -24,15 +25,32 @@ import java.time.LocalDate;
 @Entity
 public class Submission {
 
+    //@Column(name = "submission_id")
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "submission_id")
     private String submissionId;
 
-    private LocalDate submissionDate;
-    private String content;             // filepath
+    private LocalDateTime submissionDate;
+
+    //private String content;     // filepath
+
+    @Lob
+    @Column(name = "file_urls", columnDefinition = "TEXT")
+    private String fileUrls;     // file url
+
+    @Lob
+    @Column(name = "file_types")
+    private String fileTypes;
+
+    @Column(name = "status", nullable = true)
     private String status;              // SUBMITTED, LATE, NOT_SUBMITTED
-    private Double marks;
-    private Character grade;
+
+    //@Column(name = "marks", nullable = true)
+    //private Double marks;
+
+    //@Column(name = "grade", nullable = true)
+    //private Character grade;
 
     @ManyToOne
     @JoinColumn(name = "submitted_by")

@@ -95,7 +95,8 @@ public class SecurityConfig {
                                 "/profiles/**",         // allow profile images
                                 "/announcements/**",    // optional: allow public announcements
                                 "/materials/**",
-                                "/assignments/**"
+                                "/assignments/**",
+                                "/submissions/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

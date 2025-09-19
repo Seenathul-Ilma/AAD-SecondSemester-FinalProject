@@ -65,6 +65,6 @@ public class Assignment {
     //private String classroom;   // classroomId
 
     // Uni-directional
-    //@OneToMany(mappedBy = "assignment")
-    //private List<Submission> submissions;        // ok
+    @OneToMany(mappedBy = "assignment")
+    private List<Submission> submissions;        // ok
 }
