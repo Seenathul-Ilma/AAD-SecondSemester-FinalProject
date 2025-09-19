@@ -1216,7 +1216,7 @@ function removeFile(index){
             success: function (response) {
                 const comments = response; // because backend returns a raw array
 
-                renderComments(comments);
+                renderAssignmentComments(comments);
                 $("#commentModal").removeClass("hidden").addClass("flex");
             },
             error: function (xhr) {
@@ -1228,7 +1228,7 @@ function removeFile(index){
     }
 
     // comment render function
-    function renderComments(comments) {
+    function renderAssignmentComments(comments) {
         const $list = $("#commentsList");
         $list.empty();
 
@@ -1246,12 +1246,12 @@ function removeFile(index){
             const actionDropdown =
                 c.commenterId === userId
                     ? `
-            <div class="absolute top-2 right-2 dropdown">
-                <button class="comment-action-btn p-1 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+            <div class="absolute top-2 right-2 assign-comment-dropdown">
+                <button class="assign-comment-action-btn p-1 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
                     <i data-lucide="more-horizontal" class="w-4 h-4 mr-1"></i>
                 </button>
-                <div class="dropdown-menu hidden absolute right-0 mt-1 w-24 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
-                    <div class="menu-item flex items-center px-3 py-1 cursor-pointer bg-red-100/90 dark:bg-red-900/80 backdrop-blur-xl border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 comment-delete-btn" data-id="${c.commentId}">
+                <div class="assign-comment-dropdown-menu hidden absolute right-0 mt-1 w-24 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
+                    <div class="menu-item flex items-center px-3 py-1 cursor-pointer bg-red-100/90 dark:bg-red-900/80 backdrop-blur-xl border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 assign-comment-delete-btn" data-id="${c.commentId}">
                         <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
                         Delete
                     </div>
@@ -1333,20 +1333,21 @@ function removeFile(index){
     );
 
     // After renderComments
-    $(document).on("click", ".comment-action-btn", function (e) {
-        e.stopPropagation(); // prevent closing parent dropdowns
-        const $menu = $(this).siblings(".dropdown-menu");
-        $(".dropdown-menu").not($menu).addClass("hidden"); // hide others
+    $(document).on("click", ".assign-comment-action-btn", function (e) {
+        e.stopPropagation(); // stop bubbling
+        const $dropdown = $(this).closest(".assign-comment-dropdown"); // get parent .dropdown
+        const $menu = $dropdown.find(".assign-comment-dropdown-menu"); // get its menu
+        $(".assign-comment-dropdown-menu").not($menu).addClass("hidden"); // hide others
         $menu.toggleClass("hidden"); // toggle this one
     });
 
     // Optional: click outside to close
     $(document).on("click", function () {
-        $(".dropdown-menu").addClass("hidden");
+        $(".assign-comment-dropdown-menu").addClass("hidden");
     });
 
     // Delete comment using AJAX with token
-    $(document).on("click", ".comment-delete-btn", function () {
+    $(document).on("click", ".assign-comment-delete-btn", function () {
         const commentId = $(this).data("id");
         const userId = localStorage.getItem("userId");
 
@@ -1362,7 +1363,7 @@ function removeFile(index){
             success: function (response) {
                 if (response.status === 200 && response.data === true) {
                     // Remove the entire comment block
-                    $(`.comment-delete-btn[data-id="${commentId}"]`)
+                    $(`.assign-comment-delete-btn[data-id="${commentId}"]`)
                         .closest(".relative")
                         .remove();
                     //alert(response.message || "Comment deleted successfully!");

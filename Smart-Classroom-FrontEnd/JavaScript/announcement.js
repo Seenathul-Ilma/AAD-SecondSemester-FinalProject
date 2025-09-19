@@ -615,7 +615,7 @@
             success: function (response) {
                 const comments = response; // because backend returns a raw array
 
-                renderComments(comments);
+                renderAnnouncementComments(comments);
                 $("#commentModal").removeClass("hidden").addClass("flex");
             },
             error: function (xhr) {
@@ -626,7 +626,7 @@
         });
     }
 
-    function renderComments(comments) {
+    function renderAnnouncementComments(comments) {
         const $list = $("#commentsList");
         $list.empty();
 
@@ -644,12 +644,12 @@
             const actionDropdown =
                 c.commenterId === userId
                     ? `
-            <div class="absolute top-2 right-2 dropdown">
+            <div class="absolute top-2 right-2 comment-dropdown">
                 <button class="comment-action-btn p-1 rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
                     <i data-lucide="more-horizontal" class="w-4 h-4 mr-1"></i>
                 </button>
-                <div class="dropdown-menu hidden absolute right-0 mt-1 w-24 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
-                    <div class="menu-item flex items-center px-3 py-1 cursor-pointer bg-red-100/90 dark:bg-red-900/80 backdrop-blur-xl border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 comment-delete-btn" data-id="${c.commentId}">
+                <div class="comment-dropdown-menu hidden absolute right-0 mt-1 w-24 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg">
+                    <div class="menu-item flex items-center px-3 py-1 cursor-pointer bg-red-100/90 dark:bg-red-900/80 backdrop-blur-xl border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 announcement-comment-delete-btn" data-id="${c.commentId}">
                         <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
                         Delete
                     </div>
@@ -730,21 +730,49 @@
         }
     );
 
-// After renderComments
+// After renderAnnouncementComments
+
     $(document).on("click", ".comment-action-btn", function (e) {
-        e.stopPropagation(); // prevent closing parent dropdowns
-        const $menu = $(this).siblings(".dropdown-menu");
-        $(".dropdown-menu").not($menu).addClass("hidden"); // hide others
+        e.stopPropagation(); // stop bubbling
+        const $dropdown = $(this).closest(".comment-dropdown"); // get parent .dropdown
+        const $menu = $dropdown.find(".comment-dropdown-menu"); // get its menu
+        $(".comment-dropdown-menu").not($menu).addClass("hidden"); // hide others
         $menu.toggleClass("hidden"); // toggle this one
     });
 
-// Optional: click outside to close
     $(document).on("click", function () {
-        $(".dropdown-menu").addClass("hidden");
+        $(".comment-dropdown-menu").addClass("hidden");
     });
 
+    // Toggle comment dropdown
+/*
+    $(document).on("click", ".comment-action-btn", function (e) {
+        e.stopPropagation(); // prevent bubbling
+        const $dropdown = $(this).closest(".comment-dropdown");
+        const $menu = $dropdown.find(".comment-dropdown-menu");
+
+        if ($menu.length === 0) return;
+
+        // Hide other comment dropdowns
+        $(".comment-dropdown-menu").not($menu).addClass("hidden");
+
+        // Toggle this dropdown
+        $menu.toggleClass("hidden");
+    });
+*/
+
+// Prevent clicks inside the comment dropdown menu from closing it
+    $(document).on("click", ".comment-dropdown-menu", function (e) {
+        e.stopPropagation();
+    });
+
+// Close all comment dropdowns when clicking outside
+    /*$(document).on("click", function () {
+        $(".comment-dropdown-menu").addClass("hidden");
+    });*/
+
 // Delete comment using AJAX with token
-    $(document).on("click", ".comment-delete-btn", function () {
+    $(document).on("click", ".announcement-comment-delete-btn", function () {
         const commentId = $(this).data("id");
         const userId = localStorage.getItem("userId");
 
@@ -760,7 +788,7 @@
             success: function (response) {
                 if (response.status === 200 && response.data === true) {
                     // Remove the entire comment block
-                    $(`.comment-delete-btn[data-id="${commentId}"]`)
+                    $(`.announcement-comment-delete-btn[data-id="${commentId}"]`)
                         .closest(".relative")
                         .remove();
                     //alert(response.message || "Comment deleted successfully!");
