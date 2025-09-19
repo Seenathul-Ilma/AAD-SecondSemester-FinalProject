@@ -13,4 +13,6 @@ public interface AssignmentRepository extends JpaRepository<Assignment, String> 
     Assignment findTopByOrderByAssignmentIdDesc();
 
     Page<Assignment> findByClassroom_ClassroomId(String classroomId, Pageable pageable);
+
+    Page<Assignment> findByClassroom_ClassroomIdOrderByAssignedDateDesc(String classroomId, Pageable pageable);
 }

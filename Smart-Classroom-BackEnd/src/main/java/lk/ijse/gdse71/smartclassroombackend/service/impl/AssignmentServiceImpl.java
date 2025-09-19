@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
+import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.AssignmentDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.CommentDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.*;
@@ -54,7 +55,9 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public Page<AssignmentDTO> getAssignmentsByClassroomId(String classroomId, int page, int size) {
-        Page<Assignment> assignmentPage = assignmentRepository.findByClassroom_ClassroomId(classroomId, PageRequest.of(page, size));
+        Page<Assignment> assignmentPage = assignmentRepository
+                .findByClassroom_ClassroomIdOrderByAssignedDateDesc(classroomId, PageRequest.of(page, size));
+                //.findByClassroom_ClassroomId(classroomId, PageRequest.of(page, size));
 
         return assignmentPage.map(assignment -> {
             AssignmentDTO assignmentDTO = modelMapper.map(assignment, AssignmentDTO.class);
@@ -175,7 +178,8 @@ public class AssignmentServiceImpl implements AssignmentService {
             String safeAssignmentCategory = assignmentCategory.replaceAll("[^a-zA-Z0-9_-]","_");
 
             // Unique filename: classroomId_userId_announcementId_timestamp_counter_trimmedName.extension
-            String filename = String.format("%s_%s_%s_%d_%d_%s%s",
+
+            String filename = String.format("%s_%s_%s_%d_%d_%s_%s%s",
                     classroomId,
                     userId,
                     assignmentId,
@@ -302,7 +306,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public boolean deleteAssignment(String assignmentId, String deletingUserId) {
-        /*Assignment assignmentToDelete = assignmentRepository.findById(assignmentId)
+        Assignment assignmentToDelete = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
 
 
@@ -313,13 +317,17 @@ public class AssignmentServiceImpl implements AssignmentService {
         Role userRole = deletingUser.getRole();
 
         if (!assignmentToDelete.getUser().getUserId().equals(deletingUserId) && !userRole.equals(Role.ADMIN)) {
-            throw new AccessDeniedException("Access denied: Only the uploader or admin can delete this assignment.");
+            throw new AccessDeniedException("Access denied: Only the creator or admin can delete this assignment.");
         }
 
-        String existingFilePath = assignmentToDelete.getFilePaths();
+        // delete associated files if exist
+        List<String> existingFileUrls = assignmentToDelete.getFileUrls() != null
+                ? new ArrayList<>(Arrays.asList(assignmentToDelete.getFileUrls().split(",")))
+                : new ArrayList<>();
 
-        if (existingFilePath != null && !existingFilePath.isBlank()) {
-            File file = new File(existingFilePath.trim());
+
+        for (String pathStr : existingFileUrls) {
+            File file = new File(pathStr.trim());
             System.out.println("Trying to delete: " + file.getAbsolutePath());
 
             if (file.exists()) {
@@ -334,10 +342,9 @@ public class AssignmentServiceImpl implements AssignmentService {
             }
         }
 
-        // Delete the resource from DB
+        // Perform deletion
         assignmentRepository.delete(assignmentToDelete);
-        return true;*/
+        return true;
 
-        return false;
     }
 }

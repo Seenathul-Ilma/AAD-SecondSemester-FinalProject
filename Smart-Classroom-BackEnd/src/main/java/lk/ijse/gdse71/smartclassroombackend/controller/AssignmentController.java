@@ -75,14 +75,14 @@ public class AssignmentController {
     public ResponseEntity<ApiResponse> createAssignment(
             @PathVariable String classroomId,
             @PathVariable String userId,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam("content") String content,
+            //@RequestParam(value = "title", required = false) String title,
+            @RequestParam("description") String description,
             @RequestParam("dueDate") LocalDateTime dueDate,
-            @RequestParam(value = "file", required = false) List<MultipartFile> files
+            @RequestParam(value = "files", required = false) List<MultipartFile> files
     ) {
 
         try {
-            AssignmentDTO savedAssignment = assignmentService.createAssignmentByClassroomId(classroomId, userId, content, files, dueDate);
+            AssignmentDTO savedAssignment = assignmentService.createAssignmentByClassroomId(classroomId, userId, description, files, dueDate);
 
             return new ResponseEntity<>(
                     new ApiResponse(
@@ -112,7 +112,7 @@ public class AssignmentController {
     public ResponseEntity<ApiResponse> updateAssignment(
             @PathVariable String assignmentId,
             @PathVariable String userId,
-            @RequestParam(value = "title", required = false) String title,
+            //@RequestParam(value = "title", required = false) String title,
             @RequestParam("content") String content,
             @RequestParam("dueDate") LocalDateTime dueDate,
             @RequestParam(value = "file", required = false) List<MultipartFile> files

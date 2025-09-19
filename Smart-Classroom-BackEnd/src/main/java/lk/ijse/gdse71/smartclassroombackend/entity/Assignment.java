@@ -33,7 +33,7 @@ public class Assignment {
     @Column(name = "assignment_id")
     private String assignmentId;
 
-    private String title;
+    //private String title;
 
     private String description;
 
