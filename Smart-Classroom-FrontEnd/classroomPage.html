@@ -19,6 +19,7 @@
             padding: 16px;
         }
 
+        .assignment-content.ql-editor,
         .announcement-content.ql-editor {
             min-height: auto !important;
             margin: 0 !important;
@@ -28,11 +29,13 @@
             background: transparent !important;
         }
 
+        .assignment-content.ql-editor > *,
         .announcement-content.ql-editor > * {
             margin-top: 0 !important;
             margin-bottom: 0.5em !important;
         }
 
+        .assignment-content.ql-editor > *:last-child,
         .announcement-content.ql-editor > *:last-child {
             margin-bottom: 0 !important;
         }
@@ -124,6 +127,7 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
         }
 
+        .assignment-content,
         .announcement-content,
         .comment-content {
             white-space: normal;
@@ -166,6 +170,7 @@
         }
 
         /* Announcement card animations */
+        .assignment-card,
         .announcement-card {
             animation: slideInUp 0.4s ease-out;
         }
@@ -235,6 +240,16 @@
             width: 40px;
             height: 100%;
             cursor: pointer;
+        }
+
+        .assignment-status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            line-height: 1;
         }
 
     </style>
