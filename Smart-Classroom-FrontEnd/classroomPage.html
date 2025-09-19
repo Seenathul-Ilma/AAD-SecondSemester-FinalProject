@@ -19,30 +19,22 @@
             padding: 16px;
         }
 
-        .announcement-content .ql-editor {
+        .announcement-content.ql-editor {
             min-height: auto !important;
             margin: 0 !important;
             padding: 0 !important;
             line-height: 1.5;
             font-size: 16px;
-            background: transparent;
-            color: #f9f9f9;
+            background: transparent !important;
         }
 
-        .announcement-content .ql-editor p,
-        .announcement-content .ql-editor h1,
-        .announcement-content .ql-editor h2,
-        .announcement-content .ql-editor h3,
-        .announcement-content .ql-editor h4,
-        .announcement-content .ql-editor h5,
-        .announcement-content .ql-editor h6 {
-            margin: 0;
-            padding: 0;
+        .announcement-content.ql-editor > * {
+            margin-top: 0 !important;
+            margin-bottom: 0.5em !important;
         }
 
-        .dark .ql-editor {
-            color: #f9fafb;
-            background-color: #374151;
+        .announcement-content.ql-editor > *:last-child {
+            margin-bottom: 0 !important;
         }
 
         .ql-container {
@@ -231,21 +223,18 @@
         .file-icon.default { background-color: #6b7280; }
 
         /* Hide the default time picker icon (Chrome, Edge, Safari) */
-        input[type="time"]::-webkit-calendar-picker-indicator {
-            display: none;
-            -webkit-appearance: none;
-            appearance: none;
+        .time-input-wrapper {
+            position: relative;
         }
 
-        /* Firefox fix */
-        input[type="time"]::-moz-focus-inner {
-            border: 0;
-        }
-
-        /* Edge/IE fix */
-        input[type="time"]::-ms-clear,
-        input[type="time"]::-ms-expand {
-            display: none;
+        .time-input-wrapper input[type="time"]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 40px;
+            height: 100%;
+            cursor: pointer;
         }
 
     </style>
@@ -502,7 +491,7 @@
                                     <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Class Assignments</h2>
                                     <p class="text-gray-600 dark:text-gray-300">View and manage your homework, projects, and pending tasks.</p>
                                 </div>
-                                <button id="createAssignmentBtn" onclick="openAssignmentModal()" class="flex bg-purple-600 bg-gradient-to-r from-purple-600 to-blue-600 items-center gap-2 px-4 py-2 hover:bg-blue-600 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 text-white rounded-lg transition-colors">
+                                <button id="createAssignmentBtn" class="flex bg-purple-600 bg-gradient-to-r from-purple-600 to-blue-600 items-center gap-2 px-4 py-2 hover:bg-blue-600 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 text-white rounded-lg transition-colors">
                                     <i data-lucide="plus" class="w-4 h-4"></i>
                                     <span>New Assignment</span>
                                 </button>
@@ -664,7 +653,7 @@
                 <h3 id="assignmentModalTitle" class="text-xl font-bold text-gray-800 dark:text-white">
                     Create New Assignment
                 </h3>
-                <button onclick="closeAssignmentModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <button id="closeAssignmentBtn" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                     <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
                 </button>
             </div>
@@ -714,7 +703,7 @@
                         </div>
 
                         <!-- Time Picker -->
-                        <div>
+                        <div class="time-input-wrapper">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Time</label>
                             <div class="relative">
                                 <input type="time" id="timeSelect"
@@ -753,7 +742,7 @@
 
                 <!-- Buttons -->
                 <div class="flex justify-end gap-3 mt-5">
-                    <button id="cancelAssignmentBtn" onclick="closeAssignmentModal()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                    <button id="cancelAssignmentBtn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
                     <button id="postAssignmentBtn" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg flex items-center gap-2 hover:from-blue-700 hover:to-purple-700">
                         <i data-lucide="send" class="w-4 h-4"></i>
                         <span>Post Assignment</span>
@@ -790,9 +779,12 @@
 <script src="JavaScript/pageNavigate.js"></script>
 <script src="JavaScript/handleToken.js"></script>
 <script src="JavaScript/CopyClassroomPage.js"></script>
-<script src="JavaScript/assignment.js"></script>
 <script src="JavaScript/announcement.js"></script>
+<script src="JavaScript/assignment.js"></script>
+<script src="JavaScript/classroomTabPagination.js"></script>
+<!--
 <script src="JavaScript/pagination.js"></script>
+-->
 
 </body>
 </html>
