@@ -1,7 +1,9 @@
 package lk.ijse.gdse71.smartclassroombackend.controller;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.SubmissionCountDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.SubmissionDTO;
+import lk.ijse.gdse71.smartclassroombackend.entity.AssignmentStatus;
 import lk.ijse.gdse71.smartclassroombackend.service.SubmissionService;
 import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +37,14 @@ public class SubmissionController {
 
     private final SubmissionService submissionService;
 
-    @GetMapping("/view/{assignmentId}")
-    public ResponseEntity<ApiResponse> getSubmissionsByAnnouncementId(
+    @GetMapping("/view/{assignmentId}/{submitStatus}")
+    public ResponseEntity<ApiResponse> getSubmissionsByStatusAndAnnouncementId(
             @PathVariable String assignmentId,
+            @PathVariable AssignmentStatus submitStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<SubmissionDTO> submissionDTOS = submissionService.getAllSubmissionsByAnnouncementId(assignmentId, page, size);
+        Page<SubmissionDTO> submissionDTOS = submissionService.getAllSubmissionsByStatusAnnouncementId(assignmentId, submitStatus, page, size);
         return new ResponseEntity<>(
                 new ApiResponse(
                         200,
@@ -52,9 +55,24 @@ public class SubmissionController {
         );
     }
 
-    @GetMapping("/assignment/{assignmentId}")
-    public ResponseEntity<ApiResponse> getUserSubmissionByAnnouncementId(@PathVariable String assignmentId){
-        SubmissionDTO foundSubmissionDTO = submissionService.getSubmissionByAssignmentId(assignmentId);
+    @GetMapping("/counts/{assignmentId}")
+    public ResponseEntity<ApiResponse> getSubmissionCounts(@PathVariable String assignmentId) {
+        SubmissionCountDTO counts = submissionService.getSubmissionCounts(assignmentId);
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Submission counts retrieved successfully..!",
+                        counts
+                ),
+                HttpStatus.OK
+        );
+    }
+
+
+    @GetMapping("/{submissionId}")
+    public ResponseEntity<ApiResponse> getUserSubmissionByAnnouncementId(@PathVariable String submissionId){
+        SubmissionDTO foundSubmissionDTO = submissionService.getSubmissionBySubmissionId(submissionId);
 
         if (foundSubmissionDTO == null) {
             return new ResponseEntity<>(
@@ -73,7 +91,7 @@ public class SubmissionController {
                         "Announcement found..!",
                         foundSubmissionDTO
                 ),
-                HttpStatus.CREATED
+                HttpStatus.OK
         );
     }
 

@@ -43,8 +43,9 @@ public class Submission {
     @Column(name = "file_types")
     private String fileTypes;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = true)
-    private String status;              // SUBMITTED, LATE, NOT_SUBMITTED
+    private AssignmentStatus status;              // SUBMITTED, LATE, NOT_SUBMITTED
 
     //@Column(name = "marks", nullable = true)
     //private Double marks;

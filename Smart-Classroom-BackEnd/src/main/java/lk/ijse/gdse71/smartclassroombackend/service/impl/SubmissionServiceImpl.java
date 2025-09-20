@@ -1,21 +1,21 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
-import lk.ijse.gdse71.smartclassroombackend.dto.AnnouncementDTO;
-import lk.ijse.gdse71.smartclassroombackend.dto.AssignmentDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.SubmissionCountDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.SubmissionDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.*;
 import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceDuplicateException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
 import lk.ijse.gdse71.smartclassroombackend.repository.*;
-import lk.ijse.gdse71.smartclassroombackend.service.AssignmentCommentService;
 import lk.ijse.gdse71.smartclassroombackend.service.SubmissionService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,10 +72,10 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         LocalDateTime dueDate = assignment.getDueDate();
         if(dueDate.isBefore(LocalDateTime.now())) {
-            submission.setStatus((AssignmentStatus.LATE).toString());
+            submission.setStatus((AssignmentStatus.LATE));
             status = AssignmentStatus.LATE.toString();
         } else {
-            submission.setStatus(String.valueOf(AssignmentStatus.SUBMITTED));
+            submission.setStatus((AssignmentStatus.SUBMITTED));
             status = AssignmentStatus.SUBMITTED.toString();
         }
 
@@ -203,10 +203,10 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         LocalDateTime dueDate = assignment.getDueDate();
         if(dueDate.isBefore(LocalDateTime.now())) {
-            submission.setStatus((AssignmentStatus.LATE).toString());
+            submission.setStatus((AssignmentStatus.LATE));
             status = AssignmentStatus.LATE.toString();
         } else {
-            submission.setStatus(String.valueOf(AssignmentStatus.SUBMITTED));
+            submission.setStatus((AssignmentStatus.SUBMITTED));
             status = AssignmentStatus.SUBMITTED.toString();
         }
 
@@ -262,13 +262,88 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public Page<SubmissionDTO> getAllSubmissionsByAnnouncementId(String assignmentId, int page, int size) {
-        return null;
+    public Page<SubmissionDTO> getAllSubmissionsByStatusAnnouncementId(String assignmentId, AssignmentStatus submitStatus, int page, int size) {
+        Page<Submission> submissionPage = submissionRepository
+                .findByAssignment_AssignmentIdAndStatusOrderBySubmissionDateDesc(assignmentId, submitStatus, PageRequest.of(page, size));
+
+        return submissionPage.map(submission -> {
+            SubmissionDTO dto = modelMapper.map(submission, SubmissionDTO.class);
+
+            // Convert comma-separated strings to List<String>
+            /*dto.setFileUrls(announcement.getFileUrls() != null
+                    ? Arrays.asList(announcement.getFileUrls().split(","))
+                    : new ArrayList<>());*/
+            // Convert internal file paths to frontend-accessible URLs
+            List<String> fileUrlsForFrontend = submission.getFileUrls() != null
+                    ? Arrays.stream(submission.getFileUrls().split(","))
+                    .map(path -> {
+                        File file = new File(path);
+                        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                                .path("/submissions/")
+                                .path(file.getName())
+                                .toUriString();
+                    })
+                    .toList()
+                    : new ArrayList<>();
+            dto.setFileUrls(fileUrlsForFrontend);
+
+            dto.setFileTypes(submission.getFileTypes() != null
+                    ? Arrays.asList(submission.getFileTypes().split(","))
+                    : new ArrayList<>());
+
+            dto.setAssignmentId(submission.getAssignment().getAssignmentId());
+            dto.setStatus(String.valueOf(submission.getStatus()));
+            dto.setStudentName(submission.getUser() != null ? submission.getUser().getName() : null);
+            dto.setStudentId(submission.getUser() != null ? submission.getUser().getUserId() : null);
+            dto.setSubmissionDate(submission.getSubmissionDate());
+            return dto;
+        });
     }
 
     @Override
-    public SubmissionDTO getSubmissionByAssignmentId(String assignmentId) {
-        return null;
+    public SubmissionDTO getSubmissionBySubmissionId(String submissionId) {
+        Submission foundSubmission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find submission with id: " + submissionId));
+
+        SubmissionDTO dto = modelMapper.map(foundSubmission, SubmissionDTO.class);
+
+        // Handle fileUrls
+        List<String> fileUrlsForFrontend = foundSubmission.getFileUrls() != null
+                ? Arrays.stream(foundSubmission.getFileUrls().split(","))
+                .map(path -> {
+                    File file = new File(path);
+                    return ServletUriComponentsBuilder.fromCurrentContextPath()
+                            .path("/submissions/") // <-- adjusted path for submission
+                            .path(file.getName())
+                            .toUriString();
+                })
+                .toList()
+                : new ArrayList<>();
+        dto.setFileUrls(fileUrlsForFrontend);
+
+        // Handle fileTypes
+        dto.setFileTypes(foundSubmission.getFileTypes() != null
+                ? Arrays.asList(foundSubmission.getFileTypes().split(","))
+                : new ArrayList<>());
+
+        // Map nested IDs and names
+        dto.setAssignmentId(foundSubmission.getAssignment().getAssignmentId());
+        dto.setStatus(String.valueOf(foundSubmission.getStatus()));
+        dto.setStudentName(foundSubmission.getUser() != null ? foundSubmission.getUser().getName() : null);
+        dto.setStudentId(foundSubmission.getUser() != null ? foundSubmission.getUser().getUserId() : null);
+        dto.setSubmissionDate(foundSubmission.getSubmissionDate());
+
+        return dto;
+    }
+
+    @Override
+    public SubmissionCountDTO getSubmissionCounts(String assignmentId) {
+            long submitted = submissionRepository.countByStatus(assignmentId, AssignmentStatus.SUBMITTED);
+            long late = submissionRepository.countByStatus(assignmentId, AssignmentStatus.LATE);
+            long notSubmitted = submissionRepository.countByStatus(assignmentId, AssignmentStatus.NOT_SUBMITTED);
+
+            return new SubmissionCountDTO(submitted, late, notSubmitted);
+
     }
 
     private List<String> saveFiles(List<MultipartFile> files, String assignmentId, String userId, String submissionId) throws IOException {
