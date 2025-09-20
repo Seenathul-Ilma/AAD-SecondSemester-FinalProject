@@ -6,9 +6,8 @@
         loadDataPaginated(1, default_page_size);
 
         // Set user information
+        const userName = localStorage.getItem("userName");
         document.getElementById("announcementUserName").textContent = userName;
-        document.getElementById("userInitials").textContent =
-            getUserInitials(userName);
         console.log("Initials: " + userName);
 
         // Update class info if classroomId is available

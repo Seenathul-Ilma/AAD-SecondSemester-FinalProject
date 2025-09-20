@@ -44,7 +44,7 @@ public class Assignment {
     private LocalDateTime dueDate;
 
     @Lob
-    @Column(name = "file_urls")
+    @Column(name = "file_urls", columnDefinition = "TEXT")
     private String fileUrls;     // file url
 
     @Lob

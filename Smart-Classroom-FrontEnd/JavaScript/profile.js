@@ -276,14 +276,14 @@ $(document).ready(function() {
 
 });
 
-const userId = localStorage.getItem("userId");
-const userRole = localStorage.getItem("role");
-const api = "http://localhost:8080/api/v1/edusphere/users/";
+const profileUserId = localStorage.getItem("userId");
+const profileUserRole = localStorage.getItem("role");
+const profileApi = "http://localhost:8080/api/v1/edusphere/users/";
 
 // ===== Load profile data via AJAX =====
 function loadProfileData() {
     ajaxWithToken({
-        url: `http://localhost:8080/api/v1/edusphere/users/get/${userId}`,
+        url: `${profileApi}get/${profileUserId}`,
         method: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -304,15 +304,16 @@ function loadProfileData() {
                 const nameParts = data.name.split(" ");
                 const firstTwoPartOfName = nameParts.slice(0, 2).join(" "); // "Seenathul Ilma"
                 $('#sidebar-profile-name').text(firstTwoPartOfName);
+                localStorage.setItem("userName", firstTwoPartOfName);
             } else {
                 $('#sidebar-profile-name').text("Edusphere Member");
             }
 
-            $('#sidebar-role').text(getRoleDisplayName(userRole));
+            $('#sidebar-profile-role').text(getRoleDisplayName(profileUserRole));
 
             if (data.profileImg) {
                 $('#profileImage').attr('src', "http://localhost:8080/profiles/" + data.profileImg).removeClass('hidden');
-                $('#sidebar-profile-image').attr('src', "http://localhost:8080/profiles/" + data.profileImg).removeClass('hidden');
+                $('.sidebar-profile-image').attr('src', "http://localhost:8080/profiles/" + data.profileImg).removeClass('hidden');
                 $('#defaultAvatar').addClass('hidden');
             } else {
                 $('#profileImage').addClass('hidden');
@@ -345,7 +346,7 @@ function updateProfile() {
     }
 
     ajaxWithToken({
-        url: `${api}profile/update/${userRole}/${userId}`,
+        url: `${profileApi}profile/update/${profileUserRole}/${profileUserId}`,
         method: 'PUT',
         data: formData,
         processData: false,

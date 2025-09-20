@@ -23,11 +23,15 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * --------------------------------------------
@@ -226,13 +230,14 @@ public class AssignmentServiceImpl implements AssignmentService {
 
             // Unique filename: classroomId_userId_announcementId_timestamp_counter_trimmedName.extension
 
-            String filename = String.format("%s_%s_%s_%d_%d_%s_%s%s",
+            //String filename = String.format("%s_%s_%s_%d_%d_%s_%s%s",
+            String filename = String.format("%s_%s_%s_%d_%d_%s%s",
                     classroomId,
                     userId,
                     assignmentId,
                     System.currentTimeMillis(),
                     fileCounter++,
-                    safeAssignmentCategory,
+                    //safeAssignmentCategory,
                     trimmedName,
                     extension
             );
@@ -261,6 +266,11 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignment.setUser(user);
         assignment.setClassroom(classroom);
         assignment.setAssignedDate(LocalDateTime.now());
+
+        if (dueDate.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Due date cannot be in the past..!");
+        }
+
         assignment.setDueDate(dueDate);
 
         String subject = classroom.getSubject().replace(" ", "");
@@ -292,8 +302,117 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public Boolean updateAssignmentByAssignmentId(String assignmentId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException {
+    @Transactional
+    public AssignmentDTO updateAssignmentByAssignmentId(
+            String assignmentId,
+            String userId,
+            String content,
+            LocalDateTime dueDate,
+            List<MultipartFile> newFiles,
+            List<String> existingFilesFromFrontend // URLs to keep
+    ) throws IOException {
     //public AssignmentDTO updateAssignmentByAssignmentId(String assignmentId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException {
+        if (existingFilesFromFrontend == null) {
+            existingFilesFromFrontend = new ArrayList<>(); // <-- add this
+        }
+
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Announcement not found"));
+
+        assignment.setDescription(content);
+        assignment.setAssignedDate(assignment.getAssignedDate());
+        assignment.setUpdatedAt(LocalDateTime.now());
+
+        if (dueDate.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Due date cannot be in the past..!");
+        }
+
+        assignment.setDueDate(dueDate);
+
+        // Current files in DB
+        List<String> currentFileUrls = assignment.getFileUrls() != null
+                ? new ArrayList<>(Arrays.asList(assignment.getFileUrls().split(",")))
+                : new ArrayList<>();
+
+        List<String> currentFileTypes = assignment.getFileTypes() != null
+                ? new ArrayList<>(Arrays.asList(assignment.getFileTypes().split(",")))
+                : new ArrayList<>();
+
+        // Normalize frontend URLs to actual internal paths
+        List<String> normalizedExistingFiles = existingFilesFromFrontend.stream()
+                .map(url -> {
+                    try {
+                        // extract the file name from URL
+                        String fileName = Paths.get(new URI(url).getPath()).getFileName().toString();
+                        // find the internal path in currentFileUrls
+                        return currentFileUrls.stream()
+                                .filter(path -> path.endsWith(fileName))
+                                .findFirst()
+                                .orElse(null);
+                    } catch (URISyntaxException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+        // Delete removed files (those in DB but not in existingFilesFromFrontend)
+        List<String> filesToDelete = new ArrayList<>();
+        for (String url : currentFileUrls) {
+            if (!normalizedExistingFiles.contains(url)) {
+                filesToDelete.add(url);
+            }
+        }
+
+        for (String path : filesToDelete) {
+            File file = new File(path);
+            if (file.exists()) file.delete();
+        }
+
+        // Keep only files that user wants to keep
+        List<String> updatedFileUrls = new ArrayList<>(normalizedExistingFiles);
+        List<String> updatedFileTypes = new ArrayList<>();
+        for (String url : normalizedExistingFiles) {
+            int idx = currentFileUrls.indexOf(url);
+            if (idx >= 0) updatedFileTypes.add(currentFileTypes.get(idx));
+            else updatedFileTypes.add("application/octet-stream"); // fallback for safety
+        }
+
+        String subject = assignment.getClassroom().getSubject().replace(" ", "");
+        String level = assignment.getClassroom().getClassLevel().replace(" ", "");
+        String assignmentCategory = subject + "_" + level;
+        System.out.println("AssignmentCategory: "+assignmentCategory);
+
+        assignment.setUser(assignment.getUser());
+        assignment.setClassroom(assignment.getClassroom());
+
+        // Save newly uploaded files
+        if (newFiles != null && !newFiles.isEmpty()) {
+            List<String> newFileUrls = saveFiles(newFiles,
+                    assignment.getClassroom().getClassroomId(),
+                    assignment.getUser().getUserId(),
+                    assignmentId,
+                    assignmentCategory);
+            updatedFileUrls.addAll(newFileUrls);
+            updatedFileTypes.addAll(newFiles.stream().map(MultipartFile::getContentType).toList());
+        }
+
+        assignment.setFileUrls(String.join(",", updatedFileUrls));
+        assignment.setFileTypes(String.join(",", updatedFileTypes));
+
+        Assignment updatedAssignment = assignmentRepository.save(assignment);
+
+        // Map to DTO
+        AssignmentDTO dto = modelMapper.map(updatedAssignment, AssignmentDTO.class);
+        dto.setAssignedTo(updatedAssignment.getClassroom().getClassroomId());
+        dto.setAssignedBy(updatedAssignment.getUser().getUserId());
+        dto.setFileUrls(updatedFileUrls);
+        dto.setFileTypes(updatedFileTypes);
+        dto.setAssignedUserName(updatedAssignment.getUser().getName());
+        dto.setClassroomName(updatedAssignment.getClassroom().getClassLevel()+" | "+updatedAssignment.getClassroom().getSubject());
+
+        return dto;
+
         /*Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
 
@@ -348,10 +467,10 @@ public class AssignmentServiceImpl implements AssignmentService {
         dto.setAssignedBy(updatedAssignment.getUser().getUserId());
 
         return dto;*/
-        return false;
     }
 
     @Override
+    @Transactional
     public boolean deleteAssignment(String assignmentId, String deletingUserId) {
         Assignment assignmentToDelete = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));

@@ -5,6 +5,7 @@ import lk.ijse.gdse71.smartclassroombackend.service.AssignmentService;
 import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -91,12 +92,15 @@ public class AssignmentController {
             @PathVariable String userId,
             //@RequestParam(value = "title", required = false) String title,
             @RequestParam("description") String description,
-            @RequestParam("dueDate") LocalDateTime dueDate,
+            //@RequestParam("dueDate") LocalDateTime dueDate,
+            @RequestParam("dueDate") String dueDate,  // Consider accepting as String first
             @RequestParam(value = "files", required = false) List<MultipartFile> files
     ) {
 
+        LocalDateTime parsedDate = LocalDateTime.parse(dueDate);
+
         try {
-            AssignmentDTO savedAssignment = assignmentService.createAssignmentByClassroomId(classroomId, userId, description, files, dueDate);
+            AssignmentDTO savedAssignment = assignmentService.createAssignmentByClassroomId(classroomId, userId, description, files, parsedDate);
 
             return new ResponseEntity<>(
                     new ApiResponse(
@@ -124,17 +128,21 @@ public class AssignmentController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<ApiResponse> updateAssignment(
-            @PathVariable String assignmentId,
             @PathVariable String userId,
+            @PathVariable String assignmentId,
             //@RequestParam(value = "title", required = false) String title,
-            @RequestParam("content") String content,
-            @RequestParam("dueDate") LocalDateTime dueDate,
-            @RequestParam(value = "file", required = false) List<MultipartFile> files
+            @RequestParam("description") String description,
+            //@RequestParam("dueDate") LocalDateTime dueDate,
+            @RequestParam("dueDate") String dueDate,  // Consider accepting as String first
+            @RequestParam(value = "files", required = false) List<MultipartFile> files,
+            @RequestParam(value = "existingAssignmentFiles", required = false) List<String> existingAssignmentFiles
     ) {
+
+        LocalDateTime parsedDate = LocalDateTime.parse(dueDate);
 
         try {
             //AssignmentDTO savedAssignment = assignmentService.updateAssignmentByAssignmentId(assignmentId, userId, title, content, file, dueDate);
-            AssignmentDTO savedAssignment = assignmentService.createAssignmentByClassroomId(assignmentId, userId, content, files, dueDate);
+            AssignmentDTO savedAssignment = assignmentService.updateAssignmentByAssignmentId(assignmentId, userId, description, parsedDate, files, existingAssignmentFiles);
 
             return new ResponseEntity<>(
                     new ApiResponse(
@@ -142,7 +150,7 @@ public class AssignmentController {
                             "Assignment updated successfully!",
                             savedAssignment
                     ),
-                    HttpStatus.CREATED
+                    HttpStatus.OK
             );
         } catch (IOException e) {
             return new ResponseEntity<>(

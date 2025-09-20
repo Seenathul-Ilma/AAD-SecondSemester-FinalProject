@@ -409,16 +409,15 @@ function removeFile(index){
         loadDataPaginated(1, default_page_size);
 
         // Set user information
+        const userName = localStorage.getItem("userName");
         document.getElementById("assignmentUserName").textContent = userName;
-        document.getElementById("assignment_userInitials").textContent =
-            getUserInitials(userName);
         console.log("Initials: " + userName);
 
         // Update class info if classroomId is available
         if (classroomId) {
             document.getElementById(
                 "assignmentClassInfo"
-            ).textContent = `Posting to: Classroom ${classroomId}`;
+            ).textContent = `Assigning to: Classroom ${classroomId}`;
         }
     });
 
@@ -552,10 +551,10 @@ function removeFile(index){
     const assignmentFileCount = document.getElementById("assignmentFileCount");
     const assignmentFilePreviews = document.getElementById("assignmentFilePreviews");
     //const titleInput = document.getElementById("assignmentTitleInput");
+    let selectedAssignmentFiles = [];
 
     let existingAssignmentFiles = []; // New array to store files already attached to the assignment
     let removedAssignmentFileIds = []; // New array to store IDs of files to be removed
-    let selectedAssignmentFiles = [];
 
 // Open modal
     assignmentCreateBtn.addEventListener("click", () => {
@@ -564,7 +563,7 @@ function removeFile(index){
 
         document.getElementById("assignmentModalTitle").textContent = "Create New Assignment";
 
-        assignmentPostBtn.textContent = "Post Assignment..";
+        assignmentPostBtn.textContent = "Post Assignment";
 
     });
 
@@ -617,9 +616,19 @@ function removeFile(index){
         }
 
         const assignmentData = new FormData();
-        //assignmentData.append("title", title);
         assignmentData.append("description", description);
-        assignmentData.append("dueDate", selectedDate.toISOString().slice(0, 19));
+        //assignmentData.append("title", title);
+
+        // FIX: Send local time instead of UTC
+        const year = selectedDate.getFullYear();
+        const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(selectedDate.getDate()).padStart(2, '0');
+        const hour = String(selectedDate.getHours()).padStart(2, '0');
+        const minute = String(selectedDate.getMinutes()).padStart(2, '0');
+        const second = String(selectedDate.getSeconds()).padStart(2, '0');
+
+        const localDateTimeString = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+        assignmentData.append("dueDate", localDateTimeString);
         //assignmentData.append("dueDate", selectedDate.toISOString());
 
         // Handle file logic based on edit mode
@@ -654,10 +663,19 @@ function removeFile(index){
         console.log("removedAssignmentFileIds:", removedAssignmentFileIds);
         console.log("existingAssignmentFiles:", existingAssignmentFiles);
 
-        // Log FormData contents
+        console.log("=== FormData Debug ===");
+        console.log("Edit mode:", !!editingAssignmentId);
+        console.log("Selected date:", selectedDate);
+        console.log("Date string:", selectedDate.toISOString());
+
         for (let [key, value] of assignmentData.entries()) {
-            console.log(key, value);
+            console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value);
         }
+
+        // Log FormData contents
+        /*for (let [key, value] of assignmentData.entries()) {
+            console.log(key, value);
+        }*/
 
         if (editingAssignmentId) {
             updateAssignment(editingAssignmentId, assignmentData);
@@ -674,7 +692,6 @@ function removeFile(index){
 
         if (action === "edit") {
             const assignment = assignmentState.currentPageData.content.find(a => a.assignmentId === assignmentId);
-            if (!assignment) return;
 
             if (assignment) {
                 // Reset file-related variables for a clean edit session
@@ -690,32 +707,26 @@ function removeFile(index){
 
                 if (assignment.fileUrls && assignment.fileUrls.length > 0) {
                     assignment.fileUrls.forEach((url, index) => {
-                        // Extract original filename from the URL path
-                        const fullFileName = url.split("/").pop(); // Get the last part of URL
-
-                        // Parse the structured filename: classroomId_userId_assignmentId_timestamp_counter_originalName.ext
+                        const fullFileName = url.split("/").pop();
                         const parts = fullFileName.split("_");
                         let displayName = fullFileName; // fallback
 
-                        if (parts.length >= 6) {
-                            // Extract original name from parts[5] onwards and reconstruct
-                            const originalNameParts = parts.slice(5); // Everything after counter
+                        // Update: Account for the assignmentCategory in the filename
+                        if (parts.length >= 7) { // Changed from 6 to 7
+                            // Skip: classroomId_userId_assignmentId_timestamp_counter_assignmentCategory
+                            // Take: everything from index 6 onwards (the original name)
+                            const originalNameParts = parts.slice(6); // Changed from 5 to 6
                             displayName = originalNameParts.join("_");
 
-                            // Clean up the display name - remove underscores and make readable
+                            // Clean up the display name
                             displayName = displayName.replace(/_/g, " ");
-
-                            // Capitalize first letter of each word
                             displayName = displayName.replace(/\b\w/g, l => l.toUpperCase());
                         }
 
-                        // Use the URL as the unique identifier since backend doesn't provide separate IDs
-                        const fileId = url;
-
                         existingAssignmentFiles.push({
-                            fileId: fileId,
+                            fileId: url,
                             fileName: displayName,
-                            fileSize: "", // We don't have size info from backend
+                            fileSize: "",
                             fileUrl: url
                         });
                     });
@@ -914,7 +925,7 @@ function removeFile(index){
             });
 
             // Remove button logic
-            document.querySelectorAll("#filePreviews .remove-file-btn").forEach((btn) => {
+            document.querySelectorAll("#assignmentFilePreviews .remove-file-btn").forEach((btn) => {
                 btn.addEventListener("click", (e) => {
                     const displayIndex = parseInt(e.currentTarget.getAttribute("data-index"));
                     const isExisting = e.currentTarget.getAttribute("data-is-existing") === "true";

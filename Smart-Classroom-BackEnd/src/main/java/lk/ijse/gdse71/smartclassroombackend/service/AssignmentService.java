@@ -20,8 +20,7 @@ public interface AssignmentService {
     //AssignmentDTO createAssignmentByClassroomId(String classroomId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException;
     AssignmentDTO createAssignmentByClassroomId(String classroomId, String userId, String content, List<MultipartFile> file, LocalDateTime dueDate) throws IOException;
 
-    //AssignmentDTO updateAssignmentByAssignmentId(String assignmentId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException;
-    Boolean updateAssignmentByAssignmentId(String assignmentId, String userId, String title, String content, MultipartFile file, LocalDateTime dueDate) throws IOException;
+    AssignmentDTO updateAssignmentByAssignmentId(String assignmentId, String userId, String content, LocalDateTime dueDate, List<MultipartFile> newFiles, List<String> existingFilesFromFrontend) throws IOException;
 
     boolean deleteAssignment(String assignmentId, String deletingUserId);
 

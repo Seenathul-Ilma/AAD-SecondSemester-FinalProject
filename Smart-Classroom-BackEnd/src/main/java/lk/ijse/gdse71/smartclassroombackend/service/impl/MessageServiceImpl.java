@@ -215,6 +215,8 @@ public class MessageServiceImpl implements MessageService {
     }
 
 
+    @Override
+    @Transactional
     public MessageDTO markMessageAsRead(Long messageId, User reader) {
         /*Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new IllegalArgumentException("Message not found"));
