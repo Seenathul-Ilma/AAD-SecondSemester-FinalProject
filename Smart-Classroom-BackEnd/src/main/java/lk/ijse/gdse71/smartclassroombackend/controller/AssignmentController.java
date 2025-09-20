@@ -52,6 +52,20 @@ public class AssignmentController {
         );
     }
 
+    @GetMapping("/{classroomId}/view/all/assignments")
+    public ResponseEntity<ApiResponse> getAnnouncements(@PathVariable String classroomId){
+
+        List<AssignmentDTO> assignmentDTOS = assignmentService.getAllAssignmentsByClassroomId(classroomId);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Assignments paginated successfully..!",
+                        assignmentDTOS
+                ),
+                HttpStatus.OK
+        );
+    }
+
     @GetMapping("/view/assignments")
     public ResponseEntity<ApiResponse> getAllResources(
             @RequestParam(defaultValue = "0") int page,

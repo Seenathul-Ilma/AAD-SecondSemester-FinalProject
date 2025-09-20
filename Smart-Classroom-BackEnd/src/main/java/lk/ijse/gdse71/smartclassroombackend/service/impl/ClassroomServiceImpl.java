@@ -78,6 +78,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     public ClassroomDTO saveClassroom(ClassroomDTO classroomDTO, String creatingTeacherId) {
         String newId = generateNextClassroomId("CLS");
         classroomDTO.setClassroomId(newId);
+        classroomDTO.setCreatorId(creatingTeacherId);
 
         if (classroomDTO.getClassLevel() == null || classroomDTO.getSubject() == null) {
             throw new IllegalArgumentException("Class-level and Subject are required!");
@@ -103,7 +104,12 @@ public class ClassroomServiceImpl implements ClassroomService {
         joinClassroom.setUserClassroomId(newUserClassroomId);
         joinClassroom.setUser(creatingTeacher);
         joinClassroom.setClassroom(savedClassroom);
-        joinClassroom.setRoleInClassroom(ClassroomRole.TEACHER);
+        //joinClassroom.setRoleInClassroom(ClassroomRole.TEACHER);
+        joinClassroom.setRoleInClassroom(
+                creatingTeacher.getRole() == Role.ADMIN
+                        ? ClassroomRole.ADMIN
+                        : ClassroomRole.TEACHER
+        );
         joinClassroom.setCreator(true);
         joinClassroom.setJoinedAt(LocalDateTime.now());
 

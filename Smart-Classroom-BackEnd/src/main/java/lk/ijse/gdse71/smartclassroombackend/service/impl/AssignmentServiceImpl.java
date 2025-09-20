@@ -120,6 +120,53 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    public List<AssignmentDTO> getAllAssignmentsByClassroomId(String classroomId) {
+        List<Assignment> assignments = assignmentRepository
+                .findByClassroom_ClassroomIdOrderByAssignedDateDesc(classroomId);
+
+        return assignments.stream().map(assignment -> {
+            AssignmentDTO assignmentDTO = modelMapper.map(assignment, AssignmentDTO.class);
+
+            List<String> fileUrlsForFrontend = assignment.getFileUrls() != null
+                    ? Arrays.stream(assignment.getFileUrls().split(","))
+                    .map(path -> {
+                        File file = new File(path);
+                        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                                .path("/assignments/")
+                                .path(file.getName())
+                                .toUriString();
+                    })
+                    .toList()
+                    : new ArrayList<>();
+            assignmentDTO.setFileUrls(fileUrlsForFrontend);
+
+            assignmentDTO.setFileTypes(assignment.getFileTypes() != null
+                    ? Arrays.asList(assignment.getFileTypes().split(","))
+                    : new ArrayList<>());
+
+            assignmentDTO.setAssignedTo(assignment.getClassroom().getClassroomId());
+            assignmentDTO.setAssignedBy(assignment.getUser().getUserId());
+            assignmentDTO.setClassroomName(assignment.getClassroom().getClassLevel() + " | " + assignment.getClassroom().getSubject());
+            assignmentDTO.setAssignedUserName(assignment.getUser().getName());
+
+            List<CommentDTO> commentDTOs = assignment.getComments()
+                    .stream()
+                    .map(c -> new CommentDTO(
+                            c.getCommentId(),
+                            assignment.getAssignmentId(),
+                            c.getUser() != null ? c.getUser().getUserId() : null,
+                            c.getUser() != null ? c.getUser().getName() : null,
+                            c.getContent(),
+                            c.getCreatedAt()
+                    ))
+                    .toList();
+            assignmentDTO.setComments(commentDTOs);
+
+            return assignmentDTO;
+        }).toList();
+    }
+
+    @Override
     public String generateNextAssignmentId() {
 
         String year = String.valueOf(LocalDate.now().getYear());

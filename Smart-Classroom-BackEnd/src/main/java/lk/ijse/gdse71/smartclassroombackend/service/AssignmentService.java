@@ -28,4 +28,6 @@ public interface AssignmentService {
     Page<AssignmentDTO> getAssignmentsByClassroomId(String classroomId, int page, int size);
 
     Page<AssignmentDTO> getAllAssignments(int page, int size);
+
+    List<AssignmentDTO> getAllAssignmentsByClassroomId(String classroomId);
 }
