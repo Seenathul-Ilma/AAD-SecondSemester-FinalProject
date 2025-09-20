@@ -379,7 +379,9 @@ function loadAssignmentsForClassroom(classroomId, container) {
 // ========================= Constants & State =========================
 const classroomApi = "http://localhost:8080/api/v1/edusphere/classroom/";
 const assignmentApi = "http://localhost:8080/api/v1/edusphere/classrooms/";
+const submissionApi = "http://localhost:8080/api/v1/edusphere//assignments/submissions/";
 const default_page_size = 15;
+const max_visible_pages = 7;
 
 // ========================= Initialization =========================
 document.addEventListener("DOMContentLoaded", function () {
@@ -541,6 +543,8 @@ function loadAssignmentsForClassroom(classroomId, container) {
         success: function (response) {
             const assignments = response.data || [];
 
+            console.log(response.data); // Inspect what keys are returned
+
             // Update assignment count in classroom header
             const countAssignElem = $(`#classroom-${classroomId}-assignments-count`);
             if (countAssignElem.length) {
@@ -625,10 +629,9 @@ function loadAssignmentsForClassroom(classroomId, container) {
                     fileSection += `</div>`;
                 }
 
-
                 // --- Assignment Card with Submitted/Delayed/Missed ---
                 return `
-                    <div class="border-b border-gray-200 dark:border-gray-600 last:border-b-0">
+                    <div id="assignment-card-${a.assignmentId}" class="border-b border-gray-200 dark:border-gray-600 last:border-b-0">
                         <div class="p-4">
                             <div class="flex items-start gap-4">
                                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm">
@@ -646,15 +649,15 @@ function loadAssignmentsForClassroom(classroomId, container) {
                                         <div class="flex items-center gap-4 text-sm">
                                             <button class="flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
                                                 <i data-lucide="check-circle" class="w-4 h-4"></i>
-                                                <span>${a.submittedCount || 0} Submitted</span>
+                                                <span class="submitted-count" id="submitted-count-${a.assignmentId}">${a.submittedCount || 0} Submitted</span>
                                             </button>
                                             <button class="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
                                                 <i data-lucide="clock" class="w-4 h-4"></i>
-                                                <span>${a.delayedCount || 0} Delayed</span>
+                                                <span class="late-count" id="late-count-${a.assignmentId}">${a.delayedCount || 0} Delayed</span>
                                             </button>
                                             <button class="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
                                                 <i data-lucide="x-circle" class="w-4 h-4"></i>
-                                                <span>${a.missedCount || 0} Missed</span>
+                                                <span class="missed-count" id="missed-count-${a.assignmentId}">${a.missedCount || 0} Missed</span>
                                             </button>
                                         </div>
                                     </div>
@@ -666,7 +669,12 @@ function loadAssignmentsForClassroom(classroomId, container) {
             }).join("");
 
             container.html(assignmentsHTML);
+
             lucide.createIcons();
+            // Call counts after HTML exists
+            assignments.forEach(a => {
+                loadAssignmentStatusCount(a.assignmentId);
+            });
         },
         error: function (xhr) {
             container.html(`<div class="p-4 text-red-500">Failed to load assignments.</div>`);
@@ -700,7 +708,7 @@ function loadDataPaginated(page = 1, size = state.size) {
             state.currentPageData = content;
 
             renderClassroomCards(content);
-            // Optionally: renderPaginationFooter();  // If you have pagination UI
+            renderPaginationFooter();  // If you have pagination UI
         },
         error: function (xhr) {
             showMessage("error", "Error loading classroom: " + (xhr.responseJSON?.message || xhr.statusText || "Unknown error"));
@@ -709,8 +717,27 @@ function loadDataPaginated(page = 1, size = state.size) {
     });
 }
 
+function loadAssignmentStatusCount(assignmentId) {
+    ajaxWithToken({
+        url: `http://localhost:8080/api/v1/edusphere/assignments/submissions/counts/${assignmentId}`,
+        method: "GET",
+        dataType: "json",
+        success: function (response) {
+            const data = response.data || {};
+
+            $(`#submitted-count-${assignmentId}`).text(`${data.submittedCount || 0} Submitted`);
+            $(`#late-count-${assignmentId}`).text(`${data.lateCount || 0} Delayed`);
+            $(`#missed-count-${assignmentId}`).text(`${data.notSubmittedCount || 0} Missed`);
+        },
+        error: function (xhr) {
+            console.error("Error loading submission counts:", xhr.responseJSON?.message || xhr.statusText);
+        }
+    });
+}
+
+
 // ========================= Event Attachments =========================
-function attachClassroomToggle() {
+/*function attachClassroomToggle() {
 // Delegated click handler for classroom toggles
     $(document).on("click", ".classroom-toggle", function () {
         const domId = $(this).data("classroom"); // e.g., classroom-CLS20250001
@@ -733,7 +760,28 @@ function attachClassroomToggle() {
             }
         }
     });
+}*/
+
+function attachClassroomToggle() {
+    $(".classroom-toggle").off("click").on("click", function() {
+        const classroomDomId = $(this).data("classroom");
+        const container = $(`#${classroomDomId}-assignments`);
+
+        // Toggle visibility
+        container.toggleClass("hidden");
+
+        // Only load assignments once
+        if (!container.data("loaded")) {
+            const classroomId = classroomDomId.replace("classroom-", "");
+            loadAssignmentsForClassroom(classroomId, container);
+            container.data("loaded", true);
+        }
+
+        // Animate chevron
+        $(this).find("i").toggleClass("rotate-180");
+    });
 }
+
 
 function attachSubmissionButtons() {
     $(".submission-overview-btn").off("click").on("click", function () {
@@ -741,6 +789,7 @@ function attachSubmissionButtons() {
         loadSubmissionsModal(assignmentId);
     });
 }
+
 
 
 

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -52,6 +53,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 
     @Override
+    @Transactional
     public SubmissionDTO createSubmissionByAssignmentId(String assignmentId, String userId, List<MultipartFile> files) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         //Classroom classroom1 = classroomRepository.findById(classroomId).orElseThrow(() -> new ResourceNotFoundException("Classroom not found"));
@@ -110,6 +112,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
+    @Transactional
     public SubmissionDTO updateSubmissionByAssignmentIdAndSubmissionId(String userId, String assignmentId, String submissionId, List<MultipartFile> newFiles, List<String> existingFiles) throws IOException {
         if (existingFiles == null) {
             existingFiles = new ArrayList<>(); // <-- add this
@@ -221,6 +224,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
+    @Transactional
     public boolean deleteSubmission(String submissionId, String deletingUserId) {
         // Check announcement existence first
         Submission submissionToDelete = submissionRepository.findById(submissionId)
@@ -262,6 +266,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
+    @Transactional
     public Page<SubmissionDTO> getAllSubmissionsByStatusAnnouncementId(String assignmentId, AssignmentStatus submitStatus, int page, int size) {
         Page<Submission> submissionPage = submissionRepository
                 .findByAssignment_AssignmentIdAndStatusOrderBySubmissionDateDesc(assignmentId, submitStatus, PageRequest.of(page, size));

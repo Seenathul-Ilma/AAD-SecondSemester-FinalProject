@@ -1,6 +1,8 @@
 package lk.ijse.gdse71.smartclassroombackend.service;
 
+import lk.ijse.gdse71.smartclassroombackend.dto.SubmissionCountDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.SubmissionDTO;
+import lk.ijse.gdse71.smartclassroombackend.entity.AssignmentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +16,9 @@ public interface SubmissionService {
 
     boolean deleteSubmission(String submissionId, String deletingUserId);
 
-    Page<SubmissionDTO> getAllSubmissionsByAnnouncementId(String assignmentId, int page, int size);
+    Page<SubmissionDTO> getAllSubmissionsByStatusAnnouncementId(String assignmentId, AssignmentStatus submitStatus, int page, int size);
 
-    SubmissionDTO getSubmissionByAssignmentId(String assignmentId);
+    SubmissionDTO getSubmissionBySubmissionId(String submissionId);
+
+    SubmissionCountDTO getSubmissionCounts(String assignmentId);
 }

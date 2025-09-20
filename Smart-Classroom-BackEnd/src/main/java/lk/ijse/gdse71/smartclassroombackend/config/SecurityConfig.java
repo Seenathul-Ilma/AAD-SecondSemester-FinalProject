@@ -4,6 +4,7 @@ import lk.ijse.gdse71.smartclassroombackend.util.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -82,13 +83,15 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:63342", "http://127.0.0.1:5500"));
+                    config.setAllowedOriginPatterns(List.of("http://localhost:63342", "http://127.0.0.1:5500")); // allow dev origins
+                    //config.setAllowedOrigins(List.of("http://localhost:63342", "http://127.0.0.1:5500"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
                     return config;
                 }))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/ws/**",               // allows SockJS to call /ws/info without JWT, while you still validate the token for STOMP messages in WebSocketConfig.
