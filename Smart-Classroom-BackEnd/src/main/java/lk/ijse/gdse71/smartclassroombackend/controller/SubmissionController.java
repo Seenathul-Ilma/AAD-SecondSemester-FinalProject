@@ -5,6 +5,7 @@ import lk.ijse.gdse71.smartclassroombackend.dto.SubmissionDTO;
 import lk.ijse.gdse71.smartclassroombackend.service.SubmissionService;
 import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +35,53 @@ public class SubmissionController {
 
     private final SubmissionService submissionService;
 
+    @GetMapping("/view/{assignmentId}")
+    public ResponseEntity<ApiResponse> getSubmissionsByAnnouncementId(
+            @PathVariable String assignmentId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<SubmissionDTO> submissionDTOS = submissionService.getAllSubmissionsByAnnouncementId(assignmentId, page, size);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Submissions paginated successfully..!",
+                        submissionDTOS
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/assignment/{assignmentId}")
+    public ResponseEntity<ApiResponse> getUserSubmissionByAnnouncementId(@PathVariable String assignmentId){
+        SubmissionDTO foundSubmissionDTO = submissionService.getSubmissionByAssignmentId(assignmentId);
+
+        if (foundSubmissionDTO == null) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to find submission..!",
+                            null
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        201,
+                        "Announcement found..!",
+                        foundSubmissionDTO
+                ),
+                HttpStatus.CREATED
+        );
+    }
+
     @PostMapping(
             value = "/{assignmentId}/{userId}/submit",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    public ResponseEntity<ApiResponse> createAnnouncement(
+    public ResponseEntity<ApiResponse> makeSubmission(
             @PathVariable String assignmentId,
             @PathVariable String userId,
             @RequestParam(value = "files", required = false) List<MultipartFile> files
@@ -66,4 +109,66 @@ public class SubmissionController {
             );
         }
     }
+
+
+    @PutMapping(
+            value = "/{userId}/{announcementId}/{submissionId}/update",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ApiResponse> updateSubmission(
+            @PathVariable String userId,
+            @PathVariable String announcementId,
+            @PathVariable String submissionId,
+            @RequestParam(value = "files", required = false) List<MultipartFile> files,
+            @RequestParam(value = "existingFiles", required = false) List<String> existingFiles // URLs of files to keep
+    ) {
+
+        try {
+            SubmissionDTO updatedSubmission = submissionService.updateSubmissionByAssignmentIdAndSubmissionId(userId, announcementId, submissionId, files, existingFiles);
+
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            201,
+                            "Submission updated successfully!",
+                            updatedSubmission
+                    ),
+                    HttpStatus.CREATED
+            );
+        } catch (IOException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            500,
+                            "File upload failed: " + e.getMessage(),
+                            null
+                    ),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @DeleteMapping("/delete/{submissionId}")
+    public ResponseEntity<ApiResponse> deleteSubmission(@PathVariable String submissionId, @RequestParam String deletingUserId){
+
+        boolean isDeleted =  submissionService.deleteSubmission(submissionId, deletingUserId);
+        if(!isDeleted){
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            400,
+                            "Failed to delete submission..!",
+                            isDeleted
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Submission deleted successfully..!",
+                        isDeleted
+                ),
+                HttpStatus.OK
+        );
+    }
+
 }
