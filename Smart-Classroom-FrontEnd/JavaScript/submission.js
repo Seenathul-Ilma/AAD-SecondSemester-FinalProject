@@ -379,7 +379,7 @@ function loadAssignmentsForClassroom(classroomId, container) {
 // ========================= Constants & State =========================
 const classroomApi = "http://localhost:8080/api/v1/edusphere/classroom/";
 const assignmentApi = "http://localhost:8080/api/v1/edusphere/classrooms/";
-const submissionApi = "http://localhost:8080/api/v1/edusphere//assignments/submissions/";
+const submissionApi = "http://localhost:8080/api/v1/edusphere/assignments/submissions/";
 const default_page_size = 15;
 const max_visible_pages = 7;
 
@@ -472,15 +472,15 @@ function renderAssignmentCard(assignment) {
                     ${fileSection}
                     <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
     <div class="flex items-center gap-4 text-sm">
-        <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors" data-assignment="${assignment.assignmentId}" data-status="submitted">
+        <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors" data-assignment="${assignment.assignmentId}" data-status="SUBMITTED">
             <i data-lucide="check-circle" class="w-4 h-4"></i>
             <span>${assignment.submittedCount || 0} Submitted</span>
         </button>
-        <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors" data-assignment="${assignment.assignmentId}" data-status="delayed">
+        <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors" data-assignment="${assignment.assignmentId}" data-status="LATE">
             <i data-lucide="clock" class="w-4 h-4"></i>
             <span>${assignment.delayedCount || 0} Delayed</span>
         </button>
-        <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors" data-assignment="${assignment.assignmentId}" data-status="missed">
+        <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors" data-assignment="${assignment.assignmentId}" data-status="NOT_SUBMITTED">
             <i data-lucide="x-circle" class="w-4 h-4"></i>
             <span>${assignment.missedCount || 0} Missed</span>
         </button>
@@ -524,6 +524,9 @@ function renderClassroomCards(classrooms) {
             <div class="classroom-assignments hidden" id="${classroomDomId}-assignments">
                 ${assignmentsHTML}
             </div>
+            <div class="classroom-pagination mt-2 flex justify-center gap-2" id="${classroomDomId}-pagination">
+                <!-- pagination buttons will appear here -->
+            </div>
         </div>`;
 
         container.append(classroomHTML);
@@ -542,6 +545,8 @@ function loadAssignmentsForClassroom(classroomId, container) {
         dataType: "json",
         success: function (response) {
             const assignments = response.data || [];
+
+            console.log(assignments);
 
             console.log(response.data); // Inspect what keys are returned
 
@@ -647,15 +652,15 @@ function loadAssignmentsForClassroom(classroomId, container) {
                                     ${fileSection}
                                     <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                                         <div class="flex items-center gap-4 text-sm">
-                                            <button class="flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
+                                            <button data-status="SUBMITTED" data-assignment=${a.assignmentId} class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
                                                 <i data-lucide="check-circle" class="w-4 h-4"></i>
                                                 <span class="submitted-count" id="submitted-count-${a.assignmentId}">${a.submittedCount || 0} Submitted</span>
                                             </button>
-                                            <button class="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
+                                            <button data-status="LATE"  data-assignment=${a.assignmentId} class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
                                                 <i data-lucide="clock" class="w-4 h-4"></i>
                                                 <span class="late-count" id="late-count-${a.assignmentId}">${a.delayedCount || 0} Delayed</span>
                                             </button>
-                                            <button class="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                                            <button data-status="NOT_SUBMITTED" data-assignment=${a.assignmentId} class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
                                                 <i data-lucide="x-circle" class="w-4 h-4"></i>
                                                 <span class="missed-count" id="missed-count-${a.assignmentId}">${a.missedCount || 0} Missed</span>
                                             </button>
@@ -719,7 +724,7 @@ function loadDataPaginated(page = 1, size = state.size) {
 
 function loadAssignmentStatusCount(assignmentId) {
     ajaxWithToken({
-        url: `http://localhost:8080/api/v1/edusphere/assignments/submissions/counts/${assignmentId}`,
+        url: `${submissionApi}counts/${assignmentId}`,
         method: "GET",
         dataType: "json",
         success: function (response) {
@@ -786,7 +791,8 @@ function attachClassroomToggle() {
 function attachSubmissionButtons() {
     $(".submission-overview-btn").off("click").on("click", function () {
         const assignmentId = $(this).data("assignment");
-        loadSubmissionsModal(assignmentId);
+        const submitStatus = $(this).data("status");
+        loadSubmissionsModal(assignmentId, submitStatus);
     });
 }
 
@@ -887,4 +893,280 @@ function getFileInfo(fileName) {
         icon: "file",
         type: "File"
     };
+}
+
+function loadSubmissionsModal(assignmentId, submitStatus) {
+    console.log("Loading submissions for:", assignmentId, submitStatus);
+
+    const tableBody = $("#submissionsTableBody").empty(); // Clear previous content
+
+    ajaxWithToken({
+        url: `${submissionApi}view/${assignmentId}/${submitStatus}`,
+        method: "GET",
+        dataType: "json",
+        success: function (response) {
+            const submissions = response.data?.content || [];
+
+            if (submissions.length === 0) {
+                tableBody.append(`
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-gray-500">
+                            No submissions found.
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            submissions.forEach(sub => {
+                // Render files
+                let fileLinks = '';
+                // Inside your loop for each submission
+                if (sub.fileUrls && sub.fileUrls.length > 0) {
+                    fileLinks = sub.fileUrls.map((url, i) => {
+                        const fullName = sub.fileNames ? sub.fileNames[i] : url.split("/").pop();
+
+                        // Get file info (icon, colors, gradient, etc.)
+                        const info = getSubmissionFileInfo(fullName) || {
+                            icon: "file",
+                            gradient: "from-gray-200 to-gray-300",
+                            bgColor: "bg-gray-100",
+                            iconColor: "text-gray-600"
+                        };
+
+                        // Display name (last 3 parts)
+                        let displayName = fullName || "Unknown";
+                        if (fullName) {
+                            const parts = fullName.split("_");
+                            const ext = parts.pop().split(".").pop();
+                            displayName = parts.slice(-3).join("_") + "." + ext;
+                        }
+
+                        return `
+            <div class="file-card group relative bg-gradient-to-br ${info.gradient} rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer overflow-hidden mb-2">
+                <a href="${url}" target="_blank" class="block p-2">
+                    <div class="flex items-start gap-3">
+                        <div class="file-icon-wrapper flex-shrink-0 w-4 h-4 ${info.bgColor} rounded-lg flex items-center justify-center shadow-sm">
+                            <i data-lucide="${info.icon}" class="w-4 h-4 ${info.iconColor}"></i>
+                        </div>
+                        <div class="truncate text-sm font-medium text-gray-700 dark:text-gray-200">${displayName}</div>
+                    </div>
+                </a>
+            </div>
+        `;
+                    }).join('');
+                }
+
+                // Format submission date
+                const subDate = new Date(sub.submissionDate).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+                tableBody.append(`
+                    <tr class="border-b border-gray-200 dark:border-gray-600">
+                        <td class="py-2 px-2 text-sm text-gray-700 dark:text-gray-200">${sub.studentId}</td>
+                        <td class="py-2 px-2 text-sm text-gray-700 dark:text-gray-200">${sub.studentName}</td>
+                        <td class="py-2 px-2 text-sm">${fileLinks}</td>
+                        <td class="py-2 px-2 text-sm text-gray-700 dark:text-gray-200">${subDate}</td>
+                        <td class="py-2 px-2 text-sm text-gray-700 dark:text-gray-200">${renderSubmissionStatusBadge(sub)}</td>
+
+                        <!--<td class="py-2 px-2 text-sm text-gray-700 dark:text-gray-200">
+                            <button class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">View</button>
+                        </td>-->
+                    </tr>
+                `);
+            });
+
+            lucide.createIcons(); // If you use icons in files or actions
+        },
+        error: function (xhr) {
+            console.error("Error loading submissions: ", xhr.responseJSON?.message || xhr.statusText);
+            tableBody.append(`
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-red-500">
+                        Failed to load submissions.
+                    </td>
+                </tr>
+            `);
+        }
+    });
+}
+
+$(document).on("click", ".submission-overview-btn", function () {
+    const assignmentId = $(this).data("assignment");
+    const submitStatus = $(this).data("status");
+    console.log("Clicked assignment:", assignmentId, submitStatus); // check this prints
+    try {
+        loadSubmissionsModal(assignmentId, submitStatus);
+    } catch (e) {
+        console.error("Error in loadSubmissionsModal:", e);
+    }
+
+    $("#submissionsModal").removeClass("hidden").addClass("flex");
+});
+
+
+$("#closeSubmissionsModal").on("click", function () {
+    $("#submissionsModal").removeClass("flex").addClass("hidden");
+});
+
+
+// Enhanced file info function – safe for optional files
+function getSubmissionFileInfo(fileName) {
+    if (!fileName) return null; // return null if file doesn't exist
+
+    const ext = fileName.split('.').pop().toLowerCase();
+    const fileInfo = { extension: ext };
+
+    // Image files
+    if (["png", "jpg", "jpeg", "gif", "bmp", "svg", "webp"].includes(ext)) {
+        return {
+            ...fileInfo,
+            icon: "image",
+            type: "Image",
+            bgColor: "bg-green-100 dark:bg-green-900/30",
+            iconColor: "text-green-600 dark:text-green-400",
+            textColor: "text-green-600",
+            gradient: "from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20"
+        };
+    }
+
+    // PDF files
+    if (["pdf"].includes(ext)) {
+        return {
+            ...fileInfo,
+            icon: "file-text",
+            type: "PDF Document",
+            bgColor: "bg-red-100 dark:bg-red-900/30",
+            iconColor: "text-red-600 dark:text-red-400",
+            textColor: "text-red-600",
+            gradient: "from-red-50 to-rose-100 dark:from-red-900/20 dark:to-rose-900/20"
+        };
+    }
+
+    // Document files
+    if (["doc", "docx", "txt", "rtf"].includes(ext)) {
+        return {
+            ...fileInfo,
+            icon: "file-text",
+            type: "Document",
+            bgColor: "bg-blue-100 dark:bg-blue-900/30",
+            iconColor: "text-blue-600 dark:text-blue-400",
+            textColor: "text-blue-600",
+            gradient: "from-blue-50 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20"
+        };
+    }
+
+    // Spreadsheet files
+    if (["xls", "xlsx", "csv"].includes(ext)) {
+        return {
+            ...fileInfo,
+            icon: "table",
+            type: "Spreadsheet",
+            bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
+            iconColor: "text-emerald-600 dark:text-emerald-400",
+            textColor: "text-emerald-600",
+            gradient: "from-emerald-50 to-teal-100 dark:from-emerald-900/20 dark:to-teal-900/20"
+        };
+    }
+
+    // Presentation files
+    if (["ppt", "pptx"].includes(ext)) {
+        return {
+            ...fileInfo,
+            icon: "presentation",
+            type: "Presentation",
+            bgColor: "bg-orange-100 dark:bg-orange-900/30",
+            iconColor: "text-orange-600 dark:text-orange-400",
+            textColor: "text-orange-600",
+            gradient: "from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20"
+        };
+    }
+
+    // Archive files
+    if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) {
+        return {
+            ...fileInfo,
+            icon: "archive",
+            type: "Archive",
+            bgColor: "bg-purple-100 dark:bg-purple-900/30",
+            iconColor: "text-purple-600 dark:text-purple-400",
+            textColor: "text-purple-600",
+            gradient: "from-purple-50 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20"
+        };
+    }
+
+    // Video files
+    if (["mp4", "avi", "mov", "wmv", "flv", "webm"].includes(ext)) {
+        return {
+            ...fileInfo,
+            icon: "video",
+            type: "Video",
+            bgColor: "bg-pink-100 dark:bg-pink-900/30",
+            iconColor: "text-pink-600 dark:text-pink-400",
+            textColor: "text-pink-600",
+            gradient: "from-pink-50 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20"
+        };
+    }
+
+    // Audio files
+    if (["mp3", "wav", "flac", "aac", "ogg"].includes(ext)) {
+        return {
+            ...fileInfo,
+            icon: "music",
+            type: "Audio",
+            bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
+            iconColor: "text-indigo-600 dark:text-indigo-400",
+            textColor: "text-indigo-600",
+            gradient: "from-indigo-50 to-blue-100 dark:from-indigo-900/20 dark:to-blue-900/20"
+        };
+    }
+
+    // Code files
+    if (["js", "html", "css", "py", "java", "cpp", "c", "php", "rb"].includes(ext)) {
+        return {
+            ...fileInfo,
+            icon: "code",
+            type: "Code",
+            bgColor: "bg-cyan-100 dark:bg-cyan-900/30",
+            iconColor: "text-cyan-600 dark:text-cyan-400",
+            textColor: "text-cyan-600",
+            gradient: "from-cyan-50 to-blue-100 dark:from-cyan-900/20 dark:to-blue-900/20"
+        };
+    }
+
+    // Default fallback
+    return {
+        ...fileInfo,
+        icon: "file",
+        type: "File",
+        bgColor: "bg-gray-100 dark:bg-gray-600",
+        iconColor: "text-gray-600 dark:text-gray-400",
+        textColor: "text-gray-600",
+        gradient: "from-gray-50 to-slate-100 dark:from-gray-700 dark:to-slate-600"
+    };
+}
+
+
+function renderSubmissionStatusBadge(sub) {
+    switch (sub.status) {
+        case "SUBMITTED":
+            return `
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>Submitted</span>
+            </div>`;
+        case "LATE":
+            return `
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+                <span>Delayed</span>
+            </div>`;
+        case "NOT_SUBMITTED":
+            return `
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                <i data-lucide="x-circle" class="w-4 h-4"></i>
+                <span>Missed</span>
+            </div>`;
+        default:
+            return `<span class="text-gray-500 dark:text-gray-400">Unknown</span>`;
+    }
 }

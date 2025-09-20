@@ -444,12 +444,12 @@
 
 
     <!-- Modal -->
-    <div id="submissionsModal" class="fixed inset-0 bg-blur hidden items-center justify-center z-50">
+    <div id="submissionsModal" class="fixed overflow-y-auto inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden">
         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
           <div>
             <h3 class="text-xl font-bold text-gray-800 dark:text-white" id="modalAssignmentTitle">Assignment Submissions</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400" id="modalAssignmentMeta">Details</p>
+            <p class="text-md text-gray-500 dark:text-gray-400" id="modalAssignmentMeta">Details</p>
           </div>
           <button id="closeSubmissionsModal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
             <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
@@ -461,12 +461,12 @@
             <table class="w-full">
               <thead>
               <tr class="border-b border-gray-200 dark:border-gray-600">
-                <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Student</th>
-                <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">User ID</th>
+                <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Student Id</th>
+                <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Student Name</th>
                 <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Submitted Files</th>
                 <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Submission Date</th>
                 <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Status</th>
-                <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Actions</th>
+                <!--<th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Actions</th>-->
               </tr>
               </thead>
               <tbody id="submissionsTableBody">
