@@ -154,6 +154,38 @@ function escapeHtml(text) {
     });
 }
 
+// Returns avatar HTML: image if exists, else initials
+// Returns avatar HTML: image if exists, else initials
+function getAvatar(user) {
+    if (user.profileImg) {
+        const initials = getUserInitials(user.name);
+        return `<img src="http://localhost:8080/profiles/${user.profileImg}" 
+                     class="w-12 h-12 rounded-full object-cover" 
+                     alt="${user.name || 'User'}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold" style="display:none">
+                    ${initials}
+                </div>`;
+    } else {
+        return getInitialsDiv(user.name);
+    }
+}
+
+// Returns HTML for initials
+function getInitialsDiv(name) {
+    const initials = getUserInitials(name);
+    return `<div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">
+                ${initials}
+            </div>`;
+}
+
+// Get first two initials from name
+function getUserInitials(name) {
+    if (!name || typeof name !== "string") return "?";
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+}
 
 function appendMessageToCfhat(message) {
     const chatBox = document.getElementById("messagesContainer");
@@ -453,10 +485,27 @@ function loadConversations() {
             data.data.forEach((conv) => {
                 const currentUserId = localStorage.getItem("userId");
 
+
                 // Determine the other participant
+                //const isCurrentUserSender = conv.senderId === currentUserId;
+                //const otherParticipantId = isCurrentUserSender ? conv.receiverId : conv.senderId;
+                //const otherParticipantName = isCurrentUserSender ? conv.receiverName || otherParticipantId : conv.senderName || otherParticipantId;
+
+                // Determine if the current user is the sender
                 const isCurrentUserSender = conv.senderId === currentUserId;
                 const otherParticipantId = isCurrentUserSender ? conv.receiverId : conv.senderId;
-                const otherParticipantName = isCurrentUserSender ? conv.receiverName || otherParticipantId : conv.senderName || otherParticipantId;
+
+                // Get the raw name (maybe undefined)
+                const rawName = isCurrentUserSender ? conv.receiverName : conv.senderName;
+
+                // Get the correct profile image for the other participant
+                const otherParticipantProfileImg = isCurrentUserSender ? conv.receiverProfileImg : "";
+
+                // Take first two words if name exists, otherwise fallback to ID
+                const otherParticipantName = rawName
+                    ? rawName.split(" ").slice(0, 2).join(" ")
+                    : otherParticipantId;
+
 
                 const lastMsg = conv.messages[conv.messages.length - 1] || {};
 
@@ -464,14 +513,13 @@ function loadConversations() {
                 convDiv.className = "conversation-item p-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center space-x-3";
 
                 convDiv.innerHTML = `
-        <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white">
-            ${otherParticipantName?.charAt(0) || "U"}
-        </div>
-        <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">${otherParticipantName || "User"}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${lastMsg.content || ""}</p>
-        </div>
-    `;
+                    <div>${getAvatar({ name: otherParticipantName, profileImg: otherParticipantProfileImg })}</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">${otherParticipantName || "User"}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${lastMsg.content || ""}</p>
+                    </div>
+                `;
+
 
                 if(localStorage.getItem("role") !== "STUDENT") {
                     convDiv.addEventListener("click", () => {

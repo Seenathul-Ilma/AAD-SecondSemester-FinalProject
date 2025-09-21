@@ -25,8 +25,12 @@ public class ConversationDTO {
 
     //private UserDTO sender;
     private String senderId;
+
+    private String senderName;
     //private UserDTO receiver;
     private String receiverId;
+    private String receiverName;
+    private String receiverProfileImg;
 
     private List<MessageDTO> messages;
 }

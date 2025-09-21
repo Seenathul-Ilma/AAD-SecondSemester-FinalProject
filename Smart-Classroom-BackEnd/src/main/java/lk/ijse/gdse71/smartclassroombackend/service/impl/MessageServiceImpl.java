@@ -48,7 +48,11 @@ public class MessageServiceImpl implements MessageService {
         List<Conversation> conversations = conversationRepository.findByAuthorOrRecipient(user, user);
         return conversations.stream().map(c -> {
             ConversationDTO dto = modelMapper.map(c, ConversationDTO.class);
+            dto.setReceiverName(c.getRecipient().getName());
+            dto.setSenderName(c.getAuthor().getName());
+            dto.setReceiverProfileImg(c.getRecipient().getProfileImg());
             dto.setSenderId(c.getAuthor().getUserId());
+
             dto.setCreatedAt(c.getCreatedAt());
             dto.setReceiverId(c.getRecipient().getUserId());
             return dto;
@@ -66,7 +70,14 @@ public class MessageServiceImpl implements MessageService {
         }
 
         ConversationDTO dto = modelMapper.map(conversation, ConversationDTO.class);
+        /*dto.setSenderId(conversation.getAuthor().getUserId());
+        dto.setCreatedAt(conversation.getCreatedAt());
+        dto.setReceiverId(conversation.getRecipient().getUserId());*/
+        dto.setReceiverName(conversation.getRecipient().getName());
+        dto.setSenderName(conversation.getAuthor().getName());
+        dto.setReceiverProfileImg(conversation.getRecipient().getProfileImg());
         dto.setSenderId(conversation.getAuthor().getUserId());
+
         dto.setCreatedAt(conversation.getCreatedAt());
         dto.setReceiverId(conversation.getRecipient().getUserId());
         return dto;
