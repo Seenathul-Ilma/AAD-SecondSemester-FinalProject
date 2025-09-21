@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduSphere | Profile Settings</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <style>
+    .active-link {
+      background-image: linear-gradient(to right, #2563EB, #8B5CF6); /* Direct color values for from-blue-600 and to-purple-600 */
+      color: #fff;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+    }
+
+    .dark .active-link {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease-in-out; /* Add transition for smoothness */
+    }
+  </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+<!-- Wrapper -->
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="w-64 min-h-screen transition duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10">
+      <div class="p-5 border-b border-slate-200/50 dark:border-slate-700/50">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i data-lucide="school" class="w-6 h-6 font-medium text-white"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-slate-800 dark:text-white">EduSphere</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Admin Panel</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <a
+                href="adminDashboard.html"
+                data-page="adminDashboard"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group"
+        >
+          <i
+                  data-lucide="home"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Dashboard</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+
+        </a>
+        <a
+                href="manageTeacher.html"
+                data-page="manageTeacher"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+        >
+          <i
+                  data-lucide="users"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Teachers</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+        </a>
+        <a
+                href="manageStudent.html"
+                data-page="manageStudent"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+        >
+          <i
+                  data-lucide="users"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Students</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+        </a>
+        <a
+                href="manageClassroom.html"
+                data-page="manageClassroom"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+        >
+          <i
+                  data-lucide="landmark"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Classrooms</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+        </a>
+        <a
+                href="assignmentSubmission.html"
+                data-page="assignmentSubmission"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+        >
+          <i
+                  data-lucide="clipboard-list"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Submissions</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+        </a>
+        <!--<a
+                href="#"
+                data-page="materials"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+        >
+          <i
+                  data-lucide="package"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Materials</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+        </a>-->
+        <a
+                href="manageChat.html"
+                data-page="manageChat"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+        >
+          <i
+                  data-lucide="message-square"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Messages</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+        </a>
+        <a
+                href="manageProfile.html"
+                data-page="manageProfile"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+        >
+          <i
+                  data-lucide="user-circle"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Profile</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+        </a>
+        <a
+                href="login.html"
+                data-page="login"
+                class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+        >
+          <i
+                  data-lucide="log-out"
+                  class="w-5 h-5 transition-all duration-200"
+          ></i>
+          <span class="font-medium">Log Out</span>
+          <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
+        <div
+                class="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50"
+        >
+          <img
+                  src="Assets/images/user-profile-male.avif"
+                  alt="user"
+                  class="sidebar-profile-image w-10 h-10 rounded-full ring-2 ring-blue-500"
+          />
+          <div class="flex-1 min-w-0">
+            <p
+                    class="text-sm font-medium text-slate-800 dark:text-white truncate"
+                    id="sidebar-profile-name"
+            >
+              Mirzan Musawwir
+            </p>
+            <p id="sidebar-profile-role" class="text-xs text-slate-500 dark:text-slate-400 truncate">
+              Administrator
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+            <div class="hidden md:block">
+              <!--<h1 class="text-xl font-black text-slate-800 dark:text-slate-100">Profile Settings</h1>
+              <p class="text-slate-600 dark:text-slate-300">Manage your personal information and account settings</p>-->
+            </div>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <i data-lucide="bell" class="w-5 h-5"></i>
+            </button>
+            <button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <i data-lucide="settings" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="flex-1 px-6 py-4 overflow-y-auto bg-white/100 dark:bg-slate-800/100 backdrop-blur-sm">
+        <div class="space-y-6">
+          <!-- Profile Header Card -->
+          <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8">
+              <div class="flex items-center space-x-6">
+                <div class="relative">
+                  <div class="w-24 h-24 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center shadow-lg ring-4 ring-white/20" id="profileImageContainer">
+                    <img id="profileImage" src="" alt="Profile" class="w-24 h-24 rounded-full object-cover hidden">
+                    <i data-lucide="user" class="w-12 h-12 text-white/80" id="defaultAvatar"></i>
+                  </div>
+                  <button type="button" class="absolute bottom-0 right-0 bg-white/20 backdrop-blur-xl text-white rounded-full p-2 shadow-lg hover:bg-white/30 transition-colors ring-2 ring-white/20" onclick="$('#profileImageInput').click()">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                  </button>
+                  <input type="file" id="profileImageInput" class="hidden" accept="image/*">
+                </div>
+                <div class="text-white">
+                  <h3 class="text-2xl font-bold" id="profileName">ZEENATHUL ILMA</h3>
+                  <p class="text-blue-100 text-md" id="profileEmail">seenathulilma121243@gmail.com</p>
+                  <p class="text-blue-200 text-sm"><span id="displayUserId">TEA20250001</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Form Card -->
+          <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+            <form id="profileForm" enctype="multipart/form-data" class="p-6 space-y-8">
+              <!-- Personal Information Section -->
+              <div>
+                <h4 class="text-lg text-slate-800 dark:text-slate-300 mb-4 flex items-center">
+                  <i data-lucide="user" class="w-5 h-5 mr-2 text-blue-600"></i>
+                  Manage your personal information and account settings
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- User ID (Read-only) -->
+                  <div>
+                    <label for="userId" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">User ID</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="hash" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
+                      </div>
+                      <input
+                              id="userId"
+                              name="userId"
+                              type="text"
+                              readonly
+                              class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed backdrop-blur-xl"
+                              placeholder="STU2025XXXX"
+                              value=""
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Full Name -->
+                  <div>
+                    <label for="name" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Full Name</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="user" class="w-5 h-5 text-slate-700 dark:text-slate-200"></i>
+                      </div>
+                      <input
+                              id="name"
+                              name="name"
+                              type="text"
+                              required
+                              class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200"
+                              placeholder="John Deo"
+                              value=""
+                      >
+                    </div>
+                  </div>
+
+                  <!-- NIC -->
+                  <div>
+                    <label for="nic" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">National Identity Card</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="credit-card" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
+                      </div>
+                      <input
+                              id="nic"
+                              name="nic"
+                              type="text"
+                              required
+                              class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200"
+                              placeholder="123456789V"
+                              value=""
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Email -->
+                  <div>
+                    <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="mail" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
+                      </div>
+                      <input
+                              id="email"
+                              name="email"
+                              type="email"
+                              required
+                              class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200"
+                              placeholder="johndeo@gmail.com"
+                              value=""
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Contact -->
+                  <div>
+                    <label for="contact" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Contact Number</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="phone" class="w-5 h-5 text-gray-700 dark:text-gray-200"></i>
+                      </div>
+                      <input
+                              id="contact"
+                              name="contact"
+                              type="tel"
+                              required
+                              class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200"
+                              placeholder="+94 70 000 0000"
+                              value=""
+                      >
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Password</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="lock" class="w-5 h-5 text-red-800 dark:text-red-800"
+                        ></i>
+                      </div>
+                      <input
+                              id="password"
+                              name="password"
+                              type="password"
+                              class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200"
+                              placeholder="johnDoe@123"
+                              readonly
+                      >
+                      <button
+                              type="button"
+                              class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                              onclick="togglePassword()"
+                      >
+                        <i id="eye-icon" data-lucide="eye" class="w-5 h-5 dark:text-gray-500 dark:hover:text-gray-400 text-gray-400 hover:text-gray-500 cursor-pointer transition-colors"></i>
+                      </button>
+                    </div>
+                  </div>
+
+
+                  <!-- Address -->
+                  <div class="md:col-span-2">
+                    <label for="address" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Address</label>
+                    <div class="relative">
+                      <div class="absolute top-3 left-3 pointer-events-none">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
+                      </div>
+                      <textarea
+                              id="address"
+                              name="address"
+                              rows="3"
+                              required
+                              class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 resize-none bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200"
+                              placeholder="123 Main Street, Colombo 07, Western Province, Sri Lanka"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Emergency Contact Section -->
+              <div class="border-t border-slate-200/50 dark:border-slate-700/50 pt-8">
+                <h4 class="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center">
+                  <i data-lucide="phone-call" class="w-5 h-5 mr-2 text-red-600"></i>
+                  Emergency Contact
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Emergency Contact Number -->
+                  <div>
+                    <label for="emergencyContact" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Emergency Contact Number</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="phone-call" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
+                      </div>
+                      <input
+                              id="emergencyContact"
+                              name="emergencyContact"
+                              type="tel"
+                              required
+                              class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200"
+                              placeholder="+94 70 000 0000"
+                              value=""
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Relationship -->
+                  <div>
+                    <label for="relationship" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Relationship</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="users" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
+                      </div>
+                      <select
+                              id="relationship"
+                              name="relationship"
+                              required
+                              class="block w-full pl-10 pr-3 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out hover:border-slate-300 dark:hover:border-slate-500 appearance-none bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-200"
+                      >
+                        <option value="">Select relationship</option>
+                        <option value="parent" selected>Parent</option>
+                        <option value="spouse">Spouse</option>
+                        <option value="sibling">Sibling</option>
+                        <option value="child">Child</option>
+                        <option value="relative">Relative</option>
+                        <option value="friend">Friend</option>
+                        <option value="guardian">Guardian</option>
+                        <option value="other">Other</option>
+                      </select>
+                      <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 dark:text-slate-500"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="border-t border-slate-200/50 dark:border-slate-700/50 pt-6">
+                <div class="flex justify-end space-x-4">
+                  <button
+                          type="button"
+                          id="cancelBtn"
+                          class="px-6 py-3 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 ease-in-out"
+                  >
+                    <i data-lucide="x" class="w-4 h-4 mr-2 inline"></i>
+                    Cancel
+                  </button>
+                  <button
+                          type="submit"
+                          id="saveBtn"
+                          class="px-6 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition duration-200 ease-in-out hover:scale-105 active:scale-95"
+                  >
+                    <i data-lucide="save" class="w-4 h-4 mr-2 inline"></i>
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success & Error Messages -->
+  <div id="successMessage" class="hidden fixed top-4 right-4 bg-green-100/90 dark:bg-green-900/80 backdrop-blur-xl border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 px-4 py-3 rounded-xl shadow-lg z-50">
+    <div class="flex items-center">
+      <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+      <span>Profile updated successfully!</span>
+      <button onclick="$(this).parent().parent().addClass('hidden')" class="ml-4 text-green-500 hover:text-green-700">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <div id="errorMessage" class="hidden fixed top-4 right-4 bg-red-100/90 dark:bg-red-900/80 backdrop-blur-xl border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 px-4 py-3 rounded-xl shadow-lg z-50">
+    <div class="flex items-center">
+      <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i>
+      <span id="errorText">Something went wrong. Please try again.</span>
+      <button onclick="$(this).parent().parent().addClass('hidden')" class="ml-4 text-red-500 hover:text-red-700">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="JavaScript/pageNavigate.js"></script>
+<script src="JavaScript/handleToken.js"></script>
+<script src="JavaScript/profile.js"></script>
+
+</body>
+</html>

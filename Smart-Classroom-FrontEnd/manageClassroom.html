@@ -107,6 +107,18 @@
               <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
             </a>
             <a
+                    href="assignmentSubmission.html"
+                    data-page="assignmentSubmission"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="clipboard-list"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Submissions</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
+            <!--<a
                     href="#"
                     data-page="materials"
                     class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
@@ -117,10 +129,10 @@
               ></i>
               <span class="font-medium">Materials</span>
               <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
-            </a>
+            </a>-->
             <a
-                    href="#"
-                    data-page="messages"
+                    href="manageChat.html"
+                    data-page="manageChat"
                     class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
             >
               <i
@@ -131,8 +143,8 @@
               <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
             </a>
             <a
-                    href="profile.html"
-                    data-page="profile"
+                    href="manageProfile.html"
+                    data-page="manageProfile"
                     class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
             >
               <i
@@ -142,33 +154,44 @@
               <span class="font-medium">Profile</span>
               <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
             </a>
+            <a
+                    href="login.html"
+                    data-page="login"
+                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
+            >
+              <i
+                      data-lucide="log-out"
+                      class="w-5 h-5 transition-all duration-200"
+              ></i>
+              <span class="font-medium">Log Out</span>
+              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+            </a>
           </nav>
 
-          <!-- Side Bar Footer -->
-          <div
-            class="p-4 border-t border-slate-200/50 dark:border-slate-700/50"
-          >
-            <!-- Footer Wrapper -->
+          <!-- Sidebar Footer -->
+          <div class="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
             <div
-              class="flex items-center space-x-3 p-3 rounded-xl bg-gray-100 dark:bg-slate-800"
+                    class="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50"
             >
               <img
-                src="Assets/images/user-profile-male.avif"
-                alt="user"
-                class="w-10 h-10 rounded-full ring-2 ring-blue-500"
+                      src="Assets/images/user-profile-male.avif"
+                      alt="user"
+                      class="sidebar-profile-image w-10 h-10 rounded-full ring-2 ring-blue-500"
               />
               <div class="flex-1 min-w-0">
                 <p
-                  class="text-sm font-medium text-slate-800 dark:text-white truncate"
+                        class="text-sm font-medium text-slate-800 dark:text-white truncate"
+                        id="sidebar-profile-name"
                 >
                   Mirzan Musawwir
                 </p>
-                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                <p id="sidebar-profile-role" class="text-xs text-slate-500 dark:text-slate-400 truncate">
                   Administrator
                 </p>
               </div>
             </div>
           </div>
+
         </div>
 
         <!-- Main Content With Header -->
@@ -479,6 +502,7 @@
     <script src="Assets/lib/jquery-3.7.1.min.js"></script>
     <script src="JavaScript/pageNavigate.js"></script>
     <script src="JavaScript/handleToken.js"></script>
+    <script src="JavaScript/profile.js"></script>
     <script src="JavaScript/classroom.js"></script>
     <script src="JavaScript/pagination.js"></script>
 
