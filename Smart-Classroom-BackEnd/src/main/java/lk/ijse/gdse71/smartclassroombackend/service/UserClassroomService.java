@@ -1,6 +1,7 @@
 package lk.ijse.gdse71.smartclassroombackend.service;
 
 import lk.ijse.gdse71.smartclassroombackend.dto.UserClassroomDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Set;
@@ -24,4 +25,5 @@ public interface UserClassroomService {
 
     void removeListOfByUserClassroomId(Set<String> userClassroomIds);
 
+    Page<UserClassroomDTO> getClassroomMembersByPaginated(String classroomId, int page, int size);
 }

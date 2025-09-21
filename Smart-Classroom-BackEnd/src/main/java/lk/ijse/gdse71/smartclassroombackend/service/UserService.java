@@ -2,6 +2,7 @@ package lk.ijse.gdse71.smartclassroombackend.service;
 
 import jakarta.mail.MessagingException;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.UserSelectionDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,4 +48,5 @@ public interface UserService {
 
     List<UserDTO> getUsersWithoutAuthenticated(UserDTO userDTO);
 
+    Page<UserSelectionDTO> getAllUsersByPaginated(String classroomId, int page, int size);
 }

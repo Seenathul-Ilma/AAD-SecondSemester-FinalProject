@@ -6,6 +6,7 @@ import lk.ijse.gdse71.smartclassroombackend.service.UserClassroomService;
 import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,22 @@ import java.util.Set;
 public class UserClassroomController {
 
     private final UserClassroomService userClassroomService;
+
+    @GetMapping("/get/{classroomId}/members")
+    public ResponseEntity<ApiResponse> getPaginatedClassroomMembers(
+            @PathVariable String classroomId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size
+    ) {
+        Page<UserClassroomDTO> members = userClassroomService.getClassroomMembersByPaginated(classroomId, page, size);
+        return ResponseEntity.ok(
+                new ApiResponse(
+                        200,
+                        "Members retrieved successfully",
+                        members
+                )
+        );
+    }
 
     @PostMapping("/join")
     public ResponseEntity<ApiResponse> joinClassroomByCode(@RequestParam String studentId, @RequestParam String classroomCode){

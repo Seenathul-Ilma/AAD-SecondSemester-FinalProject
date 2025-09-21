@@ -3,6 +3,7 @@ package lk.ijse.gdse71.smartclassroombackend.controller;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.UserSelectionDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.service.UserService;
 import lk.ijse.gdse71.smartclassroombackend.util.ApiResponse;
@@ -45,6 +46,25 @@ public class UserController {
     public List<UserDTO> getAllStudents(){
         return userService.getAllStudents();
     }*/
+
+    @GetMapping("/all/{classroomId}/users")
+    public ResponseEntity<ApiResponse> getPaginatedUsers(
+            //public Page<UserDTO> getPaginatedStudents(
+            @PathVariable String classroomId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        //return userService.getUsersByPaginated(page, size, Role.STUDENT);
+        Page<UserSelectionDTO> userDTOS = userService.getAllUsersByPaginated(classroomId, page, size);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        200,
+                        "Users paginated successfully..!",
+                        userDTOS
+                ),
+                HttpStatus.OK
+        );
+    }
 
     @GetMapping("/students")
     public ResponseEntity<ApiResponse> getPaginatedStudents(

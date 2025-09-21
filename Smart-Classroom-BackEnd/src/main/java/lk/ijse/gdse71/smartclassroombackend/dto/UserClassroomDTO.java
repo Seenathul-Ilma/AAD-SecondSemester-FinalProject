@@ -29,6 +29,10 @@ public class UserClassroomDTO {
 
     //@NotBlank(message = "User ID cannot be empty")
     private String memberId;       // instead of full User object
+    private String name;
+    private String email;
+    private String contact;
+    private String profileImg;
 
 
     @NotBlank(message = "Classroom ID cannot be empty")

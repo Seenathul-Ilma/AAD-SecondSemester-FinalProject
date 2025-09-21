@@ -14,6 +14,8 @@ import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.UserClassroomService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,29 @@ public class UserClassroomServiceImpl implements UserClassroomService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
 
+    @Override
+    public Page<UserClassroomDTO> getClassroomMembersByPaginated(String classroomId, int page, int size) {
+        // Get paginated UserClassroom entities with eager loading
+        Page<UserClassroom> userClassroomPage = userClassroomRepository
+                .findUsersInClassroomPaginated(classroomId, PageRequest.of(page, size));
+
+        // Convert to DTOs
+        return userClassroomPage.map(userClassroom -> {
+            UserClassroomDTO dto = modelMapper.map(userClassroom, UserClassroomDTO.class);
+
+            // Set additional fields if needed
+            dto.setMemberId(userClassroom.getUser().getUserId());
+            dto.setName(userClassroom.getUser().getName());
+            dto.setEmail(userClassroom.getUser().getEmail());
+            dto.setProfileImg(userClassroom.getUser().getProfileImg());
+            dto.setContact(userClassroom.getUser().getContact());
+            //dto.setClassroomId(userClassroom.getClassroom().getClassroomId());
+            dto.setRoleInClassroom(userClassroom.getRoleInClassroom().toString());
+
+            return dto;
+        });
+    }
+
     public String generateNextClassroomId(String prefix) {
         String year = String.valueOf(LocalDate.now().getYear());
         String fullPrefix = prefix + year;   // REG + 2025
@@ -56,7 +81,6 @@ public class UserClassroomServiceImpl implements UserClassroomService {
         }
         return fullPrefix + String.format("%04d", nextSequence); // REG20250001
     }
-
 
     @Override
     @Transactional
@@ -158,7 +182,6 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
     @Override
     @Transactional
-    //public boolean joinListOfMembersToClassroomById(Set<String> memberIds, String classroomId) {
     public List<UserClassroomDTO> joinListOfMembersToClassroomById(Set<String> memberIds, String classroomId) {
         // Fetch classroom
         Classroom classroom = classroomRepository.findByClassroomId(classroomId)
@@ -170,7 +193,15 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
         for (String memberId : memberIds) {
             String newId = generateNextClassroomId("REG");
-            ClassroomRole role = memberId.startsWith("TEA") ? ClassroomRole.TEACHER : ClassroomRole.STUDENT;
+            //ClassroomRole role = memberId.startsWith("TEA") ? ClassroomRole.TEACHER : ClassroomRole.STUDENT;
+            ClassroomRole role;
+            if (memberId.startsWith("TEA")) {
+                role = ClassroomRole.TEACHER;
+            } else if (memberId.startsWith("ADM")) {
+                role = ClassroomRole.ADMIN;
+            } else {
+                role = ClassroomRole.STUDENT;
+            }
 
             if (memberRole.isEmpty()) {
                 memberRole = role.toString().toLowerCase();

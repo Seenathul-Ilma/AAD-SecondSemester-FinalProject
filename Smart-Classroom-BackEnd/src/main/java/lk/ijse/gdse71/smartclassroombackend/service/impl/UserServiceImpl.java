@@ -2,12 +2,13 @@ package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
 import jakarta.mail.MessagingException;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserDTO;
+import lk.ijse.gdse71.smartclassroombackend.dto.UserSelectionDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Role;
 import lk.ijse.gdse71.smartclassroombackend.entity.User;
-import lk.ijse.gdse71.smartclassroombackend.exception.AccessDeniedException;
 import lk.ijse.gdse71.smartclassroombackend.exception.IllegalArgumentException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceDuplicateException;
 import lk.ijse.gdse71.smartclassroombackend.exception.ResourceNotFoundException;
+import lk.ijse.gdse71.smartclassroombackend.repository.UserClassroomRepository;
 import lk.ijse.gdse71.smartclassroombackend.repository.UserRepository;
 import lk.ijse.gdse71.smartclassroombackend.service.BrevoEmailService;
 import lk.ijse.gdse71.smartclassroombackend.service.EmailService;
@@ -29,7 +30,6 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * --------------------------------------------
@@ -324,6 +324,21 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> getUsersWithoutAuthenticated(UserDTO userDTO) {
         List<User> users = userRepository.findAllByUserIdNot(userDTO.getUserId());
         return modelMapper.map(users, new TypeToken<List<UserDTO>>(){}.getType());
+    }
+
+    @Override
+    public Page<UserSelectionDTO> getAllUsersByPaginated(String classroomId, int page, int size) {
+        //Page<User> userPage = userRepository.findAll(PageRequest.of(page, size));
+        Page<User> userPage = userRepository.findUsersNotInClassroom(
+                classroomId, PageRequest.of(page, size));
+
+        return userPage.map(user -> new UserSelectionDTO(
+                user.getUserId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().toString(),
+                user.getProfileImg()
+        ));
     }
 
     @Override
