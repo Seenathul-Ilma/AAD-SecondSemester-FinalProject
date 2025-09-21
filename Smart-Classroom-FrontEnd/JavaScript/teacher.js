@@ -60,11 +60,19 @@ const max_visible_pages = 7;
 
 function getAvatar(teacher) {
   if (teacher.profileImg) {
-    return `<img src="${teacher.profileImg}" class="w-10 h-10 rounded-full object-cover" alt="${teacher.name}" />`;
+    return `<img src="http://localhost:8080/profiles/${teacher.profileImg}" 
+                 class="w-10 h-10 rounded-full object-cover" 
+                 alt="${teacher.name}" 
+                 onerror="this.outerHTML='<div class=&quot;w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold&quot;>${getUserInitials(teacher.name)}</div>'"/>`;
   } else {
-    const firstLetter = teacher.name.charAt(0).toUpperCase();
-    return `<div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">${firstLetter}</div>`;
+    const initials = getUserInitials(teacher.name);
+    return `<div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">${initials}</div>`;
   }
+}
+
+function getUserInitials(name) {
+  if (!name || typeof name !== "string") return "?";
+  return name.trim().charAt(0).toUpperCase();
 }
 
 /*// ====================== Token Refresh ======================
@@ -305,7 +313,6 @@ $("#teacher-table-tbody").on("click", ".delete-teacher", function () {
   });
 });
 
-
 // ------ Invite teachers by Admin
 const $inviteEmailInput = $("#inviteEmail");
 const $sendInviteBtn = $("#sendInviteBtn");
@@ -313,6 +320,13 @@ const $inviteMessage = $("#inviteMessage");
 const $inviteMessageText = $("#inviteMessageText");
 const $inviteError = $("#inviteError");
 const $inviteErrorText = $("#inviteErrorText");
+
+
+const viewingRole = localStorage.getItem("role");
+if(viewingRole !== "ADMIN") {
+  $sendInviteBtn.addClass("hidden");   // hide with Tailwind's hidden class
+  $inviteEmailInput.addClass("hidden");   // hide with Tailwind's hidden class
+}
 
 // Send Invite Button
 /*

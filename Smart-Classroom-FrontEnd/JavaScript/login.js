@@ -79,7 +79,7 @@ $("#loginForm").submit(function (e) {
                 if (role === "ADMIN") {
                     window.location.href = "adminDashboard.html";
                 } else if (role === "TEACHER") {
-                    window.location.href = "teacherDashboard.html";
+                    window.location.href = "adminDashboard.html";
                 } else {
                     window.location.href = "studentDashboard.html"; // default
                 }

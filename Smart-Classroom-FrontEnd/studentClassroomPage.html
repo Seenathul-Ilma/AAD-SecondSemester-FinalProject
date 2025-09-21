@@ -342,8 +342,8 @@
           <!-- Navigation -->
           <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
             <a
-                    href="adminDashboard.html"
-                    data-page="adminDashboard"
+                    href="studentDashboard.html"
+                    data-page="studentDashboard"
                     class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group"
             >
               <i
@@ -355,32 +355,8 @@
 
             </a>
             <a
-                    href="manageTeacher.html"
-                    data-page="manageTeacher"
-                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
-            >
-              <i
-                      data-lucide="users"
-                      class="w-5 h-5 transition-all duration-200"
-              ></i>
-              <span class="font-medium">Teachers</span>
-              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
-            </a>
-            <a
-                    href="manageStudent.html"
-                    data-page="manageStudent"
-                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
-            >
-              <i
-                      data-lucide="users"
-                      class="w-5 h-5 transition-all duration-200"
-              ></i>
-              <span class="font-medium">Students</span>
-              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
-            </a>
-            <a
-                    href="manageClassroom.html"
-                    data-page="manageClassroom"
+                    href="studentClassroom.html"
+                    data-page="studentClassroom"
                     class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
             >
               <i
@@ -388,18 +364,6 @@
                       class="w-5 h-5 transition-all duration-200"
               ></i>
               <span class="font-medium">Classrooms</span>
-              <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
-            </a>
-            <a
-                    href="assignmentSubmission.html"
-                    data-page="assignmentSubmission"
-                    class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
-            >
-              <i
-                      data-lucide="clipboard-list"
-                      class="w-5 h-5 transition-all duration-200"
-              ></i>
-              <span class="font-medium">Submissions</span>
               <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
             </a>
             <!--<a
@@ -415,7 +379,7 @@
               <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
             </a>-->
             <a
-                    href="manageChat.html"
+                    href="studentChat.html"
                     data-page="manageChat"
                     class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
             >
@@ -427,8 +391,8 @@
               <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
             </a>
             <a
-                    href="manageProfile.html"
-                    data-page="manageProfile"
+                    href="profile.html"
+                    data-page="profile"
                     class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow"
             >
               <i
@@ -637,13 +601,6 @@
                         tasks.
                       </p>
                     </div>
-                    <button
-                      id="createAssignmentBtn"
-                      class="flex bg-purple-600 bg-gradient-to-r from-purple-600 to-blue-600 items-center gap-2 px-4 py-2 hover:bg-blue-600 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 text-white rounded-lg transition-colors"
-                    >
-                      <i data-lucide="plus" class="w-4 h-4"></i>
-                      <span>New Assignment</span>
-                    </button>
                   </div>
 
                   <!-- Assignment Cards -->
@@ -712,13 +669,6 @@
                         See all the members who are part of this classroom.
                       </p>
                     </div>
-                    <button
-                            id="addConnectionBtn"
-                            class="flex bg-purple-600 bg-gradient-to-r from-purple-600 to-blue-600 items-center gap-2 px-4 py-2 hover:bg-blue-600 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 text-white rounded-lg transition-colors"
-                    >
-                      <i data-lucide="user-plus" class="w-4 h-4"></i>
-                      <span>Join Member</span>
-                    </button>
                   </div>
 
                   <div

@@ -23,11 +23,19 @@ let editingStudentId = null;
 
 function getAvatar(student) {
   if (student.profileImg) {
-    return `<img src="${student.profileImg}" class="w-10 h-10 rounded-full object-cover" alt="${student.name}" />`;
+    return `<img src="http://localhost:8080/profiles/${student.profileImg}" 
+                 class="w-10 h-10 rounded-full object-cover" 
+                 alt="${student.name}" 
+                 onerror="this.outerHTML='<div class=&quot;w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold&quot;>${getUserInitials(student.name)}</div>'"/>`;
   } else {
-    const firstLetter = student.name.charAt(0).toUpperCase();
-    return `<div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">${firstLetter}</div>`;
+    const initials = getUserInitials(student.name);
+    return `<div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">${initials}</div>`;
   }
+}
+
+function getUserInitials(name) {
+  if (!name || typeof name !== "string") return "?";
+  return name.trim().charAt(0).toUpperCase();
 }
 
 /*
