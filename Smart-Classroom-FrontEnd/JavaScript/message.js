@@ -389,6 +389,7 @@ setInterval(updateConnectionStatus, 5000);
 // ====================== Page Initialization ======================
 document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
+
     loadConversations();
 
     const params = new URLSearchParams(window.location.search);
@@ -472,11 +473,25 @@ function loadConversations() {
         </div>
     `;
 
-                convDiv.addEventListener("click", () => {
+                if(localStorage.getItem("role") !== "STUDENT") {
+                    convDiv.addEventListener("click", () => {
+                        if (conv.id && otherParticipantId) {
+                            window.location.href = `manageChat.html?conversationId=${conv.id}&receiverId=${otherParticipantId}`;
+                        }
+                    });
+                } else if(localStorage.getItem("role") === "STUDENT") {
+                    convDiv.addEventListener("click", () => {
+                        if (conv.id && otherParticipantId) {
+                            window.location.href = `studentChat.html?conversationId=${conv.id}&receiverId=${otherParticipantId}`;
+                        }
+                    });
+                }
+
+                /*convDiv.addEventListener("click", () => {
                     if (conv.id && otherParticipantId) {
                         window.location.href = `testSize.html?conversationId=${conv.id}&receiverId=${otherParticipantId}`;
                     }
-                });
+                });*/
 
                 conversationsList.appendChild(convDiv);
             });
@@ -524,6 +539,7 @@ function loadConversationMessages(conversationId) {
     });
 }
 */
+/*
 
 // Usage example: if you have URL like chat.html?conversationId=3
 const urlParams = new URLSearchParams(window.location.search);
@@ -534,6 +550,7 @@ if (conversationId) {
     console.log("conversationId: "+conversationId)
 }
 
+*/
 
 
 /*

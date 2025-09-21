@@ -134,7 +134,7 @@ function renderRows(items) {
             <td class="p-4 text-sm text-slate-500 dark:text-slate-400">${teacher.email}</td>
             <td class="px-6 py-4">
               <div class="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg p-1 w-fit">
-                <button aria-label="Send Message" class="start-chat p-2 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105">
+                <button aria-label="Send Message" class="start-chat p-2 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all duration-200 hover:scale-105" data-id="${teacher.userId}">
                   <i data-lucide="message-circle-more" class="size-5"></i>
                 </button>
                 <div class="w-px h-6 bg-gray-300 mx-1"></div>
@@ -477,6 +477,39 @@ $("#closeInviteError").on("click", () => $inviteError.addClass("hidden"));
 
 // Initialize Lucide icons
 lucide.createIcons();
+
+$("#teacher-table-tbody").on("click", ".start-chat", function () {
+  const receiverId = $(this).data("id");
+  const currentUserId = localStorage.getItem("userId");
+
+  // Call API to create conversation or get existing one
+  ajaxWithToken({
+    url: "http://localhost:8080/api/v1/edusphere/message/conversations",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({
+      receiverId: receiverId,
+      content: "👋 Hi, let’s start chatting!"
+    }),
+    success: function (res) {
+      const conversationId = res.data.id;
+      window.location.href = `manageChat.html?conversationId=${conversationId}&receiverId=${receiverId}`;
+    },
+    error: function (xhr) {
+      if (xhr.responseJSON?.message?.includes("Conversation already exists")) {
+        $.get("http://localhost:8080/api/v1/edusphere/message/conversations", function (res) {
+          const existingConv = res.data.find(c =>
+              c.senderId === receiverId || c.receiverId === receiverId
+          );
+          if (existingConv) {
+            window.location.href = `/manageChat.html?conversationId=${existingConv.id}&receiverId=${receiverId}`;
+          }
+        });
+      }
+    }
+  });
+});
+
 
 
 // ===== Show Toast Message for Success, Error, Warn =====

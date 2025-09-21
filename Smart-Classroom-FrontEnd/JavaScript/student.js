@@ -178,7 +178,7 @@ $("#student-table-tbody").on("click", ".message-student", function () {
     }),
     success: function (res) {
       const conversationId = res.data.id;
-      window.location.href = `testSize.html?conversationId=${conversationId}&receiverId=${receiverId}`;
+      window.location.href = `manageChat.html?conversationId=${conversationId}&receiverId=${receiverId}`;
     },
     error: function (xhr) {
       if (xhr.responseJSON?.message?.includes("Conversation already exists")) {
@@ -187,7 +187,7 @@ $("#student-table-tbody").on("click", ".message-student", function () {
               c.senderId === receiverId || c.receiverId === receiverId
           );
           if (existingConv) {
-            window.location.href = `/testSize.html?conversationId=${existingConv.id}&receiverId=${receiverId}`;
+            window.location.href = `/manageChat.html?conversationId=${existingConv.id}&receiverId=${receiverId}`;
           }
         });
       }

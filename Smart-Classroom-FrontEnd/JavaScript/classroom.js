@@ -169,13 +169,19 @@ function renderCards(items) {
   if (window.lucide?.createIcons) lucide.createIcons();
 }
 
+const checkStudent = localStorage.getItem("role");
+
 // Navigate to classroom.html with classroomId in URL
 $("#classroom-card-container").on("click", ".classroom-enter", function () {
   const classroomId = $(this).closest(".classroom-card").data("id");
   if (!classroomId) return;
 
   // Redirect to classroom.html with classroomId as query param
-  window.location.href = `classroomPage.html?classroomId=${classroomId}`;
+  if(checkStudent === "STUDENT") {
+    window.location.href = `studentClassroomPage.html?classroomId=${classroomId}`;
+  } else {
+    window.location.href = `classroomPage.html?classroomId=${classroomId}`;
+  }
 });
 
 // Navigate to classroomPage.html when clicking the entire card
@@ -186,7 +192,12 @@ $("#classroom-card-container").on("click", ".classroom-card", function (e) {
   const classroomId = $(this).data("id");
   if (!classroomId) return;
 
-  window.location.href = `classroomPage.html?classroomId=${classroomId}`;
+  if(checkStudent === "STUDENT") {
+    window.location.href = `studentClassroomPage.html?classroomId=${classroomId}`;
+  } else {
+    window.location.href = `classroomPage.html?classroomId=${classroomId}`;
+  }
+
 });
 
 

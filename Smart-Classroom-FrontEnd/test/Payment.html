@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduSphere | Payment Gateway</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .active-link {
+            background-image: linear-gradient(to right, #2563EB, #8B5CF6);
+            color: #fff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .payment-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .payment-card:hover, .payment-card.selected {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 2px solid #3B82F6;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-paid {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-failed {
+            background-color: #FEE2E2;
+            color: #B91C1C;
+        }
+
+        .method-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: #EFF6FF;
+            color: #1E40AF;
+        }
+
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+
+        .tab-button.active {
+            border-bottom: 2px solid #3B82F6;
+            color: #3B82F6;
+            font-weight: 600;
+        }
+
+        .receipt {
+            background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .gateway-logo {
+            height: 30px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .payment-processor {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-processor::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .processing .payment-processor::after {
+            content: 'Processing...';
+            opacity: 1;
+        }
+
+        .success .payment-processor::after {
+            content: 'Payment Successful!';
+            color: #166534;
+            opacity: 1;
+        }
+
+        .failed .payment-processor::after {
+            content: 'Payment Failed!';
+            color: #B91C1C;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <i data-lucide="school" class="w-6 h-6 font-medium text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800">EduSphere</h1>
+                    <p class="text-xs text-slate-500">Student Portal</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
+                    <img src="https://ui-avatars.com/api/?name=Student+User&background=3B82F6&color=fff" alt="user" class="w-8 h-8 rounded-full ring-2 ring-blue-500" />
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-slate-800 truncate">Sarah Johnson</p>
+                        <p class="text-xs text-slate-500 truncate">Computer Science</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl font-bold text-slate-800 mb-2">Payment Gateway</h1>
+                <p class="text-slate-600">Select a payment method and complete your transaction securely</p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="flex justify-between mb-12 relative">
+                <div class="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -translate-y-1/2 -z-10"></div>
+                <div class="step flex flex-col items-center relative">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center mb-2">
+                        <span class="font-bold">1</span>
+                    </div>
+                    <span class="text-sm font-medium text-blue-600">Payment Details</span>
+                </div>
+                <div class="step flex flex-col items-center relative">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center mb-2">
+                        <span class="font-bold">2</span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-500">Payment Method</span>
+                </div>
+                <div class="step flex flex-col items-center relative">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center mb-2">
+                        <span class="font-bold">3</span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-500">Confirmation</span>
+                </div>
+                <div class="step flex flex-col items-center relative">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center mb-2">
+                        <span class="font-bold">4</span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-500">Receipt</span>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-slate-800 mb-6">Payment Details</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Select Classroom</label>
+                        <select class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">-- Select Classroom --</option>
+                            <option value="math101">Mathematics 101 - Prof. Anderson</option>
+                            <option value="physics201">Physics 201 - Dr. Roberts</option>
+                            <option value="chemistry105">Chemistry 105 - Dr. Lee</option>
+                            <option value="english202">English Literature - Prof. Miller</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Payment Reason</label>
+                        <select class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">-- Select Reason --</option>
+                            <option value="exam">Exam Fee</option>
+                            <option value="semester">Semester Fee</option>
+                            <option value="course">Course Registration</option>
+                            <option value="library">Library Fine</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Amount (USD)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+                            <input type="number" class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Due Date</label>
+                        <input type="date" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Payment Note (Optional)</label>
+                    <textarea class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="2" placeholder="Add any additional information about this payment..."></textarea>
+                </div>
+
+                <div class="flex justify-end">
+                    <button class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors next-step">
+                        Continue to Payment <i data-lucide="arrow-right" class="w-4 h-4 inline ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 hidden" id="payment-methods">
+                <h2 class="text-xl font-semibold text-slate-800 mb-6">Select Payment Method</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="payment-card p-5 border-2 border-slate-200 rounded-xl" data-method="paypal">
+                        <div class="flex items-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="gateway-logo mr-4">
+                            <div>
+                                <h3 class="font-medium text-slate-800">PayPal</h3>
+                                <p class="text-sm text-slate-500">Pay with PayPal account or credit card</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-card p-5 border-2 border-slate-200 rounded-xl" data-method="payhere">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                <span class="font-bold text-purple-600">PH</span>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-slate-800">PayHere</h3>
+                                <p class="text-sm text-slate-500">Secure Sri Lankan payment gateway</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-card p-5 border-2 border-slate-200 rounded-xl" data-method="stripe">
+                        <div class="flex items-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" class="gateway-logo mr-4">
+                            <div>
+                                <h3 class="font-medium text-slate-800">Stripe</h3>
+                                <p class="text-sm text-slate-500">Credit card payments</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-card p-5 border-2 border-slate-200 rounded-xl" data-method="bank">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                <i data-lucide="building" class="w-6 h-6 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-slate-800">Bank Transfer</h3>
+                                <p class="text-sm text-slate-500">Direct bank transfer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button class="text-slate-600 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors prev-step">
+                        <i data-lucide="arrow-left" class="w-4 h-4 inline mr-2"></i> Back
+                    </button>
+                    <button class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors next-step" disabled id="continue-payment">
+                        Continue to Payment <i data-lucide="arrow-right" class="w-4 h-4 inline ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Payment Processor -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 hidden" id="payment-processor">
+                <h2 class="text-xl font-semibold text-slate-800 mb-6">Complete Payment</h2>
+
+                <div class="payment-processor bg-slate-50 rounded-xl p-8 mb-8">
+                    <div class="text-center mb-6">
+                        <h3 class="text-lg font-medium text-slate-800 mb-2" id="selected-gateway">PayPal Payment</h3>
+                        <p class="text-slate-600">You will be redirected to complete your payment securely</p>
+                    </div>
+
+                    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex justify-between mb-4">
+                            <span class="text-slate-600">Amount:</span>
+                            <span class="font-medium">$150.00</span>
+                        </div>
+                        <div class="flex justify-between mb-4">
+                            <span class="text-slate-600">Fee:</span>
+                            <span class="font-medium">$2.50</span>
+                        </div>
+                        <div class="flex justify-between mb-6 border-t pt-4">
+                            <span class="text-slate-800 font-medium">Total:</span>
+                            <span class="text-blue-600 font-bold">$152.50</span>
+                        </div>
+
+                        <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors" id="pay-now">
+                            Pay Now
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button class="text-slate-600 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors prev-step">
+                        <i data-lucide="arrow-left" class="w-4 h-4 inline mr-2"></i> Back
+                    </button>
+                </div>
+            </div>
+
+            <!-- Receipt -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 hidden" id="payment-receipt">
+                <h2 class="text-xl font-semibold text-slate-800 mb-6">Payment Successful!</h2>
+
+                <div class="receipt p-8 mb-8">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="check" class="w-8 h-8 text-green-600"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Payment Confirmed</h3>
+                        <p class="text-slate-600">Your payment has been processed successfully</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <h4 class="text-sm font-medium text-slate-500 mb-2">Transaction ID</h4>
+                            <p class="font-mono text-slate-800">TXN-20250911001</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-slate-500 mb-2">Date</h4>
+                            <p class="text-slate-800">September 11, 2025</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-slate-500 mb-2">Amount Paid</h4>
+                            <p class="text-slate-800">$152.50</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-slate-500 mb-2">Payment Method</h4>
+                            <p class="text-slate-800">PayPal</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-slate-500 mb-2">Classroom</h4>
+                            <p class="text-slate-800">Mathematics 101 - Prof. Anderson</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-slate-500 mb-2">Reason</h4>
+                            <p class="text-slate-800">Semester Fee</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            <i data-lucide="download" class="w-4 h-4 inline mr-2"></i> Download Receipt
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="index.html" class="text-blue-600 font-medium hover:underline">
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Basic flow handling
+    const steps = document.querySelectorAll(".step div");
+    const sections = [
+        document.querySelector(".bg-white.rounded-2xl.shadow-lg.p-6.mb-8"), // payment details
+        document.querySelector("#payment-methods"),
+        document.querySelector("#payment-processor"),
+        document.querySelector("#payment-receipt")
+    ];
+
+    let currentStep = 0;
+
+    document.querySelectorAll(".next-step").forEach(btn => {
+        btn.addEventListener("click", () => {
+            sections[currentStep].classList.add("hidden");
+            currentStep++;
+            sections[currentStep].classList.remove("hidden");
+            updateSteps();
+        });
+    });
+
+    document.querySelectorAll(".prev-step").forEach(btn => {
+        btn.addEventListener("click", () => {
+            sections[currentStep].classList.add("hidden");
+            currentStep--;
+            sections[currentStep].classList.remove("hidden");
+            updateSteps();
+        });
+    });
+
+    function updateSteps() {
+        steps.forEach((step, i) => {
+            if (i <= currentStep) {
+                step.classList.remove("bg-gray-200", "text-gray-600");
+                step.classList.add("bg-blue-600", "text-white");
+            } else {
+                step.classList.add("bg-gray-200", "text-gray-600");
+                step.classList.remove("bg-blue-600", "text-white");
+            }
+        });
+    }
+</script>
+</body>
+</html>

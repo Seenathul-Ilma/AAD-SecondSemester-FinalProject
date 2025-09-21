@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/AAD-SecondSemester-FinalProject.iml" filepath="$PROJECT_DIR$/.idea/AAD-SecondSemester-FinalProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Smart-Classroom-BackEnd/Smart-Classroom-BackEnd.iml" filepath="$PROJECT_DIR$/Smart-Classroom-BackEnd/Smart-Classroom-BackEnd.iml" />
     </modules>
   </component>
 </project>

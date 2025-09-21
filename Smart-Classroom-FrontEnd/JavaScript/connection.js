@@ -88,11 +88,13 @@
         filteredUsers: []
     };
 
-    // Open modal
-    addConnectionBtn.addEventListener('click', () => {
-        addConnectionModal.classList.remove('hidden');
-        loadUsersToJoin();
-    });
+    if (addConnectionBtn) {
+        // Open modal
+        addConnectionBtn.addEventListener('click', () => {
+            addConnectionModal.classList.remove('hidden');
+            loadUsersToJoin();
+        });
+    }
 
     // Close modal
     function closeModal() {
@@ -593,6 +595,43 @@
         updateBulkRemovalUI();
         lucide.createIcons();
     }
+
+
+    $("#member-table-tbody").on("click", ".message-member", function () {
+        const receiverId = $(this).data("member-id");
+        const currentUserId = localStorage.getItem("userId");
+
+        // Call API to create conversation or get existing one
+        ajaxWithToken({
+            url: "http://localhost:8080/api/v1/edusphere/message/conversations",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                receiverId: receiverId,
+                content: "👋 Hi, let’s start chatting!"
+            }),
+            success: function (res) {
+                const conversationId = res.data.id;
+                if (localStorage.getItem("role") === "STUDENT") {
+                    window.location.href = `studentChat.html?conversationId=${conversationId}&receiverId=${receiverId}`;
+                }
+                window.location.href = `studentChat.html?conversationId=${conversationId}&receiverId=${receiverId}`;
+            },
+            error: function (xhr) {
+                if (xhr.responseJSON?.message?.includes("Conversation already exists")) {
+                    $.get("http://localhost:8080/api/v1/edusphere/message/conversations", function (res) {
+                        const existingConv = res.data.find(c =>
+                            c.senderId === receiverId || c.receiverId === receiverId
+                        );
+                        if (existingConv) {
+                            window.location.href = `/studentChat.html?conversationId=${existingConv.id}&receiverId=${receiverId}`;
+                        }
+                    });
+                }
+            }
+        });
+    });
+
 
     lucide.createIcons();
 

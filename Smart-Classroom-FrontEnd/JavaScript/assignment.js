@@ -557,15 +557,17 @@ function removeFile(index){
     let removedAssignmentFileIds = []; // New array to store IDs of files to be removed
 
 // Open modal
-    assignmentCreateBtn.addEventListener("click", () => {
-        assignmentModal.classList.remove("hidden");
-        assignmentModal.classList.add("flex");
+    if (assignmentCreateBtn) {
+        assignmentCreateBtn.addEventListener("click", () => {
+            assignmentModal.classList.remove("hidden");
+            assignmentModal.classList.add("flex");
 
-        document.getElementById("assignmentModalTitle").textContent = "Create New Assignment";
+            document.getElementById("assignmentModalTitle").textContent =
+                "Create New Assignment";
 
-        assignmentPostBtn.textContent = "Post Assignment";
-
-    });
+            assignmentPostBtn.textContent = "Post Assignment";
+        });
+    }
 
 // Close modal
     assignmentCancelBtn.addEventListener("click", () => {

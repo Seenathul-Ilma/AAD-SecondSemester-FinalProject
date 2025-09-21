@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSphere | TestChat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .message-enter {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .typing-indicator {
+            animation: pulse 1.5s infinite;
+        }
+
+        .message-bubble {
+            transition: all 0.2s ease;
+        }
+
+        .message-bubble:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .active-link {
+            background-image: linear-gradient(to right, #2563EB, #8B5CF6);
+            color: #fff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .conversation-active {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #2563EB;
+        }
+
+        .conversation-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-all duration-500">
+<!-- Wrapper -->
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Navigation Sidebar -->
+        <div class="w-20 min-h-screen transition duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10">
+            <div class="p-5 border-b border-slate-200/50 dark:border-slate-700/50 flex justify-center">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <i data-lucide="school" class="w-6 h-6 font-medium text-white"></i>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <a href="index.html" data-page="index" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group">
+                    <i data-lucide="home" class="w-5 h-5 transition-all duration-200"></i>
+                    <span class="font-medium">Dashboard</span>
+                    <i data-lucide="dot" class="ml-auto w-6 h-6 text-amber-200 rounded-full animate-pulse hidden"></i>
+                </a>
+                <a href="teacher.html" data-page="teacher" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                    <i data-lucide="users" class="w-5 h-5 transition-all duration-200"></i>
+                    <span class="font-medium">Teachers</span>
+                </a>
+                <a href="../manageStudent.html" data-page="student" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                    <i data-lucide="users" class="w-5 h-5 transition-all duration-200"></i>
+                    <span class="font-medium">Students</span>
+                </a>
+                <a href="../manageClassroom.html" data-page="classroom" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                    <i data-lucide="landmark" class="w-5 h-5 transition-all duration-200"></i>
+                    <span class="font-medium">Classrooms</span>
+                </a>
+                <a href="#" data-page="materials" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                    <i data-lucide="package" class="w-5 h-5 transition-all duration-200"></i>
+                    <span class="font-medium">Materials</span>
+                </a>
+                <a href="#" data-page="messages" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                    <i data-lucide="message-square" class="w-5 h-5 transition-all duration-200"></i>
+                    <span class="font-medium">Messages</span>
+                </a>
+                <a href="../profile.html" data-page="profile" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                    <i data-lucide="user-circle" class="w-5 h-5 transition-all duration-200"></i>
+                    <span class="font-medium">Profile</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-slate-200/50 dark:border-slate-700/50 flex justify-center">
+                <div class="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                    <img src="../Assets/images/user-profile-male.avif" alt="user" class="w-10 h-10 rounded-full ring-2 ring-blue-500"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversations Sidebar (moved slightly right) -->
+        <div class="w-80 ml-2 min-h-screen transition duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col">
+            <div class="p-5 border-b border-slate-200/50 dark:border-slate-700/50">
+                <div class="flex items-center space-x-3">
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-800 dark:text-white">EduSphere</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Conversations</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="p-4 border-b border-slate-200/50 dark:border-slate-700/50">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="text" placeholder="Search conversations..." class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-700 dark:text-slate-300 placeholder-slate-500 dark:placeholder-slate-400 border-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <!-- Conversations List -->
+            <div class="flex-1 p-4 overflow-y-auto custom-scrollbar">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center">
+                    <i data-lucide="message-circle" class="w-4 h-4 mr-2"></i>
+                    Recent Conversations
+                </h3>
+                <div id="conversationsList" class="space-y-2">
+                    <!-- Conversations will be loaded here -->
+                </div>
+            </div>
+
+            <!-- New Conversation Button -->
+            <div class="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
+                <button id="newConversationBtn" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    New Conversation
+                </button>
+            </div>
+
+            <!-- User Profile -->
+            <div class="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
+                <div class="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                    <img src="../Assets/images/user-profile-male.avif" alt="user" class="w-10 h-10 rounded-full ring-2 ring-blue-500"/>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-slate-800 dark:text-white truncate">Mirzan Musawwir</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <!-- Header Left -->
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                                <i data-lucide="message-circle" class="w-6 h-6 text-white"></i>
+                            </div>
+                            <div>
+                                <h1 id="currentConversationTitle" class="text-xl font-black text-slate-800 dark:text-slate-100">Select a conversation</h1>
+                                <p id="conversationStatus" class="text-slate-600 dark:text-slate-300 flex items-center"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Header Right -->
+                    <div class="flex items-center space-x-3">
+                        <button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                            <i data-lucide="video" class="w-5 h-5"></i>
+                        </button>
+                        <button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                            <i data-lucide="phone" class="w-5 h-5"></i>
+                        </button>
+                        <button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                            <i data-lucide="more-vertical" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Container -->
+            <div class="flex-1 px-6 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-900 custom-scrollbar">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Messages Container -->
+                    <div id="messagesContainer" class="space-y-4 pb-4">
+                        <!-- Welcome message -->
+                        <div id="welcomeMessage" class="flex flex-col items-center justify-center h-full py-12">
+                            <div class="w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full flex items-center justify-center mb-6">
+                                <i data-lucide="message-circle" class="w-12 h-12 text-blue-500"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Welcome to EduSphere Chat</h2>
+                            <p class="text-gray-600 dark:text-gray-400 text-center max-w-md mb-6">Select a conversation from the sidebar or start a new one to begin chatting with your AI assistant.</p>
+                            <button id="startConversationBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg flex items-center gap-2">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                                Start New Conversation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="px-6 py-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200/50 dark:border-slate-700/50 hidden" id="inputArea">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-4 shadow-lg">
+                        <form id="messageForm" class="flex items-end space-x-3">
+                            <button type="button" class="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                                <i data-lucide="paperclip" class="w-5 h-5"></i>
+                            </button>
+                            <div class="flex-1 relative">
+                                <textarea id="messageInput" placeholder="Ask a question or share your thoughts..." class="w-full resize-none border-none focus:outline-none bg-transparent text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 max-h-32" rows="1"></textarea>
+                            </div>
+                            <button type="button" class="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                                <i data-lucide="smile" class="w-5 h-5"></i>
+                            </button>
+                            <button type="submit" id="sendButton" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i data-lucide="send" class="w-5 h-5"></i>
+                            </button>
+                        </form>
+
+                        <!-- Quick Actions -->
+                        <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Quick actions:</span>
+                            <button class="inline-flex items-center gap-1 px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                <i data-lucide="help-circle" class="w-3 h-3"></i>
+                                Help
+                            </button>
+                            <button class="inline-flex items-center gap-1 px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                <i data-lucide="calculator" class="w-3 h-3"></i>
+                                Formula
+                            </button>
+                            <button class="inline-flex items-center gap-1 px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                <i data-lucide="book-open" class="w-3 h-3"></i>
+                                Examples
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Conversation data model
+    const conversationsData = {
+        currentConversationId: null,
+        conversations: [
+            {
+                id: '1',
+                title: 'Quadratic Equations Help',
+                subject: 'Mathematics',
+                lastMessage: 'Can you help me understand vertex form?',
+                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                messages: [
+                    {
+                        id: '1-1',
+                        sender: 'ai',
+                        text: 'Hello! I\'m here to help you with your mathematics questions. How can I assist you today?',
+                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
+                    },
+                    {
+                        id: '1-2',
+                        sender: 'user',
+                        text: 'Can you help me understand quadratic equations? I\'m having trouble with the vertex form.',
+                        timestamp: new Date(Date.now() - 119 * 60 * 1000)
+                    },
+                    {
+                        id: '1-3',
+                        sender: 'ai',
+                        text: 'Of course! The vertex form of a quadratic equation is y = a(x - h)² + k, where (h, k) represents the vertex of the parabola. Let me break this down for you step by step.',
+                        timestamp: new Date(Date.now() - 118 * 60 * 1000)
+                    }
+                ]
+            },
+            {
+                id: '2',
+                title: 'Geometry Proofs',
+                subject: 'Mathematics',
+                lastMessage: 'I need help with triangle congruence',
+                timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                messages: [
+                    {
+                        id: '2-1',
+                        sender: 'ai',
+                        text: 'Hello! How can I help with geometry today?',
+                        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000)
+                    },
+                    {
+                        id: '2-2',
+                        sender: 'user',
+                        text: 'I need help understanding triangle congruence proofs.',
+                        timestamp: new Date(Date.now() - 23.5 * 60 * 60 * 1000)
+                    }
+                ]
+            },
+            {
+                id: '3',
+                title: 'Chemistry Questions',
+                subject: 'Science',
+                lastMessage: 'Hello! I\'m here to help...',
+                timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+                messages: [
+                    {
+                        id: '3-1',
+                        sender: 'ai',
+                        text: 'Hello! I\'m here to help with your chemistry questions.',
+                        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+                    }
+                ]
+            }
+        ]
+    };
+
+    // App controller
+    const app = {
+        init() {
+            this.loadConversationsList();
+            this.bindEvents();
+        },
+
+        loadConversationsList() {
+            const conversationsList = document.getElementById('conversationsList');
+            conversationsList.innerHTML = '';
+
+            conversationsData.conversations.forEach(conversation => {
+                const conversationEl = document.createElement('div');
+                conversationEl.className = 'conversation-item p-3 rounded-lg cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800';
+                conversationEl.dataset.id = conversation.id;
+
+                const time = conversation.timestamp.toLocaleTimeString([], {
+                    hour: '2-digit', minute: '2-digit'
+                });
+
+                const preview = conversation.lastMessage.length > 30 ?
+                    conversation.lastMessage.substring(0, 30) + '...' : conversation.lastMessage;
+
+                conversationEl.innerHTML = `
+                        <div class="flex items-start justify-between mb-1">
+                            <h4 class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate flex-1">${conversation.title}</h4>
+                            <span class="text-xs text-slate-400 dark:text-slate-500 ml-2">${time}</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate mb-2">${preview}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="inline-block px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-full">
+                                ${conversation.subject}
+                            </span>
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        </div>
+                    `;
+
+                conversationsList.appendChild(conversationEl);
+
+                conversationEl.addEventListener('click', () => {
+                    this.loadConversation(conversation.id);
+                });
+            });
+        },
+
+        loadConversation(conversationId) {
+            const conversation = conversationsData.conversations.find(c => c.id === conversationId);
+            if (!conversation) return;
+
+            // Update active state
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('conversation-active');
+            });
+            document.querySelector(`.conversation-item[data-id="${conversationId}"]`).classList.add('conversation-active');
+
+            // Update header
+            document.getElementById('currentConversationTitle').textContent = conversation.title;
+            document.getElementById('conversationStatus').innerHTML = `
+                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2 inline-block"></span>
+                    ${conversation.messages.length} messages
+                `;
+
+            // Show input area and hide welcome
+            document.getElementById('inputArea').classList.remove('hidden');
+            document.getElementById('welcomeMessage').classList.add('hidden');
+
+            // Load messages
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.innerHTML = '';
+
+            conversation.messages.forEach(message => {
+                this.addMessageToUI(message);
+            });
+
+            conversationsData.currentConversationId = conversationId;
+            this.scrollToBottom();
+        },
+
+        addMessageToUI(message) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex items-start space-x-3 message-enter ${message.sender === 'user' ? 'justify-end' : ''}`;
+
+            const time = message.timestamp.toLocaleTimeString([], {
+                hour: '2-digit', minute: '2-digit'
+            });
+
+            if (message.sender === 'user') {
+                messageDiv.innerHTML = `
+                        <div class="flex-1 text-right">
+                            <div class="flex items-center justify-end space-x-2 mb-1">
+                                <span class="text-xs text-gray-500 dark:text-gray-400">${time}</span>
+                                <span class="text-sm font-semibold text-gray-800 dark:text-white">You</span>
+                            </div>
+                            <div class="message-bubble bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl rounded-tr-md px-4 py-3 shadow-sm inline-block max-w-md">
+                                <p class="text-white">${this.escapeHtml(message.text)}</p>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="user" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                        </div>
+                    `;
+            } else {
+                messageDiv.innerHTML = `
+                        <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <span class="text-sm font-semibold text-gray-800 dark:text-white">AI Assistant</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">${time}</span>
+                            </div>
+                            <div class="message-bubble bg-white dark:bg-gray-800 rounded-2xl rounded-tl-md px-4 py-3 shadow-sm border border-gray-200 dark:border-gray-700 max-w-md">
+                                <p class="text-gray-800 dark:text-gray-200">${this.escapeHtml(message.text)}</p>
+                            </div>
+                        </div>
+                    `;
+            }
+
+            messagesContainer.appendChild(messageDiv);
+            lucide.createIcons();
+        },
+
+        createNewConversation() {
+            const newId = Date.now().toString();
+            const newConversation = {
+                id: newId,
+                title: 'New Conversation',
+                subject: 'General',
+                lastMessage: 'Hello! How can I help you today?',
+                timestamp: new Date(),
+                messages: [
+                    {
+                        id: `${newId}-1`,
+                        sender: 'ai',
+                        text: 'Hello! How can I help you with your studies today?',
+                        timestamp: new Date()
+                    }
+                ]
+            };
+
+            conversationsData.conversations.unshift(newConversation);
+            this.loadConversationsList();
+            this.loadConversation(newId);
+        },
+
+        bindEvents() {
+            const messageForm = document.getElementById('messageForm');
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                sendButton.disabled = this.value.trim() === '';
+            });
+
+            // Handle form submission
+            messageForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+
+                if (message && conversationsData.currentConversationId) {
+                    const conversation = conversationsData.conversations.find(c => c.id === conversationsData.currentConversationId);
+
+                    // Add user message
+                    const userMessage = {
+                        id: `${conversationsData.currentConversationId}-${conversation.messages.length + 1}`,
+                        sender: 'user',
+                        text: message,
+                        timestamp: new Date()
+                    };
+
+                    conversation.messages.push(userMessage);
+                    conversation.lastMessage = message;
+                    conversation.timestamp = new Date();
+
+                    this.addMessageToUI(userMessage);
+
+                    messageInput.value = '';
+                    messageInput.style.height = 'auto';
+                    sendButton.disabled = true;
+
+                    // Show typing indicator
+                    this.showTypingIndicator();
+
+                    // Simulate AI response
+                    setTimeout(() => {
+                        this.hideTypingIndicator();
+
+                        const aiMessage = {
+                            id: `${conversationsData.currentConversationId}-${conversation.messages.length + 1}`,
+                            sender: 'ai',
+                            text: 'Thank you for your message! This is a demo response to show how the conversation works.',
+                            timestamp: new Date()
+                        };
+
+                        conversation.messages.push(aiMessage);
+                        conversation.lastMessage = aiMessage.text;
+                        conversation.timestamp = new Date();
+
+                        this.addMessageToUI(aiMessage);
+                        this.loadConversationsList(); // Update sidebar
+                    }, 1500);
+                }
+            });
+
+            // Enter to send
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    messageForm.dispatchEvent(new Event('submit'));
+                }
+            });
+
+            // New conversation buttons
+            document.getElementById('newConversationBtn').addEventListener('click', () => {
+                this.createNewConversation();
+            });
+
+            document.getElementById('startConversationBtn').addEventListener('click', () => {
+                this.createNewConversation();
+            });
+
+            // Initialize send button state
+            sendButton.disabled = true;
+        },
+
+        showTypingIndicator() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.className = 'flex items-start space-x-3';
+            typingDiv.innerHTML = `
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-md px-4 py-3 shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div class="flex space-x-1">
+                            <div class="w-2 h-2 bg-gray-400 rounded-full typing-indicator"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full typing-indicator" style="animation-delay: 0.2s;"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full typing-indicator" style="animation-delay: 0.4s;"></div>
+                        </div>
+                    </div>
+                `;
+            messagesContainer.appendChild(typingDiv);
+            this.scrollToBottom();
+            lucide.createIcons();
+        },
+
+        hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        },
+
+        scrollToBottom() {
+            setTimeout(() => {
+                const container = document.getElementById('messagesContainer').parentElement;
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        },
+
+        escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    };
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+        app.init();
+    });
+</script>
+</body>
+</html>

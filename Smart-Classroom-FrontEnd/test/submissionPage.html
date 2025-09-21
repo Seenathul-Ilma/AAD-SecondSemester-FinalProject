@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduSphere | Assignment Submissions</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .active-link {
+            background-image: linear-gradient(to right, #2563EB, #8B5CF6);
+            color: #fff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .dark .active-link {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .assignment-expand {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+
+        .submission-status-submitted { @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400; }
+        .submission-status-delayed { @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400; }
+        .submission-status-missed { @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400; }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <div class="w-64 min-h-screen transition duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10">
+        <div class="p-5 border-b border-slate-200/50 dark:border-slate-700/50">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <i data-lucide="school" class="w-6 h-6 font-medium text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800 dark:text-white">EduSphere</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Admin Panel</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" data-page="index" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                <i data-lucide="home" class="w-5 h-5 transition-all duration-200"></i>
+                <span class="font-medium">Dashboard</span>
+            </a>
+            <a href="#" data-page="submissions" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group active-link">
+                <i data-lucide="clipboard-list" class="w-5 h-5 transition-all duration-200"></i>
+                <span class="font-medium">Submissions</span>
+            </a>
+            <a href="teacher.html" data-page="teacher" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                <i data-lucide="users" class="w-5 h-5 transition-all duration-200"></i>
+                <span class="font-medium">Teachers</span>
+            </a>
+            <a href="../manageStudent.html" data-page="student" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                <i data-lucide="users" class="w-5 h-5 transition-all duration-200"></i>
+                <span class="font-medium">Students</span>
+            </a>
+            <a href="../manageClassroom.html" data-page="classroom" class="w-full text-slate-700 dark:text-slate-200 flex items-center gap-3 px-4 py-2 mb-3 rounded-xl text-left group dark:hover:bg-gray-800 hover:bg-gray-100 hover:shadow">
+                <i data-lucide="landmark" class="w-5 h-5 transition-all duration-200"></i>
+                <span class="font-medium">Classrooms</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
+            <div
+                    class="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50"
+            >
+                <img
+                        src="../Assets/images/user-profile-male.avif"
+                        alt="user"
+                        class="sidebar-profile-image w-10 h-10 rounded-full ring-2 ring-blue-500"
+                />
+                <div class="flex-1 min-w-0">
+                    <p
+                            class="text-sm font-medium text-slate-800 dark:text-white truncate"
+                            id="sidebar-profile-name"
+                    >
+                        Mirzan Musawwir
+                    </p>
+                    <p id="sidebar-profile-role" class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                        Administrator
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Assignment Submissions</h1>
+                <p class="text-slate-600 dark:text-slate-400">Review and manage student submissions across all classrooms</p>
+            </div>
+        </div>
+
+        <!-- Submissions by Classroom -->
+        <div class="space-y-6" id="submissions-container">
+            <!-- Classroom 1 -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                <i data-lucide="landmark" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Mathematics - Grade 10A</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">3 assignments • 25 students</p>
+                            </div>
+                        </div>
+                        <button class="classroom-toggle p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-classroom="math-10a">
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="classroom-assignments hidden" id="math-10a-assignments">
+                    <!-- Assignment 1 -->
+                    <div class="border-b border-gray-200 dark:border-gray-600 last:border-b-0">
+                        <div class="p-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm">
+                                    MM
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <h4 class="font-medium text-gray-800 dark:text-white mb-1">Algebra Problem Set Chapter 5</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Complete problems 1-20 from Chapter 5. Show all work and provide explanations for your solutions.</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Due: Dec 15, 2024 • Posted 5 days ago</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Files if exist -->
+                                    <div class="mt-3 flex flex-wrap gap-2">
+                                        <div class="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
+                                            <span class="text-sm text-blue-700 dark:text-blue-300">Chapter5_Problems.pdf</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 px-3 py-1 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                            <i data-lucide="image" class="w-4 h-4 text-green-600"></i>
+                                            <span class="text-sm text-green-700 dark:text-green-300">reference_sheet.png</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submission Overview -->
+                                    <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                        <div class="flex items-center gap-4 text-sm">
+                                            <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors" data-assignment="algebra-ch5">
+                                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                                <span>18 Submitted</span>
+                                            </button>
+                                            <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors" data-assignment="algebra-ch5">
+                                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                                <span>5 Delayed</span>
+                                            </button>
+                                            <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors" data-assignment="algebra-ch5">
+                                                <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                                <span>2 Missed</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assignment 2 -->
+                    <div class="border-b border-gray-200 dark:border-gray-600 last:border-b-0">
+                        <div class="p-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm">
+                                    MM
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <h4 class="font-medium text-gray-800 dark:text-white mb-1">Geometry Quiz Preparation</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Study materials and practice problems for the upcoming geometry quiz.</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Due: Dec 18, 2024 • Posted 2 days ago</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submission Overview -->
+                                    <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                        <div class="flex items-center gap-4 text-sm">
+                                            <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors" data-assignment="geometry-quiz">
+                                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                                <span>22 Submitted</span>
+                                            </button>
+                                            <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors" data-assignment="geometry-quiz">
+                                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                                <span>2 Delayed</span>
+                                            </button>
+                                            <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors" data-assignment="geometry-quiz">
+                                                <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                                <span>1 Missed</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classroom 2 -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                                <i data-lucide="landmark" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Science - Grade 10B</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">2 assignments • 28 students</p>
+                            </div>
+                        </div>
+                        <button class="classroom-toggle p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-classroom="science-10b">
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="classroom-assignments hidden" id="science-10b-assignments">
+                    <div class="border-b border-gray-200 dark:border-gray-600 last:border-b-0">
+                        <div class="p-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold text-sm">
+                                    JS
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <h4 class="font-medium text-gray-800 dark:text-white mb-1">Chemistry Lab Report</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Submit your detailed lab report on the chemical reactions experiment conducted last week.</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Due: Dec 20, 2024 • Posted 1 day ago</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                        <div class="flex items-center gap-4 text-sm">
+                                            <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors" data-assignment="chem-lab">
+                                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                                <span>15 Submitted</span>
+                                            </button>
+                                            <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors" data-assignment="chem-lab">
+                                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                                <span>8 Delayed</span>
+                                            </button>
+                                            <button class="submission-overview-btn flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors" data-assignment="chem-lab">
+                                                <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                                <span>5 Missed</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Submissions Modal -->
+<div id="submissionsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white" id="modalAssignmentTitle">Assignment Submissions</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400" id="modalAssignmentMeta">Details</p>
+            </div>
+            <button id="closeSubmissionsModal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
+            </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                    <tr class="border-b border-gray-200 dark:border-gray-600">
+                        <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Student</th>
+                        <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">User ID</th>
+                        <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Submitted Files</th>
+                        <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Submission Date</th>
+                        <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Status</th>
+                        <th class="text-left py-3 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="submissionsTableBody">
+                    <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+
+        // Mock data for submissions
+        const submissionsData = {
+            'algebra-ch5': [
+                { id: 1, name: 'Alice Johnson', userId: 'ST001', files: ['solution.pdf', 'work_shown.jpg'], date: '2024-12-14', status: 'submitted', grade: 'A-' },
+                { id: 2, name: 'Bob Smith', userId: 'ST002', files: ['algebra_homework.pdf'], date: '2024-12-15', status: 'submitted', grade: 'B+' },
+                { id: 3, name: 'Carol White', userId: 'ST003', files: ['math_work.docx'], date: '2024-12-16', status: 'delayed', grade: null },
+                { id: 4, name: 'David Brown', userId: 'ST004', files: [], date: null, status: 'missed', grade: null },
+                { id: 5, name: 'Emma Davis', userId: 'ST005', files: ['homework.pdf'], date: '2024-12-14', status: 'submitted', grade: 'A' }
+            ],
+            'geometry-quiz': [
+                { id: 1, name: 'Alice Johnson', userId: 'ST001', files: ['geometry_prep.pdf'], date: '2024-12-17', status: 'submitted', grade: null },
+                { id: 2, name: 'Bob Smith', userId: 'ST002', files: ['quiz_practice.jpg'], date: '2024-12-18', status: 'delayed', grade: null },
+                { id: 3, name: 'Carol White', userId: 'ST003', files: ['geometry_notes.docx'], date: '2024-12-17', status: 'submitted', grade: null }
+            ],
+            'chem-lab': [
+                { id: 1, name: 'John Doe', userId: 'ST201', files: ['lab_report.pdf', 'data_sheet.xlsx'], date: '2024-12-19', status: 'submitted', grade: null },
+                { id: 2, name: 'Jane Wilson', userId: 'ST202', files: ['chemistry_report.docx'], date: '2024-12-20', status: 'delayed', grade: null },
+                { id: 3, name: 'Mike Johnson', userId: 'ST203', files: [], date: null, status: 'missed', grade: null }
+            ]
+        };
+
+        // Toggle classroom assignments
+        document.querySelectorAll('.classroom-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const classroomId = this.dataset.classroom;
+                const assignments = document.getElementById(`${classroomId}-assignments`);
+                const chevron = this.querySelector('i');
+
+                if (assignments.classList.contains('hidden')) {
+                    assignments.classList.remove('hidden');
+                    chevron.classList.add('rotate-180');
+                } else {
+                    assignments.classList.add('hidden');
+                    chevron.classList.remove('rotate-180');
+                }
+            });
+        });
+
+        // Show submissions modal
+        document.querySelectorAll('.submission-overview-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const assignmentId = this.dataset.assignment;
+                const submissions = submissionsData[assignmentId] || [];
+
+                // Set modal title
+                const assignmentTitle = this.closest('.p-4').querySelector('h4').textContent;
+                document.getElementById('modalAssignmentTitle').textContent = assignmentTitle;
+                document.getElementById('modalAssignmentMeta').textContent = `${submissions.length} total submissions`;
+
+                // Populate table
+                const tbody = document.getElementById('submissionsTableBody');
+                tbody.innerHTML = '';
+
+                submissions.forEach(submission => {
+                    const statusClass = `submission-status-${submission.status}`;
+                    const statusText = submission.status.charAt(0).toUpperCase() + submission.status.slice(1);
+
+                    const filesHtml = submission.files.map(file =>
+                        `<span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded text-xs">
+            <i data-lucide="file" class="w-3 h-3"></i>${file}
+          </span>`
+                    ).join(' ');
+
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50';
+                    row.innerHTML = `
+          <td class="py-3 px-2">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                ${submission.name.split(' ').map(n => n[0]).join('')}
+              </div>
+              <span class="font-medium text-gray-800 dark:text-white">${submission.name}</span>
+            </div>
+          </td>
+          <td class="py-3 px-2 text-gray-600 dark:text-gray-300">${submission.userId}</td>
+          <td class="py-3 px-2">
+            <div class="flex flex-wrap gap-1">
+              ${filesHtml || '<span class="text-gray-400 text-sm">No files</span>'}
+            </div>
+          </td>
+          <td class="py-3 px-2 text-gray-600 dark:text-gray-300">${submission.date || 'Not submitted'}</td>
+          <td class="py-3 px-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+              ${statusText}
+            </span>
+            ${submission.grade ? `<div class="text-xs text-gray-500 mt-1">Grade: ${submission.grade}</div>` : ''}
+          </td>
+          <td class="py-3 px-2">
+            <div class="flex items-center gap-2">
+              <button class="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors" title="View Details">
+                <i data-lucide="eye" class="w-4 h-4 text-gray-500"></i>
+              </button>
+              <button class="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors" title="Download">
+                <i data-lucide="download" class="w-4 h-4 text-gray-500"></i>
+              </button>
+              ${submission.status === 'submitted' ?
+                        `<button class="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors" title="Grade">
+                  <i data-lucide="edit-3" class="w-4 h-4 text-gray-500"></i>
+                </button>` : ''}
+            </div>
+          </td>
+        `;
+                    tbody.appendChild(row);
+                });
+
+                // Show modal
+                document.getElementById('submissionsModal').classList.remove('hidden');
+                document.getElementById('submissionsModal').classList.add('flex');
+
+                // Reinitialize Lucide icons for new content
+                lucide.createIcons();
+            });
+        });
+
+        // Close modal
+        document.getElementById('closeSubmissionsModal').addEventListener('click', function() {
+            document.getElementById('submissionsModal').classList.add('hidden');
+            document.getElementById('submissionsModal').classList.remove('flex');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('submissionsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+                this.classList.remove('flex');
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcement Modal with Date Picker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <style>
+        .date-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+        }
+        .date-picker-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .date-picker-cell:hover {
+            background-color: rgb(59 130 246 / 0.1);
+        }
+        .date-picker-cell.selected {
+            background-color: rgb(59 130 246);
+            color: white;
+        }
+        .date-picker-cell.today {
+            background-color: rgb(156 163 175);
+            color: white;
+        }
+        .date-picker-cell.other-month {
+            color: rgb(156 163 175);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 p-8">
+
+<!-- Trigger Button -->
+<button onclick="openModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+    Create Announcement
+</button>
+
+<!-- Assignment Modal -->
+<div id="announcementModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+
+        <!-- Sticky Header -->
+        <div class="p-5 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+            <div class="flex items-center justify-between">
+                <h3 id="AssignmentModalTitle" class="text-xl font-bold text-gray-800 dark:text-white">
+                    Create New Assignment
+                </h3>
+                <button onclick="closeModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrollable Body -->
+        <div class="p-5 overflow-y-auto">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm" id="userInitials">MM</div>
+                <div>
+                    <h4 id="assignmentUserName" class="font-semibold text-gray-800 dark:text-white">Mirzan Musawwir</h4>
+                    <p id="assignmentClassInfo" class="text-xs text-gray-500 dark:text-gray-400">Posting to: Grade 10 Mathematics</p>
+                </div>
+            </div>
+
+            <!-- Scheduling Options -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Publishing Options</label>
+
+                <div class="flex items-center space-x-4 mb-3">
+                    <label class="flex items-center">
+                        <input type="radio" name="publishOption" value="now" checked class="text-blue-600 focus:ring-blue-500 border-gray-300">
+                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Post now</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="publishOption" value="schedule" class="text-blue-600 focus:ring-blue-500 border-gray-300">
+                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Schedule for later</span>
+                    </label>
+                </div>
+
+                <!-- Date & Time Picker Section (Initially Hidden) -->
+                <div id="schedulingSection" class="hidden bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Date Picker -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Date</label>
+                            <div class="relative">
+                                <input type="text" id="dateInput" readonly
+                                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                                       placeholder="Select date" />
+                                <i data-lucide="calendar" class="absolute right-3 top-2.5 w-4 h-4 text-gray-400"></i>
+                            </div>
+
+                            <!-- Custom Date Picker -->
+                            <div id="datePicker" class="hidden absolute z-50 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4 w-80">
+                                <!-- Month Navigation -->
+                                <div class="flex items-center justify-between mb-4">
+                                    <button id="prevMonth" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                    </button>
+                                    <h3 id="currentMonth" class="font-semibold text-gray-800 dark:text-white"></h3>
+                                    <button id="nextMonth" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Days of Week -->
+                                <div class="date-picker-grid mb-2">
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 text-center p-2">Sun</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 text-center p-2">Mon</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 text-center p-2">Tue</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 text-center p-2">Wed</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 text-center p-2">Thu</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 text-center p-2">Fri</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 text-center p-2">Sat</div>
+                                </div>
+
+                                <!-- Calendar Days -->
+                                <div id="calendarDays" class="date-picker-grid"></div>
+
+                                <!-- Today Button -->
+                                <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+                                    <button id="todayBtn" class="w-full py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
+                                        Today
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Time Picker -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Time</label>
+                            <div class="relative">
+                                <input
+                                        type="time"
+                                        id="timeSelect"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
+                                           bg-white dark:bg-gray-700 text-gray-800 dark:text-white
+                                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                           transition-colors duration-200">
+                                <i data-lucide="clock" class="absolute right-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scheduled Time Preview -->
+                    <div id="scheduledTimePreview" class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <div class="flex items-center text-sm">
+                            <i data-lucide="clock" class="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0"></i>
+                            <span class="text-blue-800 dark:text-blue-200">This assignment will be posted on <span id="previewDateTime" class="font-semibold"></span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Editor -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content</label>
+                <!-- Quill Editor Container -->
+                <div id="editor-container" class="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                    <div id="editor" class="h-48 bg-white dark:bg-gray-700"></div>
+                </div>
+            </div>
+
+            <!-- File Attachment Section -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Attachments</label>
+
+                <!-- File Input Button -->
+                <div class="flex items-center gap-3 mb-3">
+                    <input type="file" id="fileInput" class="hidden" multiple>
+                    <button id="fileSelectBtn" class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i data-lucide="paperclip" class="w-4 h-4"></i>
+                        <span>Add Files</span>
+                    </button>
+                    <span id="fileCount" class="text-sm text-gray-500 dark:text-gray-400 hidden">0 files selected</span>
+                </div>
+
+                <!-- File Previews -->
+                <div id="filePreviews" class="space-y-2 hidden border border-gray-200 dark:border-gray-700 rounded-lg p-2">
+                    <!-- File previews will be added here dynamically -->
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-end gap-3 mt-5">
+                <button id="cancelAnnouncementBtn" onclick="closeModal()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    Cancel
+                </button>
+                <button id="postAnnouncementBtn" onclick="postAnnouncement()" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg transition-colors flex items-center gap-2 hover:from-blue-700 hover:to-purple-700">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    <span id="postButtonText">Assign Now</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let quill;
+    let currentDate = new Date();
+    let selectedDate = null;
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeQuill();
+        initializeDatePicker();
+        initializeTimePicker();
+        setupEventListeners();
+        lucide.createIcons();
+    });
+
+    function initializeQuill() {
+        quill = new Quill('#editor', {
+            theme: 'snow',
+            placeholder: 'Write your assignment content here...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    ['link', 'blockquote'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            }
+        });
+    }
+
+    function initializeDatePicker() {
+        populateCalendar(currentDate);
+
+        document.getElementById('dateInput').addEventListener('click', function() {
+            document.getElementById('datePicker').classList.toggle('hidden');
+        });
+
+        // Close date picker when clicking outside
+        document.addEventListener('click', function(e) {
+            const datePicker = document.getElementById('datePicker');
+            const dateInput = document.getElementById('dateInput');
+            if (!datePicker.contains(e.target) && e.target !== dateInput) {
+                datePicker.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            populateCalendar(currentDate);
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            populateCalendar(currentDate);
+        });
+
+        document.getElementById('todayBtn').addEventListener('click', function() {
+            const today = new Date();
+            currentDate = new Date(today);
+            selectedDate = new Date(today);
+            populateCalendar(currentDate);
+            updateDateInput();
+            document.getElementById('datePicker').classList.add('hidden');
+            updatePreview();
+        });
+    }
+
+    function initializeTimePicker() {
+        // Set default time to current time + 1 hour
+        const defaultTime = new Date();
+        defaultTime.setHours(defaultTime.getHours() + 1, 0, 0, 0);
+
+        const hours = defaultTime.getHours().toString().padStart(2, '0');
+        const minutes = defaultTime.getMinutes().toString().padStart(2, '0');
+
+        document.getElementById('timeSelect').value = `${hours}:${minutes}`;
+
+        // Add event listener for time change
+        document.getElementById('timeSelect').addEventListener('change', updatePreview);
+    }
+
+    function setupEventListeners() {
+        // Radio button change
+        document.querySelectorAll('input[name="publishOption"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const schedulingSection = document.getElementById('schedulingSection');
+                const postButtonText = document.getElementById('postButtonText');
+
+                if (this.value === 'schedule') {
+                    schedulingSection.classList.remove('hidden');
+                    postButtonText.textContent = 'Schedule Assignment';
+                    updatePreview();
+                } else {
+                    schedulingSection.classList.add('hidden');
+                    postButtonText.textContent = 'Post Assignment';
+                }
+            });
+        });
+
+        // File input
+        document.getElementById('fileSelectBtn').addEventListener('click', function() {
+            document.getElementById('fileInput').click();
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function() {
+            handleFileSelection();
+        });
+    }
+
+    function populateCalendar(date) {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+
+        // Update month header
+        document.getElementById('currentMonth').textContent =
+            date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+        const calendarDays = document.getElementById('calendarDays');
+        calendarDays.innerHTML = '';
+
+        // Previous month days
+        for (let i = firstDay - 1; i >= 0; i--) {
+            const day = daysInPrevMonth - i;
+            const dayElement = createDayElement(day, 'other-month', new Date(year, month - 1, day));
+            calendarDays.appendChild(dayElement);
+        }
+
+        // Current month days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayDate = new Date(year, month, day);
+            const dayElement = createDayElement(day, '', dayDate);
+
+            // Mark today
+            const today = new Date();
+            if (dayDate.toDateString() === today.toDateString()) {
+                dayElement.classList.add('today');
+            }
+
+            // Mark selected date
+            if (selectedDate && dayDate.toDateString() === selectedDate.toDateString()) {
+                dayElement.classList.add('selected');
+                dayElement.classList.remove('today');
+            }
+
+            calendarDays.appendChild(dayElement);
+        }
+
+        // Next month days
+        const totalCells = calendarDays.children.length;
+        const remainingCells = 42 - totalCells; // 6 rows × 7 days
+        for (let day = 1; day <= remainingCells; day++) {
+            const dayElement = createDayElement(day, 'other-month', new Date(year, month + 1, day));
+            calendarDays.appendChild(dayElement);
+        }
+    }
+
+    function createDayElement(day, className, date) {
+        const dayElement = document.createElement('div');
+        dayElement.className = `date-picker-cell text-sm rounded-lg ${className}`;
+        dayElement.textContent = day;
+
+        // Disable past dates
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (date < today && !className.includes('other-month')) {
+            dayElement.classList.add('opacity-50', 'cursor-not-allowed');
+            dayElement.style.pointerEvents = 'none';
+        } else if (!className.includes('other-month')) {
+            dayElement.addEventListener('click', function() {
+                selectedDate = new Date(date);
+                populateCalendar(currentDate);
+                updateDateInput();
+                document.getElementById('datePicker').classList.add('hidden');
+                updatePreview();
+            });
+        }
+
+        return dayElement;
+    }
+
+    function updateDateInput() {
+        if (selectedDate) {
+            document.getElementById('dateInput').value =
+                selectedDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+        }
+    }
+
+    function updatePreview() {
+        const publishOption = document.querySelector('input[name="publishOption"]:checked').value;
+        if (publishOption === 'schedule' && selectedDate) {
+            const timeValue = document.getElementById('timeSelect').value;
+
+            if (timeValue) {
+                // Convert 24-hour time to 12-hour format
+                const [hours, minutes] = timeValue.split(':');
+                const hour24 = parseInt(hours);
+                const hour12 = hour24 === 0 ? 12 : (hour24 > 12 ? hour24 - 12 : hour24);
+                const ampm = hour24 < 12 ? 'AM' : 'PM';
+                const formattedTime = `${hour12}:${minutes} ${ampm}`;
+
+                const previewDateTime = document.getElementById('previewDateTime');
+                previewDateTime.textContent = `${selectedDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })} at ${formattedTime}`;
+            }
+        }
+    }
+
+    function handleFileSelection() {
+        const fileInput = document.getElementById('fileInput');
+        const fileCount = document.getElementById('fileCount');
+        const filePreviews = document.getElementById('filePreviews');
+
+        const files = Array.from(fileInput.files);
+
+        if (files.length > 0) {
+            fileCount.textContent = `${files.length} file${files.length > 1 ? 's' : ''} selected`;
+            fileCount.classList.remove('hidden');
+            filePreviews.classList.remove('hidden');
+
+            filePreviews.innerHTML = '';
+            files.forEach((file, index) => {
+                const preview = document.createElement('div');
+                preview.className = 'flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded';
+                preview.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="file" class="w-4 h-4 text-gray-500"></i>
+                            <span class="text-sm text-gray-700 dark:text-gray-300">${file.name}</span>
+                            <span class="text-xs text-gray-500">(${(file.size / 1024).toFixed(1)} KB)</span>
+                        </div>
+                        <button onclick="removeFile(${index})" class="text-red-500 hover:text-red-700">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    `;
+                filePreviews.appendChild(preview);
+            });
+
+            lucide.createIcons();
+        } else {
+            fileCount.classList.add('hidden');
+            filePreviews.classList.add('hidden');
+        }
+    }
+
+    function removeFile(index) {
+        const fileInput = document.getElementById('fileInput');
+        const dt = new DataTransfer();
+        const files = Array.from(fileInput.files);
+
+        files.splice(index, 1);
+        files.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+
+        handleFileSelection();
+    }
+
+    function openModal() {
+        document.getElementById('announcementModal').classList.remove('hidden');
+        document.getElementById('announcementModal').classList.add('flex');
+    }
+
+    function closeModal() {
+        document.getElementById('announcementModal').classList.add('hidden');
+        document.getElementById('announcementModal').classList.remove('flex');
+    }
+
+    function postAnnouncement() {
+        const title = document.getElementById('announcementTitleInput').value;
+        const content = quill.root.innerHTML;
+        const publishOption = document.querySelector('input[name="publishOption"]:checked').value;
+
+        if (!title.trim()) {
+            alert('Please enter a title for the announcement.');
+            return;
+        }
+
+        if (quill.getText().trim().length === 0) {
+            alert('Please enter some content for the announcement.');
+            return;
+        }
+
+        if (publishOption === 'schedule' && !selectedDate) {
+            alert('Please select a date for scheduling.');
+            return;
+        }
+
+        if (publishOption === 'schedule' && !document.getElementById('timeSelect').value) {
+            alert('Please select a time for scheduling.');
+            return;
+        }
+
+        let message = `Announcement "${title}" `;
+        if (publishOption === 'schedule') {
+            const timeValue = document.getElementById('timeSelect').value;
+            const [hours, minutes] = timeValue.split(':');
+            const hour24 = parseInt(hours);
+            const hour12 = hour24 === 0 ? 12 : (hour24 > 12 ? hour24 - 12 : hour24);
+            const ampm = hour24 < 12 ? 'AM' : 'PM';
+            const formattedTime = `${hour12}:${minutes} ${ampm}`;
+
+            message += `scheduled for ${selectedDate.toLocaleDateString()} at ${formattedTime}`;
+        } else {
+            message += 'posted successfully!';
+        }
+
+        alert(message);
+        closeModal();
+    }
+</script>
+
+</body>
+</html>
