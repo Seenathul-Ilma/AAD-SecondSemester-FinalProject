@@ -23,7 +23,7 @@ public interface UserClassroomService {
 
     void removeByUserAndClassroomUsingClassroomCode(String userId, String classroomCode);
 
-    void removeListOfByUserClassroomId(Set<String> userClassroomIds);
+    void removeListOfByUserClassroomId(Set<String> userClassroomIds, String classroomId);
 
     Page<UserClassroomDTO> getClassroomMembersByPaginated(String classroomId, int page, int size);
 }

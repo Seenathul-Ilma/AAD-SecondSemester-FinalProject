@@ -1,6 +1,5 @@
 package lk.ijse.gdse71.smartclassroombackend.service.impl;
 
-import lk.ijse.gdse71.smartclassroombackend.dto.ClassroomDTO;
 import lk.ijse.gdse71.smartclassroombackend.dto.UserClassroomDTO;
 import lk.ijse.gdse71.smartclassroombackend.entity.Classroom;
 import lk.ijse.gdse71.smartclassroombackend.entity.ClassroomRole;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.FileAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -296,14 +294,20 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
     @Override
     @Transactional
-    public void removeListOfByUserClassroomId(Set<String> userClassroomIds) {
-        for (String id : userClassroomIds) {
+    public void removeListOfByUserClassroomId(Set<String> memberIds, String classroomId) {
+        /*for (String id : memberIds) {
             UserClassroom userClassroomToDelete = userClassroomRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "UserClassroom not found with ID: " + id
                     ));
             userClassroomRepository.delete(userClassroomToDelete);
-        }
-    }
+        }*/
 
+        // Ensure classroom exists
+        classroomRepository.findByClassroomId(classroomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Classroom not found!"));
+
+        // Bulk delete in one query
+        userClassroomRepository.deleteByUserIdsAndClassroomId(memberIds, classroomId);
+    }
 }

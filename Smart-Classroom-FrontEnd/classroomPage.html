@@ -274,7 +274,8 @@
       .modal-overlay {
         background-color: rgba(0, 0, 0, 0.5);
       }
-      .checkbox-circle {
+
+      .checkbox-circle, .checkbox-circle-remove, .member-checkbox {
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
@@ -289,11 +290,11 @@
         align-items: center;
         justify-content: center;
       }
-      .checkbox-circle:checked {
+      .checkbox-circle:checked, .checkbox-circle-remove:checked, .member-checkbox:checked {
         border-color: #8b5cf6;
         background-image: linear-gradient(to right, #2563EB, #8B5CF6);
       }
-      .checkbox-circle:checked::after {
+      .checkbox-circle:checked::after, .checkbox-circle-remove:checked::after, .member-checkbox:checked::after {
         content: "";
         position: absolute;
         width: 12px;
@@ -733,6 +734,7 @@
                           <table class="w-full">
                             <thead>
                             <tr class="bg-gray-50 dark:bg-gray-800">
+                              <th class="px-5 py-3 w-12"></th>
                               <th
                                       class="text-left px-5 py-3 text-xs uppercase font-semibold text-gray-500 dark:text-gray-400"
                               >
@@ -1297,7 +1299,7 @@
             <button id="cancelModal" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               Cancel
             </button>
-            <button id="joinClassroomBtn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2" disabled>
+            <button id="joinClassroomBtn" class="px-4 py-2 bg-purple-600 bg-gradient-to-r from-purple-600 to-blue-600 items-center text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2" disabled>
               <i data-lucide="user-plus" class="w-4 h-4"></i>
               <span>Join Classroom</span>
             </button>

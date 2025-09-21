@@ -137,10 +137,10 @@ public class UserClassroomController {
         );
     }
 
-    @DeleteMapping("/remove")
+    @DeleteMapping("/remove/{classroomId}/{userId}")
     public ResponseEntity<ApiResponse> removeByUserAndClassroom(
-            @RequestParam String userId,
-            @RequestParam String classroomId) {
+            @PathVariable String classroomId,
+            @PathVariable String userId) {
 
         userClassroomService.removeByUserAndClassroom(userId, classroomId);
         return new ResponseEntity<>(
@@ -170,9 +170,10 @@ public class UserClassroomController {
     }
 
     @DeleteMapping("/removeById/list")
-    public ResponseEntity<ApiResponse> RemoveListOfMembersFromClassroomByUserClassroomId(@RequestBody Set<String> userClassroomIds){
+    //public ResponseEntity<ApiResponse> RemoveListOfMembersFromClassroomByUserClassroomId(@RequestBody Set<String> userClassroomIds){
+    public ResponseEntity<ApiResponse> RemoveListOfMembersFromClassroomByUserClassroomId(@RequestBody Set<String> memberIds, @RequestParam String classroomId){
 
-        userClassroomService.removeListOfByUserClassroomId(userClassroomIds);
+        userClassroomService.removeListOfByUserClassroomId(memberIds, classroomId);
         return new ResponseEntity<>(
                 new ApiResponse(
                         200,

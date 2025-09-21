@@ -7,11 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * --------------------------------------------
@@ -50,4 +52,10 @@ public interface UserClassroomRepository extends JpaRepository<UserClassroom, St
     Optional<UserClassroom> findByClassroom_ClassroomIdAndIsCreatorTrue(String classroomId);
 
     Page<UserClassroom> findByUser_UserId(String userId, Pageable pageable);
+
+    @Modifying
+    @Query("DELETE FROM UserClassroom uc " +
+            "WHERE uc.user.userId IN :memberIds AND uc.classroom.classroomId = :classroomId")
+    void deleteByUserIdsAndClassroomId(@Param("memberIds") Set<String> memberIds,
+                                       @Param("classroomId") String classroomId);
 }
