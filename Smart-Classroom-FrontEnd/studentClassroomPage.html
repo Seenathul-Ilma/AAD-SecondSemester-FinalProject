@@ -304,6 +304,57 @@
         background-position: center;
       }
 
+      .submission-modal-overlay {
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+      }
+
+      .submission-modal-content {
+        animation: slideUp 0.3s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .submission-file-drop-zone {
+        border: 2px dashed #cbd5e1;
+        transition: all 0.3s ease;
+      }
+
+      .submission-file-drop-zone:hover, .submission-file-drop-zone.dragover {
+        border-color: #3b82f6;
+        background-color: rgba(59, 130, 246, 0.05);
+      }
+
+      .submission-file-item {
+        transition: all 0.2s ease;
+      }
+
+      .submission-file-item:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+      }
+
+      .dark .submission-file-drop-zone {
+        border-color: #475569;
+      }
+
+      .dark .submission-file-drop-zone:hover, .dark .submission-file-drop-zone.dragover {
+        border-color: #3b82f6;
+        background-color: rgba(59, 130, 246, 0.1);
+      }
+
+      .dark .submission-file-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
     </style>
   </head>
   <body class="bg-gray-50 dark:bg-gray-900">
@@ -1184,6 +1235,91 @@
       </div>
     </div>
 
+    <!-- Submission Modal -->
+    <!-- Submission Modal -->
+    <div id="submissionModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+      <div class="submission-modal-overlay absolute inset-0"></div>
+      <div class="submission-modal-content relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+        <!-- Modal Header -->
+        <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800 dark:text-white">Submit Assignment</h2>
+          </div>
+          <button id="submissionCloseModal" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+
+          <!-- File Upload Section -->
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Upload Files
+            </label>
+            <div id="submissionFileDropZone" class="submission-file-drop-zone rounded-lg p-6 text-center cursor-pointer">
+              <i data-lucide="upload-cloud" class="w-12 h-12 text-slate-400 mx-auto mb-3"></i>
+              <p class="text-slate-700 dark:text-slate-300 font-medium">Drag and drop files here</p>
+              <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">or click to browse</p>
+              <input type="file" id="submissionFileInput" class="hidden" multiple>
+            </div>
+
+            <!-- Selected Files List -->
+            <div id="submissionFileList" class="mt-4 space-y-2 hidden">
+              <h3 class="text-sm font-medium text-slate-700 dark:text-slate-300">Selected Files</h3>
+              <div id="submissionFileItems" class="space-y-2">
+                <!-- Files will be listed here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- URL Submission Section -->
+          <div>
+            <label for="submissionUrl" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Submission URL (Optional)
+            </label>
+            <div class="flex space-x-3">
+              <input
+                      type="url"
+                      id="submissionUrl"
+                      placeholder="https://example.com/your-project"
+                      class="flex-1 px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+              <button id="submissionTestUrl" class="px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center gap-2">
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+                Test
+              </button>
+            </div>
+          </div>
+
+          <!-- Submission Description -->
+          <div>
+            <label for="submissionDescription" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Submission Description
+            </label>
+            <textarea
+                    id="submissionDescription"
+                    rows="3"
+                    placeholder="Describe your submission, any special instructions, or notes for the teacher..."
+                    class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-6 border-t border-slate-200 dark:border-slate-700 flex justify-end space-x-3">
+          <button id="submissionCancel" class="px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+            Cancel
+          </button>
+          <button id="submissionSubmit" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg flex items-center gap-2">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            Submit Assignment
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Connection Modal -->
     <div id="addConnectionModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto bg-black/50 backdrop-blur-sm">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
@@ -1294,6 +1430,7 @@
     <script src="JavaScript/profile.js"></script>
     <script src="JavaScript/announcement.js"></script>
     <script src="JavaScript/assignment.js"></script>
+    <script src="JavaScript/submitAssignment.js"></script>
     <script src="JavaScript/connection.js"></script>
     <script src="JavaScript/classroomTabPagination.js"></script>
     <!--

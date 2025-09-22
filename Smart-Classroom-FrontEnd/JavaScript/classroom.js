@@ -430,6 +430,7 @@ $("#classroom-card-container").on("click", ".delete-classroom", function () {
 
 
 
+/*
 function showMessage(type, text, duration = 5000) {
   let messageId, textId;
 
@@ -457,6 +458,56 @@ function showMessage(type, text, duration = 5000) {
   }, duration);
 
   if (window.lucide?.createIcons) lucide.createIcons();
+}
+*/
+
+function showMessage(type, message) {
+  const toast = document.createElement('div');
+  toast.className = `fixed top-4 right-4 z-[9999] px-4 py-3 rounded-xl shadow-lg transition-all duration-300 transform translate-x-full`;
+
+  let bgClass, textClass, icon;
+  switch(type) {
+    case 'success':
+      bgClass = 'bg-green-100 dark:bg-green-900/80 border border-green-400';
+      textClass = 'text-green-700 dark:text-green-200';
+      icon = 'check-circle';
+      break;
+    case 'error':
+      bgClass = 'bg-red-100 dark:bg-red-900/80 border border-red-400';
+      textClass = 'text-red-700 dark:text-red-200';
+      icon = 'alert-circle';
+      break;
+    case 'warning':
+      bgClass = 'bg-orange-100 dark:bg-orange-900/80 border border-orange-400';
+      textClass = 'text-orange-700 dark:text-orange-200';
+      icon = 'alert-triangle';
+      break;
+  }
+
+  toast.className += ` ${bgClass} ${textClass}`;
+  toast.innerHTML = `
+        <div class="flex items-center">
+            <i data-lucide="${icon}" class="w-5 h-5 mr-2"></i>
+            <span>${message}</span>
+            <button class="ml-4 hover:opacity-70" onclick="this.parentElement.parentElement.remove()">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    `;
+
+  document.body.appendChild(toast);
+  lucide.createIcons();
+
+  // Animate in
+  setTimeout(() => {
+    toast.classList.remove('translate-x-full');
+  }, 100);
+
+  // Auto remove
+  setTimeout(() => {
+    toast.classList.add('translate-x-full');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
 }
 
 // ====================== Form Submit ======================

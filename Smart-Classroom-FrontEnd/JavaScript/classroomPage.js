@@ -379,6 +379,7 @@ function formatRelativeTime(dateString) {
   }
 }
 
+/*
 function showMessage(type, text, duration = 5000) {
   let messageId, textId;
 
@@ -405,5 +406,37 @@ function showMessage(type, text, duration = 5000) {
     $msg.addClass("hidden");
   }, duration);
 
+  if (window.lucide?.createIcons) lucide.createIcons();
+}
+*/
+
+function showMessage(type, text, duration = 5000) {
+  // Get the template element of the requested type
+  const template = document.querySelector(`.message.${type}`);
+  if (!template) return;
+
+  // Clone the template so multiple messages can exist
+  const msg = template.cloneNode(true);
+  msg.classList.remove('hidden');
+
+  // Update the message text
+  const textSpan = msg.querySelector('.message-text');
+  if (textSpan) textSpan.textContent = text;
+
+  // Add close button functionality
+  const closeBtn = msg.querySelector('.close-message');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => msg.remove());
+  }
+
+  // Append to body
+  document.body.appendChild(msg);
+
+  // Auto-remove after duration
+  setTimeout(() => {
+    msg.remove();
+  }, duration);
+
+  // Re-initialize Lucide icons
   if (window.lucide?.createIcons) lucide.createIcons();
 }
