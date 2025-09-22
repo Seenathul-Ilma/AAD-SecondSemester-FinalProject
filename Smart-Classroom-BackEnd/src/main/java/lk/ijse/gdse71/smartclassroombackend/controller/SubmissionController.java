@@ -71,7 +71,7 @@ public class SubmissionController {
 
 
     @GetMapping("/{submissionId}")
-    public ResponseEntity<ApiResponse> getUserSubmissionByAnnouncementId(@PathVariable String submissionId){
+    public ResponseEntity<ApiResponse> getUserSubmissionByAssignmentId(@PathVariable String submissionId){
         SubmissionDTO foundSubmissionDTO = submissionService.getSubmissionBySubmissionId(submissionId);
 
         if (foundSubmissionDTO == null) {
@@ -94,6 +94,25 @@ public class SubmissionController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/{assignmentId}/{userId}/submission")
+    public ResponseEntity<ApiResponse> getSubmissionByUserAndAssignment(
+            @PathVariable String assignmentId,
+            @PathVariable String userId) {
+
+        SubmissionDTO submissionDTO = submissionService.getSubmissionByUserIdAndAssignmentId(userId, assignmentId);
+
+        if (submissionDTO == null) {
+            return ResponseEntity.ok(
+                    new ApiResponse(200, "User didn't submit to that assignment yet..!", null)
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse(200, "Submission fetched successfully", submissionDTO)
+        );
+    }
+
 
     @PostMapping(
             value = "/{assignmentId}/{userId}/submit",
@@ -130,19 +149,19 @@ public class SubmissionController {
 
 
     @PutMapping(
-            value = "/{userId}/{announcementId}/{submissionId}/update",
+            value = "/{userId}/{assignmentId}/{submissionId}/update",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<ApiResponse> updateSubmission(
             @PathVariable String userId,
-            @PathVariable String announcementId,
+            @PathVariable String assignmentId,
             @PathVariable String submissionId,
             @RequestParam(value = "files", required = false) List<MultipartFile> files,
             @RequestParam(value = "existingFiles", required = false) List<String> existingFiles // URLs of files to keep
     ) {
 
         try {
-            SubmissionDTO updatedSubmission = submissionService.updateSubmissionByAssignmentIdAndSubmissionId(userId, announcementId, submissionId, files, existingFiles);
+            SubmissionDTO updatedSubmission = submissionService.updateSubmissionByAssignmentIdAndSubmissionId(userId, assignmentId, submissionId, files, existingFiles);
 
             return new ResponseEntity<>(
                     new ApiResponse(
@@ -150,7 +169,7 @@ public class SubmissionController {
                             "Submission updated successfully!",
                             updatedSubmission
                     ),
-                    HttpStatus.CREATED
+                    HttpStatus.OK
             );
         } catch (IOException e) {
             return new ResponseEntity<>(

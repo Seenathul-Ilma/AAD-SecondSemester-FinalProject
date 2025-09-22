@@ -20,5 +20,7 @@ public interface SubmissionService {
 
     SubmissionDTO getSubmissionBySubmissionId(String submissionId);
 
+    SubmissionDTO getSubmissionByUserIdAndAssignmentId(String submissionId, String assignmentId);
+
     SubmissionCountDTO getSubmissionCounts(String assignmentId);
 }

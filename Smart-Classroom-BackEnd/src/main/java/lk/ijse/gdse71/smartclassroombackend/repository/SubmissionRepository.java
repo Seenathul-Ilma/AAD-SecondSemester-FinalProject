@@ -23,6 +23,8 @@ public interface SubmissionRepository extends JpaRepository<Submission, String> 
     // Optional: fetch existing submission
     Optional<Submission> findByUserAndAssignment(User user, Assignment assignment);
 
+    Optional<Submission> findByUserUserIdAndAssignmentAssignmentId(String userId, String assignmentId);
+
     //Page<Submission> findByAssignment_AssignmentIdOrderByAssignedDateDesc(String assignmentId, Pageable pageable);
     Page<Submission> findByAssignment_AssignmentIdAndStatusOrderBySubmissionDateDesc(
             String assignmentId,

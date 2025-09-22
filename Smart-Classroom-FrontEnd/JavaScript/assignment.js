@@ -994,6 +994,12 @@ function removeFile(index){
           </div>`
                     : "";
 
+            const submissionButton = userRole === "STUDENT" ? `
+            <div class="submissionOpenModal absolute top-2 right-2 p-2 rounded-full text-slate-600/100 dark:text-slate-800 bg-slate-100 hover:bg-slate-100 hover:text-slate-800 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer" data-assignment-id="${assignment.assignmentId}">
+                <i data-lucide="square-arrow-out-up-right" class="w-4 h-4 hover:scale-120 dark:hover:scale-none"></i>
+            </div>
+        ` : "";
+
             // Determine status
             let statusBadge = "";
             if (assignment.dueDate) {
@@ -1099,6 +1105,7 @@ function removeFile(index){
             const card = `
       <div class="assignment-card bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden relative">
         ${actionButtons}
+        ${submissionButton}
         <div class="p-5 pb-0">
           <div class="flex items-start gap-3 mb-4">
             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg">
@@ -1156,6 +1163,66 @@ function removeFile(index){
         // Refresh icons after dynamic render
         if (window.lucide?.createIcons) lucide.createIcons();
     }
+
+
+    $(document).on('click', '.submissionOpenModal', function() {
+        const assignmentId = $(this).data('assignment-id');
+        console.log("Clicked submission Open modal button for assignment:", assignmentId);
+
+        ajaxWithToken({
+            url: `http://localhost:8080/api/v1/edusphere/assignments/submissions/${assignmentId}/${userId}/submission`,
+            method: "GET",
+            success: function(response) {
+                console.log("Submission fetch success:", response);
+
+                // If data exists → edit mode, else → create mode
+                if (response.data) {
+                    openSubmissionModal(assignmentId, response.data);
+                } else {
+                    openSubmissionModal(assignmentId); // create mode
+                }
+            },
+            error: function(xhr) {
+                console.error("Error fetching submission:", xhr);
+                showMessage("error", "Failed to check submission status.");
+                // fallback to create mode if needed
+                openSubmissionModal(assignmentId);
+            }
+        });
+    });
+
+    // Handle submission modal opening
+    $(document).on('click', '.submissionOpenModal', function() {
+        const assignmentId = $(this).data('assignment-id');
+
+        ajaxWithToken({
+            url: `${submissionApi}${assignmentId}/${userId}/submission`,
+            method: "GET",
+            success: function (response) {
+                if (response.status === 200 && response.data) {
+                    // Edit mode: User has already submitted
+                    openSubmissionModal(assignmentId, response.data);
+                } else if (response.status === 400) {
+                    // Create mode: No submission exists
+                    openSubmissionModal(assignmentId);
+                } else {
+                    // Default to create mode
+                    openSubmissionModal(assignmentId);
+                }
+            },
+            error: function (xhr) {
+                if (xhr.status === 400) {
+                    // No submission yet - create mode
+                    openSubmissionModal(assignmentId);
+                } else {
+                    showMessage("error", "Failed to check submission status.");
+                    // Still open modal in create mode as fallback
+                    openSubmissionModal(assignmentId);
+                }
+            }
+        });
+    });
+
 
 // Toggle dropdown visibility
     $("#assignment-cards-container").on("click", ".assignment-action-btn", function (e) {
@@ -1404,6 +1471,54 @@ function removeFile(index){
         });
     });
 
+    function showMessage(type, message) {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 z-[9999] px-4 py-3 rounded-xl shadow-lg transition-all duration-300 transform translate-x-full`;
+
+        let bgClass, textClass, icon;
+        switch(type) {
+            case 'success':
+                bgClass = 'bg-green-100 dark:bg-green-900/80 border border-green-400';
+                textClass = 'text-green-700 dark:text-green-200';
+                icon = 'check-circle';
+                break;
+            case 'error':
+                bgClass = 'bg-red-100 dark:bg-red-900/80 border border-red-400';
+                textClass = 'text-red-700 dark:text-red-200';
+                icon = 'alert-circle';
+                break;
+            case 'warning':
+                bgClass = 'bg-orange-100 dark:bg-orange-900/80 border border-orange-400';
+                textClass = 'text-orange-700 dark:text-orange-200';
+                icon = 'alert-triangle';
+                break;
+        }
+
+        toast.className += ` ${bgClass} ${textClass}`;
+        toast.innerHTML = `
+        <div class="flex items-center">
+            <i data-lucide="${icon}" class="w-5 h-5 mr-2"></i>
+            <span>${message}</span>
+            <button class="ml-4 hover:opacity-70" onclick="this.parentElement.parentElement.remove()">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    `;
+
+        document.body.appendChild(toast);
+        lucide.createIcons();
+
+        // Animate in
+        setTimeout(() => {
+            toast.classList.remove('translate-x-full');
+        }, 100);
+
+        // Auto remove
+        setTimeout(() => {
+            toast.classList.add('translate-x-full');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
     // At the end of your assignment IIFE:
     window.loadAssignmentsPaginated = loadDataPaginated;
 })();

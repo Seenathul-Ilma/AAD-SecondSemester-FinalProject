@@ -266,7 +266,6 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    @Transactional
     public Page<SubmissionDTO> getAllSubmissionsByStatusAnnouncementId(String assignmentId, AssignmentStatus submitStatus, int page, int size) {
         Page<Submission> submissionPage = submissionRepository
                 .findByAssignment_AssignmentIdAndStatusOrderBySubmissionDateDesc(assignmentId, submitStatus, PageRequest.of(page, size));
@@ -309,6 +308,46 @@ public class SubmissionServiceImpl implements SubmissionService {
     public SubmissionDTO getSubmissionBySubmissionId(String submissionId) {
         Submission foundSubmission = submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot find submission with id: " + submissionId));
+
+        SubmissionDTO dto = modelMapper.map(foundSubmission, SubmissionDTO.class);
+
+        // Handle fileUrls
+        List<String> fileUrlsForFrontend = foundSubmission.getFileUrls() != null
+                ? Arrays.stream(foundSubmission.getFileUrls().split(","))
+                .map(path -> {
+                    File file = new File(path);
+                    return ServletUriComponentsBuilder.fromCurrentContextPath()
+                            .path("/submissions/") // <-- adjusted path for submission
+                            .path(file.getName())
+                            .toUriString();
+                })
+                .toList()
+                : new ArrayList<>();
+        dto.setFileUrls(fileUrlsForFrontend);
+
+        // Handle fileTypes
+        dto.setFileTypes(foundSubmission.getFileTypes() != null
+                ? Arrays.asList(foundSubmission.getFileTypes().split(","))
+                : new ArrayList<>());
+
+        // Map nested IDs and names
+        dto.setAssignmentId(foundSubmission.getAssignment().getAssignmentId());
+        dto.setStatus(String.valueOf(foundSubmission.getStatus()));
+        dto.setStudentName(foundSubmission.getUser() != null ? foundSubmission.getUser().getName() : null);
+        dto.setStudentId(foundSubmission.getUser() != null ? foundSubmission.getUser().getUserId() : null);
+        dto.setSubmissionDate(foundSubmission.getSubmissionDate());
+
+        return dto;
+    }
+
+    @Override
+    public SubmissionDTO getSubmissionByUserIdAndAssignmentId(String userId, String assignmentId) {
+        Submission foundSubmission = submissionRepository.findByUserUserIdAndAssignmentAssignmentId(userId, assignmentId)
+                .orElse(null);
+
+        if (foundSubmission == null) {
+            return null; // prevent mapping a null entity
+        }
 
         SubmissionDTO dto = modelMapper.map(foundSubmission, SubmissionDTO.class);
 
