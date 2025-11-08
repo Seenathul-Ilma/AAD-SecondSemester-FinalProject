@@ -1,0 +1,5 @@
+Smart-Classroom-BackEnd/src/main/resources/application.properties
+
+logs/
+
+.gitignore
