@@ -1,5 +1,16 @@
+# Sensitive files
 Smart-Classroom-BackEnd/src/main/resources/application.properties
-
 logs/
+*.log
 
-.gitignore
+# Uploaded files (user-generated content)
+uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.iml
