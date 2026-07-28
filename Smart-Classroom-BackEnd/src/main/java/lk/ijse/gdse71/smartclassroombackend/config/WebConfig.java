@@ -1,5 +1,6 @@
 package lk.ijse.gdse71.smartclassroombackend.config;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -33,6 +34,30 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${profile.upload.dir}")
     private String profileDir;
+
+    // Auto-create upload directories on application startup if they don't exist.
+    @PostConstruct
+    public void initUploadDirectories() {
+        createDirectoryIfNotExists(announcementDir);
+        createDirectoryIfNotExists(submissionDir);
+        createDirectoryIfNotExists(materialsDir);
+        createDirectoryIfNotExists(assignmentsDir);
+        createDirectoryIfNotExists(profileDir);
+    }
+
+    private void createDirectoryIfNotExists(String dirPath) {
+        java.io.File directory = new java.io.File(dirPath);
+        if (!directory.exists()) {
+            boolean created = directory.mkdirs();
+            if (created) {
+                System.out.println("Created upload directory: " + dirPath);
+            } else {
+                System.err.println("Failed to create directory: " + dirPath);
+            }
+        } else {
+            System.out.println("Directory already exists: " + dirPath);
+        }
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

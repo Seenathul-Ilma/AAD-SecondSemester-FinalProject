@@ -1,0 +1,69 @@
+# =====================================================
+# Smart Classroom Backend - Configuration Template
+# =====================================================
+# Copy this file to 'application.properties' and update values.
+# DO NOT commit 'application.properties' to version control!
+# =====================================================
+
+spring.application.name=Smart-Classroom-BackEnd
+
+# Database Settings (MySQL)
+spring.datasource.url=jdbc:mysql://localhost:3306/edusphere?createDatabaseIfNotExist=true
+spring.datasource.username=YOUR_DB_USERNAME
+spring.datasource.password=YOUR_DB_PASSWORD
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.hikari.maximum-pool-size=10
+
+# JPA / Hibernate Settings
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+spring.jpa.show-sql=true
+spring.jpa.generate-ddl=true
+
+# Server Settings
+server.port=8080
+
+# Logging
+logging.file.name=logs/application.log
+
+# JWT Configuration
+# Secret key should be long, random, and kept safe (use env vars in production)
+# Generate one at: https://www.grc.com/passwords.htm or use a 64+ char random string
+jwt.secretKey=YOUR_GENERATED_SECRET_KEY_HERE_REPLACE_WITH_A_LONG_RANDOM_STRING_OF_AT_LEAST_64_CHARACTERS
+# Access token expiry (10 days in milliseconds: 10 * 24 * 60 * 60 * 1000)
+jwt.expiration=864000000
+# Refresh token expiry (30 days in milliseconds: 30 * 24 * 60 * 60 * 1000)
+jwt.refresh-expiration=2592000000
+
+# Alternative shorter expiry values (uncomment to use):
+#jwt.expiration=900000        # 15 minutes
+#jwt.refresh-expiration=604800000  # 7 days
+
+# Default Admin Account (created on startup if not exists)
+admin.email=admin@example.com
+admin.password=CHANGE_THIS_ADMIN_PASSWORD
+
+# Email Configuration (SMTP - Brevo Example)
+spring.mail.host=smtp-relay.brevo.com
+spring.mail.port=587
+spring.mail.username=YOUR_SMTP_USERNAME
+spring.mail.password=YOUR_SMTP_PASSWORD
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.ssl.trust=smtp-relay.brevo.com
+spring.mail.default-encoding=UTF-8
+
+# File Upload Directories
+# Use forward slashes (works on Windows/Linux/Mac)
+# Example:- announcement.upload.dir=C:/IJSE/AAD/AAD-SecondSemester-FinalProject/uploads/announcements
+# OR,
+# You can use ${user.home} for cross-platform paths
+announcement.upload.dir=${user.home}/uploads/announcements
+materials.upload.dir=${user.home}/uploads/materials
+assignments.upload.dir=${user.home}/uploads/assignments
+profile.upload.dir=${user.home}/uploads/profiles
+submission.upload.dir=${user.home}/uploads/submissions
+
+# Multipart File Upload Limits
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=50MB
